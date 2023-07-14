@@ -1,12 +1,37 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div class="app">
+    <post-form @create="createPost">
+    </post-form>
+    <post-list :posts="posts" @remove="removePost"></post-list>
+  </div>
 </template>
 <script>
 
+import {defineComponent} from "vue";
+import PostForm from "@/components/PostForm.vue";
+import PostList from "@/components/PostList.vue";
+
+export default defineComponent({
+  data() {
+    return {
+      posts: [
+        {id:1, body: 'test'},
+      ]
+    }
+  },
+  components: {
+    PostForm,
+    PostList
+  },
+  methods:{
+    createPost(post) {
+     this.posts.push(post)
+    },
+    removePost(post){
+      this.posts = this.posts.filter(p => p.id !== post.id)
+    }
+  }
+})
 </script>
 <style lang="scss">
 
