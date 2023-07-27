@@ -1,34 +1,33 @@
 <template>
   <div class="app">
-    <post-form @create="createPost">
-    </post-form>
-    <post-list :posts="posts" @remove="removePost"></post-list>
+    <im-dialog v-model:show="dialogVisible"></im-dialog>
+    <notes-form :postsTitel="dayNotes"></notes-form>
+    <notes-form :postsTitel="editionNotes"></notes-form>
+    <notes-form :postsTitel="sectionNotes"></notes-form>
+    <notes-form :postsTitel="pageNotes"></notes-form>
   </div>
 </template>
 <script>
 
 import {defineComponent} from "vue";
-import PostForm from "@/components/PostForm.vue";
-import PostList from "@/components/PostList.vue";
+import NotesForm from "@/components/NotesForm.vue";
 
 export default defineComponent({
   data() {
     return {
-      posts: [
-        {id:1, body: 'test'},
-      ]
+      dialogVisible: false,
+      dayNotes: "Day notes",
+      editionNotes: "Edition notes",
+      sectionNotes: "Section notes",
+      pageNotes: "Page notes"
     }
   },
   components: {
-    PostForm,
-    PostList
+    NotesForm
   },
   methods:{
-    createPost(post) {
-     this.posts.push(post)
-    },
-    removePost(post){
-      this.posts = this.posts.filter(p => p.id !== post.id)
+    hideDialog(){
+      this.dialogVisible = true;
     }
   }
 })

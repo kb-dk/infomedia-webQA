@@ -1,11 +1,10 @@
 <template>
-  <select v-model="localModelValue" @change="changeOption">
+  <select class="select" v-model="localModelValue" @change="changeOption">
     <option disabled value="">Select notes</option>
     <option
         v-for="option in options"
         :key="option.value"
-        :value="option.value"
-    >
+        :value="option.value">
       {{ option.name }}
     </option>
   </select>
@@ -44,5 +43,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+.select {
+  width: 100%;
+  border: 1px solid teal;
+  padding: 10px 15px;
+  margin-top: 15px;
+}
 </style>

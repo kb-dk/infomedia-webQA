@@ -1,14 +1,13 @@
 <template>
-  <div>
-    <div class="post">
-      <div>
-        <div><strong>Beskrivelse:</strong> {{ post.body }}</div>
+  <div class="post__item">
+      <div class="output">
+        <div>{{ post.body }}</div>
       </div>
-      <div class="post__btns">
-        <im-button @click="$emit('remove', post)">
-          Slet
-        </im-button>
-      </div>
+
+    <div>
+      <im-button @click="$emit('remove', post)">
+        Slet
+      </im-button>
     </div>
   </div>
 </template>
@@ -17,6 +16,7 @@
 import {defineComponent} from 'vue'
 
 export default defineComponent({
+  emits: ['remove'],
   props: {
     post: {
       type: Object,
@@ -27,15 +27,18 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.post {
+.post__item {
   padding: 15px;
-  border: 2px solid teal;
-  margin-top: 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.post__btns {
-  display: flex;
+
+.output {
+  width: 100%;
+  border: 1px solid teal;
+  padding: 10px 15px;
+  margin-right: 15px;
+  text-align: left;
 }
 </style>
