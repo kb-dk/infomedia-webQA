@@ -1,5 +1,6 @@
 <template>
-  <YearPicker @date-select="yearSelect" v-model="date" view="year" dateFormat="yy" class="yearPicker"></YearPicker>
+  <YearPicker xl :input-value="currentYear" is-expanded @date-select="yearSelect" v-model="date" view="year" dateFormat="yy" class="yearPicker">
+  </YearPicker>
   <!--  <DatePicker :masks="format"/>-->
   <Calendar :initialPage="{day:1,month:1,year:currentYear}"
             :masks="{title:'MMMM'}" :rows="3" ref="yearCalendar" class="yearCalendar"
@@ -12,8 +13,9 @@ import {defineComponent, ref} from "vue";
 import {Calendar} from 'v-calendar';
 import YearPicker from 'primevue/calendar'
 // import 'v-calendar/style.css';
-import "primevue/resources/themes/lara-light-indigo/theme.css";
-import'v-calendar/style.css'
+// import "primevue/resources/themes/lara-light-indigo/theme.css";
+// import'v-calendar/style.css'
+// import "src/style/stylesheet.scss";
 
 export default defineComponent({
   name: "year-calendar",
