@@ -30,8 +30,4 @@ nav {
     }
   }
 }
-
-@import "primevue/resources/themes/lara-light-indigo/theme.css";
-@import'v-calendar/dist/style.css';
-@import "style/stylesheet.scss";
 </style>

@@ -1,9 +1,9 @@
 .yearPicker{
-  color:red;
-  background-color: green;
   display: flex;
-
+  align-self: center;
 }
-.p-calendar{
-  display: flex;
+.calendar{
+  max-width: 50%;
+  display: inline-table;
+
 }
