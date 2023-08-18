@@ -31,7 +31,7 @@ export default defineComponent({
     PostList
   },
   methods: {
-    createPost(post: { id: any; body: any }[] = []) {
+    createPost(post: { id: any; body: any }) {
       this.posts.push(post)
     },
     removePost(post: { id: any; }) {
