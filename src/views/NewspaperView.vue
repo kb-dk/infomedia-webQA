@@ -1,16 +1,61 @@
 <template>
-<h1>
-  Test
-</h1>
+  <div class="app">
+<!--    <im-dialog v-model:show="dialogVisible"></im-dialog>-->
+<!--    <notes-form :postsTitel="dayNotes"></notes-form>-->
+<!--    <notes-form :postsTitel="editionNotes"></notes-form>-->
+<!--    <notes-form :postsTitel="sectionNotes"></notes-form>-->
+<!--    <notes-form :postsTitel="pageNotes"></notes-form>-->
+    <NotesForm></NotesForm>
+  </div>
 </template>
 
 <script>
-import { defineComponent,ref } from 'vue';
-export default defineComponent ({
-  name: "NewspaperView"
+
+import {defineComponent} from "vue";
+import NotesForm from "@/components/NotesForm.vue";
+
+export default defineComponent({
+  data() {
+    return {
+      dialogVisible: false,
+      dayNotes: "Day notes",
+      editionNotes: "Edition notes",
+      sectionNotes: "Section notes",
+      pageNotes: "Page notes"
+    }
+  },
+  components: {
+    NotesForm
+  },
+  methods:{
+    hideDialog(){
+      this.dialogVisible = true;
+    }
+  }
 })
 </script>
 
-<style scoped>
 
+<style lang="scss">
+
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
 </style>

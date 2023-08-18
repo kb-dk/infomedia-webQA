@@ -19,7 +19,7 @@ import PostList from "@/components/PostList.vue";
 export default defineComponent({
   data() {
     return {
-      posts: [],
+      posts: [] as any[],
       dialogVisible: false,
     }
   },
@@ -31,7 +31,7 @@ export default defineComponent({
     PostList
   },
   methods: {
-    createPost(post: { id: any; body: any }) {
+    createPost(post: { id: any; body: any }[] = []) {
       this.posts.push(post)
     },
     removePost(post: { id: any; }) {

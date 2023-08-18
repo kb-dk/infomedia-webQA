@@ -1,36 +1,8 @@
 <template>
-  <div class="app">
-    <im-dialog v-model:show="dialogVisible"></im-dialog>
-    <notes-form :postsTitel="dayNotes"></notes-form>
-    <notes-form :postsTitel="editionNotes"></notes-form>
-    <notes-form :postsTitel="sectionNotes"></notes-form>
-    <notes-form :postsTitel="pageNotes"></notes-form>
-  </div>
+  <h1>test</h1>
 </template>
 <script>
 
-import {defineComponent} from "vue";
-import NotesForm from "@/components/NotesForm.vue";
-
-export default defineComponent({
-  data() {
-    return {
-      dialogVisible: false,
-      dayNotes: "Day notes",
-      editionNotes: "Edition notes",
-      sectionNotes: "Section notes",
-      pageNotes: "Page notes"
-    }
-  },
-  components: {
-    NotesForm
-  },
-  methods:{
-    hideDialog(){
-      this.dialogVisible = true;
-    }
-  }
-})
 </script>
 <style lang="scss">
 
