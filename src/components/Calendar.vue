@@ -1,10 +1,17 @@
 <template>
-  <YearPicker @date-select="yearSelect" v-model="date" view="year" dateFormat="yy" class="yearPicker"></YearPicker>
-  <!--  <DatePicker :masks="format"/>-->
-  <Calendar :initialPage="{day:1,month:1,year:currentYear}"
-            :masks="{title:'MMMM'}" :rows="3" ref="yearCalendar" class="yearCalendar"
-            :columns="4" :attributes="testData" :first-day-of-week="2" :nav-visibility="null"/>
-  <!--  <Calendar v-model="date"></Calendar>-->
+  <div class="calendar">
+    <YearPicker :inputStyle="yearPickerInputStyle" ref="yearPicker" inputId="yearPickerInput" @date-select="yearSelect" id v-model="date" view="year" dateFormat="yy" class="yearPicker">
+    </YearPicker>
+    <!--  <DatePicker :masks="format"/>-->
+    <Calendar locale="da" :initialPage="{day:1,month:1,year:currentYear}"
+              :masks="{title:'MMMM'}" :rows="3" ref="yearCalendar" class="yearCalendar"
+              :columns="4" :attributes="testData" :first-day-of-week="2" :nav-visibility="null"
+              @did-move="next($event)"
+              @dayclick="routeToNewspaper($event)"
+             />
+    <!--  <Calendar v-model="date"></Calendar>-->
+  </div>
+
 </template>
 
 <script>
@@ -14,29 +21,24 @@ import YearPicker from 'primevue/calendar'
 // import 'v-calendar/style.css';
 import "primevue/resources/themes/lara-light-indigo/theme.css";
 import'v-calendar/style.css'
+// import "src/style/stylesheet.scss";
 
 export default defineComponent({
   name: "year-calendar",
-  emits:["yearChange","onYearChange"],
   components: {
-    // DatePicker,
     Calendar,
     YearPicker
-    // DatePicker,
-    //
   },
   data() {
     return {
       currentYear: 2023,
-      date: ref(),
+      date: ref().value = new Date(2023,0,1),
+      yearPickerInputStyle: {'text-align':'center','font-size':'larger','font-weight':'bold'}
+
 
     }
   },
   computed: {
-    createDateFromYear() {
-      console.log(this.date)
-      return new Date(this.date.value);
-    },
     testData() {
       let result = [];
       for (let i = 0; i < 12; i++) {
@@ -59,15 +61,25 @@ export default defineComponent({
   methods: {
     yearSelect() {
       let createdDate = this.date;
-      // console.log("hello")
-      console.log(createdDate);
+      this.$refs.yearPicker.updateModel(createdDate)
       this.$refs.yearCalendar.focusDate(createdDate)
 
+    },
+    next(event){
+      this.date.value = new Date(event[0].year,0,1)
+      this.$refs.yearPicker.updateModel(this.date.value)
+    },
+    routeToNewspaper(event){
+      this.$router.push({name:"newspaper-view",params:{batchid:"dl_10102023_rt1",newspaperid:"Aarhusstiftidende",year:event.year,month:event.month,day:event.day}})
     }
   },
+
 
 
 
 })
 
 </script>
+<style lang="scss" scoped>
+@import "../style/stylesheet.scss";
+</style>

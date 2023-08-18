@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
+    <h1>{{newspaper}}</h1>
     <Calendar/>
 
   </div>
@@ -13,10 +13,16 @@ import Calendar from '@/components/Calendar.vue'// @ is an alias to /src
 
 export default defineComponent({
   name: 'HomeView',
-  emits:["yearChange"],
   components: {
     Calendar,
   },
+  data(){
+    return{
+      newspaper:"Aarhusstiftidende"
+    }
+
+  }
+
 
 
 });
@@ -24,5 +30,5 @@ export default defineComponent({
 
 
 // const attributes = ref(result)
-
+// import "src/style/stylesheet.scss";
 </script>

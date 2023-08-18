@@ -1,5 +1,9 @@
 .yearPicker{
-  color:red;
-  background-color: green;
   display: flex;
+  align-self: center;
+}
+.calendar{
+  max-width: 50%;
+  display: inline-table;
+
 }
