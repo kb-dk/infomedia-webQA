@@ -1,11 +1,11 @@
 <template>
   <div class="app">
-<!--    <im-dialog v-model:show="dialogVisible"></im-dialog>-->
-<!--    <notes-form :postsTitel="dayNotes"></notes-form>-->
-<!--    <notes-form :postsTitel="editionNotes"></notes-form>-->
-<!--    <notes-form :postsTitel="sectionNotes"></notes-form>-->
-<!--    <notes-form :postsTitel="pageNotes"></notes-form>-->
-    <NotesForm></NotesForm>
+    <im-dialog v-model:show="dialogVisible"></im-dialog>
+    <notes-form :postsTitel="dayNotes"></notes-form>
+    <notes-form :postsTitel="editionNotes"></notes-form>
+    <notes-form :postsTitel="sectionNotes"></notes-form>
+    <notes-form :postsTitel="pageNotes"></notes-form>
+<!--    <NotesForm></NotesForm>-->
   </div>
 </template>
 
