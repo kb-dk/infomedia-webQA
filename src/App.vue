@@ -1,12 +1,29 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <b-row>
+    <nav>
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
+    </nav>
+  </b-row>
+  <b-row>
+    <b-col sm="2">
+      <NewspaperTable/>
+    </b-col>
+    <b-col sm="8">
+      <router-view/>
+    </b-col>
+
+  </b-row>
+
+
 </template>
 <script>
-
+import NewspaperTable from "@/components/NewspaperTable";
+  export default {
+    components:{
+      NewspaperTable
+    }
+  }
 </script>
 <style lang="scss">
 
