@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1 @click="info" v-text="newspaper" content="{newspaper}"></h1>
+    <h1 v-text="newspaper"></h1>
     <Calendar/>
 
   </div>
@@ -25,14 +25,7 @@ export default defineComponent({
       newspaper: this.$route.params.newspaperid
     }
 
-  },
-  methods:{
-    info(){
-      console.log(this.$route.params.newspaperid);
-    }
   }
-
-
 
 });
 
