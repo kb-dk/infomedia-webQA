@@ -1,10 +1,17 @@
 <template>
   <div class="app">
-    <im-dialog v-model:show="dialogVisible"></im-dialog>
-    <notes-form :postsTitel="dayNotes"></notes-form>
-    <notes-form :postsTitel="editionNotes"></notes-form>
-    <notes-form :postsTitel="sectionNotes"></notes-form>
-    <notes-form :postsTitel="pageNotes"></notes-form>
+    <b-row>
+      <b-col sm="5">
+        <im-dialog v-model:show="dialogVisible"></im-dialog>
+        <notes-form :postsTitel="dayNotes"></notes-form>
+        <notes-form :postsTitel="editionNotes"></notes-form>
+        <notes-form :postsTitel="sectionNotes"></notes-form>
+        <notes-form :postsTitel="pageNotes"></notes-form>
+      </b-col>
+      <b-col sm="5">
+        <im-pdf-viewer :pdf="pdf" :checkbox-text="checkboxText"></im-pdf-viewer>
+      </b-col>
+    </b-row>
 <!--    <NotesForm></NotesForm>-->
   </div>
 </template>
@@ -21,7 +28,9 @@ export default defineComponent({
       dayNotes: "Day notes",
       editionNotes: "Edition notes",
       sectionNotes: "Section notes",
-      pageNotes: "Page notes"
+      pageNotes: "Page notes",
+      pdf: "test_pdf.pdf",
+      checkboxText: "Show all pages"
     }
   },
   components: {
@@ -30,8 +39,8 @@ export default defineComponent({
   methods:{
     hideDialog(){
       this.dialogVisible = true;
-    }
-  }
+    },
+  },
 })
 </script>
 
@@ -56,6 +65,12 @@ nav {
     &.router-link-exact-active {
       color: #42b983;
     }
+  }
+}
+
+@media (min-width: 768px) {
+  ::v-deep(.pdf-vue3-backToTopBtn) {
+    right: 32px !important;
   }
 }
 </style>

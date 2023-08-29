@@ -70,14 +70,14 @@ export default defineComponent({
 }
 
 .post__input {
-  padding: 15px;
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .post__select {
-  padding: 15px;
+  padding: 10px;
   display: flex;
 }
 
