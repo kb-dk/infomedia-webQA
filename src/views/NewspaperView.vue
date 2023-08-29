@@ -67,10 +67,4 @@ nav {
     }
   }
 }
-
-@media (min-width: 768px) {
-  ::v-deep(.pdf-vue3-backToTopBtn) {
-    right: 32px !important;
-  }
-}
 </style>
