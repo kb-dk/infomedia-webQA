@@ -39,8 +39,8 @@ export default defineComponent({
   methods:{
     hideDialog(){
       this.dialogVisible = true;
-    },
-  },
+    }
+  }
 })
 </script>
 
