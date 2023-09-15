@@ -1,7 +1,9 @@
-import InButton from "@/components/UI/Button.vue";
-import InInput from "@/components/UI/Input.vue";
-import InSelect from "@/components/UI/Select.vue";
-import InDialog from "@/components/UI/Dialog.vue";
-import InOutput from "@/components/UI/Output.vue";
+import ImButton from "@/components/UI/Button.vue";
+import ImInput from "@/components/UI/Input.vue";
+import ImSelect from "@/components/UI/Select.vue";
+import ImDialog from "@/components/UI/Dialog.vue";
+import ImOutput from "@/components/UI/Output.vue";
+import ImPdfViewer from "@/components/UI/PdfViewer.vue";
+import ImCheckbox from "@/components/UI/Checkbox.vue"
 
-export default [InButton, InInput, InSelect, InDialog, InOutput]
+export default [ImButton, ImInput, ImSelect, ImDialog, ImOutput, ImPdfViewer, ImCheckbox]

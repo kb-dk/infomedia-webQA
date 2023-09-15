@@ -1,5 +1,5 @@
 <template>
-  <button class="btn">
+  <button class="im-button" :disabled="disabled">
     <slot></slot>
   </button>
 </template>
@@ -9,11 +9,14 @@ import {defineComponent} from 'vue'
 
 export default defineComponent({
   name: 'im-button',
+  props: {
+    disabled: [Boolean]
+  }
 })
 </script>
 
 <style scoped>
-.btn {
+.im-button {
   padding: 10px 15px;
   background: none;
   color: teal;

@@ -46,14 +46,14 @@ export default defineComponent({
 
 <style scoped>
 .form {
-  padding: 15px;
+  padding: 10px;
   border: 2px solid teal;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 .header {
   text-align: left;
-  padding: 15px;
+  padding: 10px;
 }
 
 </style>
