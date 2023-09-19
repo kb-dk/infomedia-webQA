@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+    <display-name>${project.name}</display-name>
+
+    <servlet>
+        <servlet-name>web-qa-servlet</servlet-name>
+        <servlet-class>org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>dk.kb.webQA.webservice.Application</param-value>
+        </init-param>
+        <init-param>
+            <!--This enables the endpoint /pdf-service/openapi.json-->
+            <!--This enables the (Swagger UI) endpoint /pdf-service/api-docs -->
+            <param-name>jaxrs.features</param-name>
+            <param-value>org.apache.cxf.jaxrs.openapi.OpenApiFeature</param-value>
+        </init-param>
+
+        <init-param>
+            <!--Here we override openapi.json and openapi.yaml from the above feature, to serve the static files-->
+            <!--THIS IS A HACK. But it seems like the simplest way to recover the original specs-->
+            <param-name>static-resources-list</param-name>
+            <param-value>
+                /openapi\..+
+            </param-value>
+        </init-param>
+        <init-param>
+            <param-name>static-welcome-file</param-name>
+            <param-value>/api/index.html</param-value>
+        </init-param>
+        <init-param>
+            <param-name>index-page</param-name>
+            <param-name>../../../js/public/index.html</param-name>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>web-qa-servlet</servlet-name>
+<!--        <url-pattern>/api/*</url-pattern>-->
+        <url-pattern>../../../js/public/*</url-pattern>
+    </servlet-mapping>
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>webQA-index</servlet-name>-->
+<!--        <url-pattern>../../../js/public/*</url-pattern>-->
+<!--    </servlet-mapping>-->
+
+    <!-- CAS filters -->
+    <filter>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>CAS Validation Filter</filter-name>
+        <filter-class>org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CAS Validation Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>CAS Assertion Thread Local Filter</filter-name>
+        <filter-class>org.jasig.cas.client.util.AssertionThreadLocalFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CAS Assertion Thread Local Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+        <filter-class>org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+<!--
+
+    <filter>
+        <filter-name>AD Validation Filter</filter-name>
+        <filter-class>dk.kb.alma.request.service.ADMemberFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AD Validation Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+-->
+
+    <!-- CAS Filters done -->
+
+
+</web-app>
+

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+
+    <New id="logback" class="org.eclipse.jetty.plus.jndi.EnvEntry">
+        <Arg>${project.artifactId}-logback-config</Arg>
+        <Arg type="java.lang.String">
+            ${basedir}/target/jetty-res/logback.xml
+        </Arg>
+        <Arg type="boolean">true</Arg>
+    </New>
+
+    <New id="config" class="org.eclipse.jetty.plus.jndi.EnvEntry">
+        <!-- Note that the application-config is defined using globbing: Multiple config files are merged -->
+        <Arg>application-config</Arg>
+        <Arg type="java.lang.String">
+            ${basedir}/conf/${project.artifactId}*.yaml
+        </Arg>
+        <Arg type="boolean">true</Arg>
+    </New>
+
+    <Call name="setInitParameter">
+        <Arg>casServerLoginUrl</Arg>
+        <Arg>https://intern-samlstage.statsbiblioteket.dk/module.php/sbcasserver/cas.php/login</Arg>
+    </Call>
+
+    <Call name="setInitParameter">
+        <Arg>casServerUrlPrefix</Arg>
+        <Arg>https://intern-samlstage.statsbiblioteket.dk/module.php/sbcasserver/cas.php/</Arg>
+    </Call>
+
+    <Call name="setInitParameter">
+        <Arg>serverName</Arg>
+        <Arg>localhost:8080</Arg>
+    </Call>
+
+</Configure>
