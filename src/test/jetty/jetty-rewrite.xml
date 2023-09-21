@@ -35,13 +35,46 @@
             <!-- see rewrite-compactpath.xml for example how to add a rule -->
             <Call name="addRule">
                <Arg>
-                  <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                  <New class="org.eclipse.jetty.rewrite.handler.RewriteRegexRule">
                       <!-- Exclude static -->
-                     <Set name="pattern">/rewrite/test.html</Set>
-                     <Set name="replacement">/indexA.html</Set>
+                     <Set name="regex">(.*/static/.*)</Set>
+                     <Set name="replacement">$1</Set>
+                      <Set name="terminating">true</Set>
                   </New>
                </Arg>
             </Call>
+            <Call name="addRule">
+               <Arg>
+                  <New class="org.eclipse.jetty.rewrite.handler.RewriteRegexRule">
+                      <!-- Exclude static -->
+                     <Set name="regex">(.*/api/.*)</Set>
+                     <Set name="replacement">$1</Set>
+                      <Set name="terminating">true</Set>
+                  </New>
+               </Arg>
+            </Call>
+            <Call name="addRule">
+               <Arg>
+                  <New class="org.eclipse.jetty.rewrite.handler.RewriteRegexRule">
+                      <!-- Exclude static -->
+                     <Set name="regex">.*/bar.html</Set>
+                     <Set name="replacement">/nonexisting_on_purpose</Set>
+                      <Set name="terminating">true</Set>
+                  </New>
+               </Arg>
+            </Call>
+            <Call name="addRule">
+               <Arg>
+                  <New class="org.eclipse.jetty.rewrite.handler.RewriteRegexRule">
+                      <!-- Exclude static -->
+                     <Set name="regex">^.*$</Set>
+                      <!-- TODO: Figure out how to avoid the infomedia-webqa/ below -->
+                      <!-- TODO: Make the Vue app aware of infomedia-webqa when constructing URLs -->
+                     <Set name="replacement">/infomedia-webqa/index.html</Set>
+                  </New>
+               </Arg>
+            </Call>
+
          </New>
       </Arg>
    </Call>
