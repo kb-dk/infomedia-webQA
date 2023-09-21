@@ -372,7 +372,9 @@
                 <!--<version>9.4.30.v20200611</version>-->
                 <configuration>
                     <useTestScope>true</useTestScope>
-                    <jettyXmls>${project.basedir}/src/test/jetty/jetty.xml,${project.basedir}/src/test/jetty/jetty-rewrite.xml</jettyXmls>
+                    <!-- @toes: I'm guessing this is not needed -->
+                    <jettyXmls>${project.basedir}/src/test/jetty/jetty.xml</jettyXmls>
+                    <!--<jettyXmls>${project.basedir}/src/test/jetty/jetty.xml,${project.basedir}/src/test/jetty/jetty-rewrite.xml</jettyXmls>-->
 <!--                    ,${project.basedir}/src/test/jetty/jetty-rewrite.xml-->
                     <webApp>
 

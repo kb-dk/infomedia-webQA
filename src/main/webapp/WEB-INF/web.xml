@@ -28,17 +28,18 @@
             <param-name>static-welcome-file</param-name>
             <param-value>/api/index.html</param-value>
         </init-param>
-        <init-param>
+        <!-- what is this? -->
+         <!-- <init-param>
             <param-name>index-page</param-name>
             <param-name>../../../js/public/index.html</param-name>
-        </init-param>
+        </init-param>-->
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>
         <servlet-name>web-qa-servlet</servlet-name>
-<!--        <url-pattern>/api/*</url-pattern>-->
-        <url-pattern>../../../js/public/*</url-pattern>
+        <url-pattern>/api/*</url-pattern>
+        <!--<url-pattern>../../../js/public/*</url-pattern>-->
     </servlet-mapping>
 <!--    <servlet-mapping>-->
 <!--        <servlet-name>webQA-index</servlet-name>-->
@@ -46,7 +47,7 @@
 <!--    </servlet-mapping>-->
 
     <!-- CAS filters -->
-    <filter>
+    <!--<filter>
         <filter-name>CAS Authentication Filter</filter-name>
         <filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
     </filter>
@@ -80,7 +81,7 @@
     <filter-mapping>
         <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    </filter-mapping>-->
 <!--
 
     <filter>

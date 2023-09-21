@@ -36,8 +36,9 @@
             <Call name="addRule">
                <Arg>
                   <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                      <!-- Exclude static -->
                      <Set name="pattern">/rewrite/test.html</Set>
-                     <Set name="replacement">/test/test.html</Set>
+                     <Set name="replacement">/indexA.html</Set>
                   </New>
                </Arg>
             </Call>
