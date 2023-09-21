@@ -377,7 +377,8 @@
                     <jettyXmls>${project.basedir}/src/test/jetty/jetty.xml,${project.basedir}/src/test/jetty/jetty-rewrite.xml</jettyXmls>
 <!--                    ,${project.basedir}/src/test/jetty/jetty-rewrite.xml-->
 
-                    <!-- Manually copy js/dist/* and src/main/webapp/* to target/jetty-res2 -->
+                    <!-- TODO: Manually copy js/dist/* and src/main/webapp/* to target/jetty-res2 -->
+                    <!-- TODO: Or rather: Create a maven plugin-setup-thingie that does it automatically on jetty:run -->
                     <webAppSourceDirectory>target/jetty-res2</webAppSourceDirectory>
                     <webApp>
 
