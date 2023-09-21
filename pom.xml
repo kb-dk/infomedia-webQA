@@ -362,6 +362,39 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>copy-vue-to-target</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+
+                            <outputDirectory>${basedir}/target/jetty-res2</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/js/dist</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-webapp-to-target</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/jetty-res2</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/webapp</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -395,11 +428,12 @@
                     <dependency>
                         <groupId>org.eclipse.jetty</groupId>
                         <artifactId>jetty-rewrite</artifactId>
-                        <version>10.0.7</version>
+                        <version>9.4.48.v20220622</version>
                         <type>jar</type>
                         <scope>runtime</scope>
                     </dependency>
                 </dependencies>
+
             </plugin>
             <plugin>
                 <groupId>org.openapitools</groupId>
