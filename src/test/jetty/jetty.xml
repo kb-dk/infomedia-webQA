@@ -88,20 +88,20 @@
     <!-- handler by context path and virtual host, and then only if  -->
     <!-- the request is not handled is the DefaultHandler invoked    -->
     <!-- =========================================================== -->
-<!--    <Set name="handler">-->
-<!--        <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerList">-->
-<!--            <Set name="handlers">-->
-<!--                <Array type="org.eclipse.jetty.server.Handler">-->
-<!--                    <Item>-->
-<!--                        <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>-->
-<!--                    </Item>-->
-<!--                    <Item>-->
-<!--                        <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>-->
-<!--                    </Item>-->
-<!--                </Array>-->
-<!--            </Set>-->
-<!--        </New>-->
-<!--    </Set>-->
+    <Set name="handler">
+        <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerList">
+            <Set name="handlers">
+                <Array type="org.eclipse.jetty.server.Handler">
+                    <Item>
+                        <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+                    </Item>
+                    <Item>
+                        <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>
+                    </Item>
+                </Array>
+            </Set>
+        </New>
+    </Set>
 
     <!-- =========================================================== -->
     <!-- extra server options                                        -->
@@ -111,24 +111,24 @@
     <Set name="dumpAfterStart" property="jetty.server.dumpAfterStart">false</Set>
     <Set name="dumpBeforeStop" property="jetty.server.dumpBeforeStop">false</Set>
 
-    <Get id="oldhandler" name="handler"/>
-    <Set name="handler">
-        <New id="Rewrite" class="org.eclipse.jetty.rewrite.handler.RewriteHandler">
-<!--            <Set name="handler">-->
-<!--                <Ref id="oldhandler" />-->
-<!--            </Set>-->
-            <Set name="rewriteRequestURI">true</Set>
-            <Set name="rewritePathInfo">false</Set>
-            <Set name="originalPathAttribute">requestedPath</Set>
-            <!-- Added for mainsite js tagging files -->
-            <Call name="addRule">
-                <Arg>
-                    <New class="org.eclipse.jetty.rewrite.handler.RedirectPatternRule">
-                        <Set name="pattern">/redirect/*</Set>
-                        <Set name="location">/redirected</Set>
-                    </New>
-                </Arg>
-            </Call>
-        </New>
-    </Set>
+<!--    <Get id="oldhandler" name="handler"/>-->
+<!--    <Set name="handler">-->
+<!--        <New id="Rewrite" class="org.eclipse.jetty.rewrite.handler.RewriteHandler">-->
+<!--&lt;!&ndash;            <Set name="handler">&ndash;&gt;-->
+<!--&lt;!&ndash;                <Ref id="oldhandler" />&ndash;&gt;-->
+<!--&lt;!&ndash;            </Set>&ndash;&gt;-->
+<!--            <Set name="rewriteRequestURI">true</Set>-->
+<!--            <Set name="rewritePathInfo">false</Set>-->
+<!--            <Set name="originalPathAttribute">requestedPath</Set>-->
+<!--            &lt;!&ndash; Added for mainsite js tagging files &ndash;&gt;-->
+<!--            <Call name="addRule">-->
+<!--                <Arg>-->
+<!--                    <New class="org.eclipse.jetty.rewrite.handler.RedirectPatternRule">-->
+<!--                        <Set name="pattern">/redirect/*</Set>-->
+<!--                        <Set name="location">/redirected</Set>-->
+<!--                    </New>-->
+<!--                </Arg>-->
+<!--            </Call>-->
+<!--        </New>-->
+<!--    </Set>-->
 </Configure>
