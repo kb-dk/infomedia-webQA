@@ -1,6 +1,8 @@
 package dk.kb.webQA.api.impl;
 
 import dk.kb.webQA.api.*;
+import dk.kb.webQA.dao.DAOFailureException;
+import dk.kb.webQA.dao.NewspaperQADao;
 import dk.kb.webQA.model.Batch;
 import dk.kb.webQA.model.CharacterizationInfo;
 import java.io.File;
@@ -27,15 +29,10 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
-import javax.ws.rs.core.MediaType;
+
 import org.apache.cxf.jaxrs.model.wadl.Description;
 import org.apache.cxf.jaxrs.model.wadl.DocTarget;
 import org.apache.cxf.jaxrs.ext.MessageContext;
@@ -87,9 +84,18 @@ public class DefaultApiServiceImpl implements DefaultApi {
     private transient ServletConfig servletConfig;
 
     @Context
+    private transient Application application;
+
+    @Context
     private transient MessageContext messageContext;
 
+    private dk.kb.webQA.webservice.Application getApplication() {
+        return (dk.kb.webQA.webservice.Application) application;
+    }
 
+    private NewspaperQADao getDAO() {
+        return getApplication().getDao();
+    }
     @Override
     public Batch
  getBatch(String batchID) {
@@ -114,8 +120,13 @@ public class DefaultApiServiceImpl implements DefaultApi {
     @Override
     public List<SlimBatch>
  getBatches() {
-        // TODO: Implement...
-        return null;
+        try {
+            List<SlimBatch> IDs = getDAO().getBatchIDs();
+            return IDs;
+        } catch (DAOFailureException e) {
+            log.error("Could not get newspaper IDs from backend");
+            throw handleException(e);
+        }
     }
 
     @Override

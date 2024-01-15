@@ -573,26 +573,31 @@ components:
           type: string
         roundtrip:
           type: integer
-        avisid:
+#        avisid:
+#          type: string
+        newspaper:
           type: string
-        startDate:
-          type: string
-          format: date
-        endDate:
-          type: string
-          format: date
-        deliveryDate:
+        date:
           type: string
           format: date
+#        startDate:
+#          type: string
+#          format: date
+#        endDate:
+#          type: string
+#          format: date
+#        deliveryDate:
+#          type: string
+#          format: date
         numProblems:
           description: "Number of problems found. Use this to see if the batch completed checks without any errors"
           type: integer
-        numNotes:
-          type: integer
+#        numNotes:
+#          type: integer
         state:
           type: string
-        username:
-          type: string
+#        username:
+#          type: string
         lastModified:
           type: string
           format: 'date-time'

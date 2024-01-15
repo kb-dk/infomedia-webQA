@@ -9,7 +9,8 @@
 #
 #
 avischk-web-qa:
-  jdbc-connection-string: "jdbc:postgresql://localhost:5432/postgres"
-  jdbc-user: "pabr"
+#  jdbc-connection-string: "jdbc:postgresql://localhost:5432/postgres"
+  jdbc-connection-string: "jdbc:postgresql://nifi-avis-devel-pgsql01.kb.dk:5432/newspaper_ingest"
+  jdbc-user: "kuanadpa"
   jdbc-password: "DO NOT SET HERE"
   jdbc-driver: "org.postgresql.Driver"

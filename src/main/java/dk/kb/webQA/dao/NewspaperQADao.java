@@ -135,7 +135,7 @@ public class NewspaperQADao {
 
         //Get all distinct newspaperIDs
         try (Connection conn = connectionPool.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement("SELECT distinct(avisid) FROM newspaperarchive")) {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT distinct(avisid) FROM newspaper")) {
                 try (ResultSet res = ps.executeQuery()) {
                     while (res.next()) {
                         String avisID = res.getString(1);
@@ -155,10 +155,10 @@ public class NewspaperQADao {
     public NewspaperID checkNewspaperInactive(String avisID) throws SQLException {
         try (Connection conn = connectionPool.getConnection()) {
             return new NewspaperID()
-                    .avisid(avisID)
-                    .isInactive(Set.of("APPROVED", "REJECTED")
-                                   .containsAll(DaoBatchHelper.getBatchStatesForAvisID(avisID, conn)))
-                    .deliveryDate(DaoBatchHelper.getLatestDeliveryDate(avisID, conn));
+                           .avisid(avisID)
+                           .isInactive(Set.of("APPROVED", "REJECTED")
+                                          .containsAll(DaoBatchHelper.getBatchStatesForAvisID(avisID, conn)))
+                           .deliveryDate(DaoBatchHelper.getLatestDeliveryDate(avisID, conn));
         }
     }
 
@@ -172,10 +172,10 @@ public class NewspaperQADao {
         }
     }
 
-    public List<SlimBatch> getBatchesFromMonthAndYear(String month,String year) throws DAOFailureException {
-        try (Connection conn = connectionPool.getConnection()){
-            return DaoBatchHelper.getAllBatchesFromMonthAndYear(conn,month,year);
-        }catch (SQLException e){
+    public List<SlimBatch> getBatchesFromMonthAndYear(String month, String year) throws DAOFailureException {
+        try (Connection conn = connectionPool.getConnection()) {
+            return DaoBatchHelper.getAllBatchesFromMonthAndYear(conn, month, year);
+        } catch (SQLException e) {
             log.error("Failed to lookup batch ids", e);
             throw new DAOFailureException("Err looking up batch ids", e);
         }
@@ -198,7 +198,7 @@ public class NewspaperQADao {
 
         try (Connection conn = connectionPool.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(
-                    "SELECT distinct(EXTRACT(YEAR from edition_date)) AS year FROM newspaperarchive WHERE avisid = ? " +
+                    "SELECT distinct(EXTRACT(YEAR from edition_date)) AS year FROM newspaper WHERE newspaperid = ? " +
                     "ORDER BY year ASC")) {
 
                 ps.setString(1, id);
@@ -226,7 +226,7 @@ public class NewspaperQADao {
         try (Connection conn = connectionPool.getConnection()) {
             List<SlimBatch> batches = DaoBatchHelper.getLatestBatches(avisID, conn);
             for (SlimBatch batch : batches) {
-                if (batch.getEndDate().getYear() <= yearInt && batch.getStartDate().getYear() >= yearInt) {
+                if (batch.getDate().getYear() <= yearInt && batch.getDate().getYear() >= yearInt) {
 
                     DaoBatchHelper.batchDays(batch).
                                   filter(date -> date.getYear() == yearInt)
@@ -237,7 +237,7 @@ public class NewspaperQADao {
                                                                                              .editionCount(0)
                                                                                              .notesCount(0)
                                                                                              .batchid(batch.getBatchid())
-                                                                                             .avisid(batch.getAvisid())
+                                                                                             .avisid(batch.getNewspaper())
                                                                                              .roundtrip(batch.getRoundtrip())
                                                                                              .state(batch.getState());
                                       resultMap.put(date, newspaperDate);
@@ -249,24 +249,24 @@ public class NewspaperQADao {
 
             try (PreparedStatement ps = conn.prepareStatement(
                     """
-                    select newspaperarchive.edition_date,
-                           newspaperarchive.batchid,
-                           count(DISTINCT(edition_title)) as numEditions,
+                    select newspaper.edition_date,
+                           newspaper.batchid,
+                           count(DISTINCT(newspaperid)) as numEditions,
                            count(*) as numPages,
                            string_agg(problems.problem, '\\n') as allProblems
-                    from newspaperarchive, problems
-                    where newspaperarchive.avisid = ? and
-                      EXTRACT(YEAR FROM newspaperarchive.edition_date) = ?
+                    from newspaper, problems
+                    where newspaper.newspaperid = ? and
+                      EXTRACT(YEAR FROM newspaper.edition_date) = ?
                       AND problems.batchid = ? AND problems.newspaper = ?
-                    group by newspaperarchive.edition_date, newspaperarchive.batchid
+                    group by newspaper.edition_date, newspaper.batchid
                     """)) {
                 //ascending sort ensures that the highest roundtrips are last
                 //last entry for a given date wins. So this way, the calender will show the latest roundtrips
 
                 ps.setString(1, avisID);
                 ps.setInt(2, Integer.parseInt(year));
-                ps.setString(3,"dl_20221201_rt1");
-                ps.setString(4,avisID);
+                ps.setString(3, "dl_20221201_rt1");
+                ps.setString(4, avisID);
                 //ps.setString(3, year);
                 try (ResultSet res = ps.executeQuery()) {
 
@@ -293,7 +293,7 @@ public class NewspaperQADao {
                                                                   .batchid(batchID)
                                                                   .notesCount(noteCount)
                                                                   .avisid(avisID);
-                        batch.ifPresent(val -> result.setAvisid(val.getAvisid()));
+                        batch.ifPresent(val -> result.setAvisid(val.getNewspaper()));
                         batch.ifPresent(val -> result.setBatchid(val.getBatchid()));
                         batch.ifPresent(val -> result.setState(val.getState()));
                         batch.ifPresent(val -> result.setRoundtrip(val.getRoundtrip()));
@@ -328,18 +328,19 @@ public class NewspaperQADao {
                                                                                      .notesCount(0)
                                                                                      .editionCount(0)
                                                                                      .batchid(batchID)
-                                                                                     .avisid(batch.getAvisid())
+                                                                                     .avisid(batch.getNewspaper())
                                                                                      .state(batch.getState());
                               resultMap.put(date, newspaperDate);
                           });
 
 
             try (PreparedStatement ps = conn.prepareStatement(
-                    "select edition_date, count(DISTINCT(edition_title)) as numEditions,  count(*) as numPages,  " +
+                    //TODO - connect to problmes table
+                    "select edition_date, count(DISTINCT(newspaperid)) as numEditions,  count(*) as numPages,  " +
                     "string_agg(newspaperarchive.problems, '\\n') as allProblems "
-                    + " from newspaperarchive "
-                    + " join batch b on b.batchid = newspaperarchive.batchid and b.lastmodified = ? "
-                    + " where newspaperarchive.batchid = ? and "
+                    + " from newspaper "
+                    + " join batch b on b.batchid = newspaper.batchid and b.lastmodified = ? "
+                    + " where newspaper.batchid = ? and "
                     + " EXTRACT(YEAR FROM edition_date) = ? "
                     + " group by edition_date ")) {
                 int param = 1;
@@ -399,14 +400,14 @@ public class NewspaperQADao {
                 throw new NotFoundServiceException("Err looking up batch id " + batchID, e);
             }
             SlimBatch batch = result1;
-            if (date.isBefore(batch.getStartDate()) || date.isAfter(batch.getEndDate())) {
+            if (date.isBefore(batch.getDate()) || date.isAfter(batch.getDate())) {
                 throw new NotFoundServiceException("Date "
                                                    + date
                                                    + " is not within start ("
-                                                   + batch.getStartDate()
+                                                   + batch.getDate()
                                                    + ") "
                                                    + "and end ("
-                                                   + batch.getEndDate()
+                                                   + batch.getDate()
                                                    + ") of batch "
                                                    + batch.getBatchid());
             }
@@ -427,28 +428,30 @@ public class NewspaperQADao {
             throw new DAOFailureException("Err looking up dates for newspaper id", e);
         }
     }
-    private List<String> getProblems(String batchID,String newspaperID,Connection conn){
+
+    private List<String> getProblems(String batchID, String newspaperID, Connection conn) {
         List<String> problems = new ArrayList<>();
-        try(PreparedStatement ps = conn.prepareStatement(
+        try (PreparedStatement ps = conn.prepareStatement(
                 """
-                    SELECT * FROM problems WHERE
-                    batchid = ? AND 
-                    newspaper = ?
-                    """
-        )) {
-           ps.setString(1,batchID);
-           ps.setString(2,newspaperID);
-           try (ResultSet res = ps.executeQuery()){
-                while (res.next()){
+                SELECT * FROM problems WHERE
+                batchid = ? AND 
+                newspaper = ?
+                """
+                                                         )) {
+            ps.setString(1, batchID);
+            ps.setString(2, newspaperID);
+            try (ResultSet res = ps.executeQuery()) {
+                while (res.next()) {
                     problems.add(res.getString("problem"));
                 }
-           }
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return problems;
     }
+
     private List<NewspaperEdition> getEditions(String batchID,
                                                String newspaperID,
                                                LocalDate date,
@@ -456,11 +459,10 @@ public class NewspaperQADao {
                                                String batchesFolder) throws SQLException {
 
         try (PreparedStatement ps = conn.prepareStatement(
-                "SELECT orig_relpath, format_type, p.edition_date, single_page, p.page_number, p.avisid, avistitle, " +
-                "shadow_path, p.section_title, p.edition_title, delivery_date, handle, side_label, fraktur," +
-                " p.batchid"
-                + " FROM newspaperarchive as p"
-                + " WHERE p.batchid = ? AND p.avisid = ? AND p.edition_date = ?"
+                "SELECT absolute_path, newspaperid, p.edition_date, p.page_number, " +
+                "p.section_title, p.batchid"
+                + " FROM newspaper as p"
+                + " WHERE p.batchid = ? AND p.newspaperid = ? AND p.edition_date = ?"
                 + " ORDER BY p.section_title, p.page_number ASC")) {
 
             ps.setString(1, batchID);
@@ -472,7 +474,7 @@ public class NewspaperQADao {
             try (ResultSet res = ps.executeQuery()) {
                 while (res.next()) {
 
-
+                    //TODO - clean up
                     String edition_title = res.getString("edition_title");
 
 
@@ -500,7 +502,9 @@ public class NewspaperQADao {
                                                             .handle(res.getLong("handle"))
                                                             .singlePage(res.getBoolean("single_page"))
                                                             .fraktur(res.getBoolean("fraktur"))
-                                                            .problems(getProblems(batchID,newspaperID,conn).toString());
+                                                            .problems(getProblems(batchID,
+                                                                                  newspaperID,
+                                                                                  conn).toString());
 
                     pages.add(page);
                 }
@@ -529,11 +533,11 @@ public class NewspaperQADao {
             List<NewspaperSection> sections = new ArrayList<>();
 
             NewspaperEdition edition = new NewspaperEdition()
-                    .batchid(batchID)
-                    .avisid(newspaperID)
-                    .date(date)
-                    .edition(editionPages.getKey())
-                    .sections(sections);
+                                               .batchid(batchID)
+                                               .avisid(newspaperID)
+                                               .date(date)
+                                               .edition(editionPages.getKey())
+                                               .sections(sections);
             editions.add(edition);
 
 
@@ -543,15 +547,15 @@ public class NewspaperQADao {
             for (Map.Entry<String, Set<NewspaperPage>> sectionPages : sectionsToPages.entrySet()) {
 
                 NewspaperSection section = new NewspaperSection()
-                        .batchid(batchID)
-                        .avisid(newspaperID)
-                        .date(date)
-                        .edition(editionPages.getKey())
-                        .section(sectionPages.getKey())
-                        .pages(sectionPages.getValue()
-                                           .stream()
-                                           .sorted(Comparator.comparingInt(p -> p.getPageNumber()))
-                                           .toList());
+                                                   .batchid(batchID)
+                                                   .avisid(newspaperID)
+                                                   .date(date)
+                                                   .edition(editionPages.getKey())
+                                                   .section(sectionPages.getKey())
+                                                   .pages(sectionPages.getValue()
+                                                                      .stream()
+                                                                      .sorted(Comparator.comparingInt(p -> p.getPageNumber()))
+                                                                      .toList());
 
 
                 Map<Integer, List<Note>> pageNotes = DaoNoteHelper.getPageLevelNotes(batchID,
@@ -583,6 +587,7 @@ public class NewspaperQADao {
 
     public String getOrigRelPath(long handle) throws DAOFailureException {
         log.debug("Looking up relpath by handle for handle {}", handle);
+        //TODO What is handle?
         String SQL = "SELECT orig_relpath FROM newspaperarchive WHERE handle = ?";
 
         try (Connection conn = connectionPool.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL)) {
@@ -605,6 +610,7 @@ public class NewspaperQADao {
     public List<CharacterizationInfo> getCharacterizationForEntity(long handle) throws DAOFailureException {
         log.debug("Looking up characterization for newspaper handle: '{}'", handle);
         String origRelpath = getOrigRelPath(handle);
+        //TODO remove?
         String SQL = "SELECT * FROM characterisation_info WHERE orig_relpath = ?";
 
         try (Connection conn = connectionPool.getConnection(); PreparedStatement ps = conn.prepareStatement(SQL)) {
@@ -651,7 +657,7 @@ public class NewspaperQADao {
         try (Connection conn = connectionPool.getConnection()) {
             return DaoNoteHelper.getAllNumNotesForDay(batchID,
                                                       newspaperID,
-                                                      LocalDate.parse(date,DateTimeFormatter.ISO_LOCAL_DATE),
+                                                      LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE),
                                                       conn);
         }
     }

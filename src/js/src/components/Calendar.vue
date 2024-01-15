@@ -8,6 +8,7 @@
               :columns="4" :attributes="testData" :first-day-of-week="2" :nav-visibility="null"
               @did-move="next($event)"
               @dayclick="routeToNewspaper($event)"
+              @load="getBatches"
              />
     <!--  <Calendar v-model="date"></Calendar>-->
   </div>
@@ -56,7 +57,8 @@ export default defineComponent({
         }
       }
       return result;
-    }
+    },
+
   },
   methods: {
     yearSelect() {
@@ -71,6 +73,11 @@ export default defineComponent({
     },
     routeToNewspaper(event){
       this.$router.push({name:"newspaper-view",params:{batchid:"dl_10102023_rt1",newspaperid:"Aarhusstiftidende",year:event.year,month:event.month,day:event.day}})
+    },
+    async getBatches(){
+      const res = await fetch("/api/batch")
+      const data = await res.json()
+      console.log(data);
     }
   },
 
@@ -78,7 +85,7 @@ export default defineComponent({
 
 
 })
-
+// this.getBatches();
 </script>
 <style lang="scss" scoped>
 @import "../style/stylesheet.scss";
