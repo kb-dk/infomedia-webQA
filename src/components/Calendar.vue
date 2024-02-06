@@ -1,13 +1,14 @@
 <template>
   <div class="calendar">
-    <YearPicker :inputStyle="yearPickerInputStyle" ref="yearPicker" inputId="yearPickerInput" @date-select="yearSelect" id v-model="date" view="year" dateFormat="yy" class="yearPicker">
+    <YearPicker v-if="isYear" :inputStyle="yearPickerInputStyle" ref="yearPicker" inputId="yearPickerInput" @date-select="yearSelect" id v-model="date" view="year" dateFormat="yy" class="yearPicker">
     </YearPicker>
     <!--  <DatePicker :masks="format"/>-->
     <Calendar locale="da" :initialPage="{day:1,month:1,year:currentYear}"
-              :masks="{title:'MMMM'}" :rows="3" ref="yearCalendar" class="yearCalendar"
-              :columns="4" :attributes="testData" :first-day-of-week="2" :nav-visibility="null"
+              :masks="monthMask" :rows="calendarRows" ref="yearCalendar" class="yearCalendar"
+              :columns="calendarCol" :attributes="testData" :first-day-of-week="2" :nav-visibility="monthNav"
+              expanded
               @did-move="next($event)"
-              @dayclick="routeToNewspaper($event)"
+              @dayclick="calendarDayClicked"
              />
     <!--  <Calendar v-model="date"></Calendar>-->
   </div>
@@ -15,27 +16,31 @@
 </template>
 
 <script>
-import {defineComponent, ref} from "vue";
+import {defineComponent, ref, onMounted, onBeforeUnmount} from "vue";
 import {Calendar} from 'v-calendar';
 import YearPicker from 'primevue/calendar'
 // import 'v-calendar/style.css';
 import "primevue/resources/themes/lara-light-indigo/theme.css";
 import'v-calendar/style.css'
+import BatchMetadata from "@/components/BatchMetadata";
 // import "src/style/stylesheet.scss";
 
 export default defineComponent({
   name: "year-calendar",
   components: {
     Calendar,
-    YearPicker
+    YearPicker,
   },
   data() {
     return {
       currentYear: 2023,
       date: ref().value = new Date(2023,0,1),
-      yearPickerInputStyle: {'text-align':'center','font-size':'larger','font-weight':'bold'}
-
-
+      yearPickerInputStyle: {'text-align':'center','font-size':'larger','font-weight':'bold'},
+      isYear: this.$attrs.isYear,
+      calendarRows : this.$attrs.rows,
+      calendarCol : this.$attrs.columns,
+      monthNav : this.$attrs.monthNav,
+      monthMask : this.$attrs.monthMask
     }
   },
   computed: {
@@ -67,11 +72,20 @@ export default defineComponent({
     },
     next(event){
       this.date.value = new Date(event[0].year,0,1)
-      this.$refs.yearPicker.updateModel(this.date.value)
+      if(this.isYear){
+        this.$refs.yearPicker.updateModel(this.date.value)
+      }
+
     },
-    routeToNewspaper(event){
-      this.$router.push({name:"newspaper-view",params:{batchid:"dl_10102023_rt1",newspaperid:"Aarhusstiftidende",year:event.year,month:event.month,day:event.day}})
-    }
+    calendarDayClicked(calendarData, event){
+      if(this.isYear){
+        this.$router.push({name:"newspaper-view",params:{batchid:"dl_10102023_rt1",newspaperid:"Aarhusstiftidende",year:calendarData.year,month:calendarData.month,day:calendarData.day}})
+      }else{
+        event.stopPropagation()
+        this.$parent.showBatchInfo(calendarData)
+      }
+
+    },
   },
 
 

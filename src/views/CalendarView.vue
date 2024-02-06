@@ -1,7 +1,8 @@
 <template>
   <div class="home">
     <h1 v-text="newspaper"></h1>
-    <Calendar/>
+    <Calendar :isYear="true" :rows="3" :columns="4" :monthNav="null" :monthMask="{title:'MMMM'}" :expanded="false">
+    </Calendar>
 
   </div>
 </template>
@@ -24,6 +25,9 @@ export default defineComponent({
     return{
       newspaper: this.$route.params.newspaperid
     }
+
+  },
+  methods:{
 
   }
 

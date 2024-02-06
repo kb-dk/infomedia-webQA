@@ -7,3 +7,47 @@
   display: inline-table;
 
 }
+#technicalDiv>.calendar{
+  max-height: 100%;
+  width:50%;
+  height: 50%;
+}
+.vc.day.content{
+  width: 100%;
+}
+.batchMetadata{
+  position: absolute;
+  z-index: 1;
+  background-color: white;
+  width: 25em;
+  height: 40em;
+  outline: solid 1px black;
+  top:10%;
+  right:39%;
+  border-radius: 10px;
+}
+.batchInfo{
+  display:none;
+}
+.batchInfo-is-active{
+  display: block;
+}
+.newspaperList{
+  background-color: rgba(0,0,0,0.1);
+  border: 1px solid #2c3e50;
+  z-index: 20;
+  cursor:pointer;
+}
+.errorMessageList{
+  border-left: 1px solid #2c3e50;
+  border-right: 1px solid #2c3e50;
+  border-bottom: 1px solid #2c3e50;
+  cursor: default;
+}
+.errorTypeList{
+  cursor: pointer;
+}
+
+.batchMetadataNotes{
+  right:17%
+}

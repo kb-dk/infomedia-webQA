@@ -25,7 +25,7 @@ export default defineComponent({
   },
   methods:{
     rowClicked(event){
-      console.log(event)
+      // console.log(event)
       this.$router.push({name:"newspaper-calendar",params:{newspaperid:event.newspaperId}})
     }
   }

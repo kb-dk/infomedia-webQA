@@ -53,7 +53,7 @@ export default defineComponent({
       this.page = this.page - 1;
     },
     handleDocumentRender(args: any) {
-      console.log(args)
+      // console.log(args)
       this.isLoading = false
       this.pageCount = (this.$refs.pdfRef as typeof VuePdfEmbed).pageCount
     },
