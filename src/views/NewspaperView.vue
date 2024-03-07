@@ -9,7 +9,7 @@
         <notes-form :postsTitel="pageNotes"></notes-form>
       </b-col>
       <b-col sm="6">
-        <im-pdf-viewer :pdf="encodeURIComponent(pdf)" :checkbox-text="checkboxText"></im-pdf-viewer>
+        <im-pdf-viewer :pdfVal="encodeURIComponent(pdfVal)" :checkbox-text="checkboxText"></im-pdf-viewer>
       </b-col>
       <b-col sm="2">
         <PageTable :rowClick="switchPage"></PageTable>
@@ -36,7 +36,7 @@ export default defineComponent({
       sectionNotes: "Section notes",
       pageNotes: "Page notes",
       checkboxText: "Show all pages",
-      pdf:ref("20210101_aarhusstiftstidende_section01_page001_ast20210101x11#0001.pdf")
+      pdfVal:ref("20210101_aarhusstiftstidende_section01_page001_ast20210101x11#0001.pdf")
     }
   },
   components: {
@@ -49,7 +49,7 @@ export default defineComponent({
     },
     switchPage(source){
       // console.log(this)
-      this.pdf = source
+      this.pdfVal = source
     }
   }
 })

@@ -24,14 +24,18 @@
 <!--      <vue-pdf-embed :source="frontPage.src" v-for="frontPage in filterFrontPages" :key="frontPage.src">-->
 <!--      </vue-pdf-embed>-->
 <!--    </vue-pdf-embed>-->
-    <VuePDF :pdf="pdfSource"></VuePDF>
+    <div v-if="!showAllPages">
+      <VuePdfEmbed :source="pdfSource"></VuePdfEmbed>
+    </div>
+    <div v-if="showAllPages">
+      <VuePdfEmbed :key="frontpage" v-for="frontpage in filterFrontPages()" :source="encodeURIComponent(frontpage.src)"></VuePdfEmbed>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent, ref, ShallowRef} from 'vue'
-// import VuePdfEmbed from "vue-pdf-embed"
-import {VuePDF,usePDF} from "@tato30/vue-pdf";
+import {defineComponent, ref} from 'vue'
+import VuePdfEmbed from "vue-pdf-embed"
 
 export default defineComponent({
   name: 'im-pdf-viewer',
@@ -42,7 +46,7 @@ export default defineComponent({
       pageCount: 2,
       showAllPages: false,
       disabled: false,
-      // pdfSource:ref(usePDF(this.pdf).pdf),
+      pdfSource:ref(this.pdfVal),
       allPages:[
         {"Page":1,"Section":"1","src":"20210101_aarhusstiftstidende_section01_page001_ast20210101x11#0001.pdf"},
         {"Page":2,"Section":"1","src":"20210101_aarhusstiftstidende_section01_page002_ast20210101x11#0002.pdf"},
@@ -53,18 +57,21 @@ export default defineComponent({
     }
   },
   components: {
-    VuePDF
+    VuePdfEmbed
   },
   props: {
-    pdf: [String],
+    pdfVal: [String],
     checkboxText: [String]
   },
   watch: {
     showAllPages() {
       this.page = this.showAllPages ? 1 : 1
     },
-    pdf:function(newVal,oldVal){
+    pdfVal:function(newVal,oldVal){
       this.showAllPages = false;
+      console.log(this.pdfSource)
+      this.pdfSource = newVal
+
     },
   },
   methods: {
@@ -83,19 +90,12 @@ export default defineComponent({
     updateCheckbox() {
       this.showAllPages = true
     },
-    filterFrontPages(){
-      if(this.showAllPages){
-        return this.allPages.filter((page) =>{
-          return page.Page === 1
-        })
-      }
+    filterFrontPages():{Page: number, Section: string, src: string}[] {
+      return this.allPages.filter((page) => {
+        return page.Page === 1
+      })
 
-    }
-  },
-  computed:{
-    pdfSource():any{
-      console.log(usePDF(this.pdf))
-      return usePDF(this.pdf).pages
+
     }
   }
 })
