@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-table-simple  :items="pages" :fields="fields" @row-clicked="rowClicked($event)">
+    <b-table-simple >
       <b-thead>
         <b-tr>
           <b-th>{{fields[0]}}</b-th>
@@ -8,7 +8,7 @@
         </b-tr>
       </b-thead>
       <b-tbody>
-        <b-tr :key="page" v-for="page in pages">
+        <b-tr :key="page" v-for="page in pages"  @click="rowClicked(page)">
           <b-td>{{page.Page}}</b-td>
           <b-td>{{ page.Section }}</b-td>
         </b-tr>
@@ -44,8 +44,6 @@ export default defineComponent({
   methods: {
     rowClicked(e) {
       this.rowClick(e.src)
-      // .switchPage(e.src)
-      // NewspaperView.methods.switchPage(e.src)
     }
   }
 })
