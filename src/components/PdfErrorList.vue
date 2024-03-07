@@ -22,6 +22,9 @@ import {defineComponent, ref} from "vue";
 export default defineComponent({
   name: "PdfErrorList",
   expose:["handleErrors"],
+  props:{
+    date:[String],
+  },
   setup() {
     return {
       errors: ref([
@@ -65,11 +68,6 @@ export default defineComponent({
               ]
         }]),
       currentIndex:ref(-1)
-    }
-  },
-  data(){
-    return{
-      date:this.$attrs.date
     }
   },
   methods:{

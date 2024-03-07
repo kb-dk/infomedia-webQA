@@ -1,5 +1,5 @@
 <template>
-  <b-button :variant="changeVariant" @click="approveState" v-text="approveButton.btnText">
+  <b-button :variant="changeVariant" @click="approveState" v-text="btnText">
   </b-button>
 </template>
 
@@ -13,10 +13,13 @@ export default defineComponent({
       clicked:ref(false)
     }
   },
+  props:{
+    stateChange: [Boolean],
+    btnText: [String]
+  },
   data(){
     const approveButton={
-      state:ref(this.$attrs.stateChange),
-      btnText: this.$attrs.btnText,
+      state:ref(this.stateChange),
     }
     return {approveButton}
   },

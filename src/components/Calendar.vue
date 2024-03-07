@@ -4,8 +4,8 @@
     </YearPicker>
     <!--  <DatePicker :masks="format"/>-->
     <Calendar locale="da" :initialPage="{day:1,month:1,year:currentYear}"
-              :masks="monthMask" :rows="calendarRows" ref="yearCalendar" class="yearCalendar"
-              :columns="calendarCol" :attributes="testData" :first-day-of-week="2" :nav-visibility="monthNav"
+              :masks="monthMask" :rows="rows" ref="yearCalendar" class="yearCalendar"
+              :columns="columns" :attributes="testData" :first-day-of-week="2" :nav-visibility="monthNav"
               expanded
               @did-move="next($event)"
               @dayclick="calendarDayClicked"
@@ -31,16 +31,19 @@ export default defineComponent({
     Calendar,
     YearPicker,
   },
+  props:{
+    isYear: [Boolean],
+    rows : [Number],
+    columns : [Number],
+    monthNav : [String],
+    monthMask : [Object]
+  },
   data() {
     return {
       currentYear: 2023,
       date: ref().value = new Date(2023,0,1),
       yearPickerInputStyle: {'text-align':'center','font-size':'larger','font-weight':'bold'},
-      isYear: this.$attrs.isYear,
-      calendarRows : this.$attrs.rows,
-      calendarCol : this.$attrs.columns,
-      monthNav : this.$attrs.monthNav,
-      monthMask : this.$attrs.monthMask
+
     }
   },
   computed: {
