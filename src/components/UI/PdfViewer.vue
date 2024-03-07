@@ -14,21 +14,11 @@
     </template>
   </div>
   <div class="pdf-content">
-<!--    <vue-pdf-embed :scale="1" :id="'page'" :key="'page'" v-if="!showAllPages" :source="encodeURIComponent(pdfSource)" @progress="(e)=>{console.log(e)}" @rendered="handleDocumentRender" ref="pdfRef" :page="page"></vue-pdf-embed>-->
-<!--    <vue-pdf-embed :id="frontPage.src" v-for="frontPage in filterFrontPages()" :page="frontPage.Page" :key="frontPage.src" :source="encodeURIComponent(frontPage.src)" @rendered="handleDocumentRender" ref="pdfRef"></vue-pdf-embed>-->
-<!--      <div  v-for="frontPage in filterFrontPages()" :key="frontPage">-->
-<!--        <vue-pdf-embed :page="frontPage.Page" :source="encodeURIComponent(frontPage.src)" @rendered="handleDocumentRender" ref="pdfRef"></vue-pdf-embed>-->
-<!--      </div>-->
-
-<!--    <vue-pdf-embed v-if="showAllPages" >-->
-<!--      <vue-pdf-embed :source="frontPage.src" v-for="frontPage in filterFrontPages" :key="frontPage.src">-->
-<!--      </vue-pdf-embed>-->
-<!--    </vue-pdf-embed>-->
     <div v-if="!showAllPages">
       <VuePdfEmbed :source="pdfSource"></VuePdfEmbed>
     </div>
     <div v-if="showAllPages">
-      <VuePdfEmbed :key="frontpage" v-for="frontpage in filterFrontPages()" :source="encodeURIComponent(frontpage.src)"></VuePdfEmbed>
+      <VuePdfEmbed :key="frontpage" v-for="frontpage in filterFrontPages()" :source="encodeURIComponent(frontpage.src)"  :height="500" class="pdfFrontpage"></VuePdfEmbed>
     </div>
   </div>
 </template>
@@ -82,10 +72,8 @@ export default defineComponent({
       this.page = this.page - 1;
     },
     handleDocumentRender(args: any) {
-      console.log("rendered")
       this.isLoading = false
-      // this.page=1
-      // this.pageCount = this.showAllPages ? 1 : 2
+
     },
     updateCheckbox() {
       this.showAllPages = true
