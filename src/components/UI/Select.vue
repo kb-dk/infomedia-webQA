@@ -17,8 +17,8 @@ export default defineComponent({
   name: 'im-select',
   computed: {
     localModelValue: {
-      get() {
-        return this.modelValue
+      get():string|undefined {
+        return this.modelValue;
       },
       set(newValue: any) {
         this.$emit('update:modelValue', newValue)

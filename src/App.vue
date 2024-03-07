@@ -2,7 +2,7 @@
   <b-row>
     <nav>
       <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/technical">Technical QA</router-link>
     </nav>
   </b-row>
   <b-row>

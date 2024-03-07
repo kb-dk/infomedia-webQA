@@ -1,15 +1,18 @@
 <template>
   <div class="app">
     <b-row>
-      <b-col sm="5">
+      <b-col sm="4">
         <im-dialog v-model:show="dialogVisible"></im-dialog>
         <notes-form :postsTitel="dayNotes"></notes-form>
         <notes-form :postsTitel="editionNotes"></notes-form>
         <notes-form :postsTitel="sectionNotes"></notes-form>
         <notes-form :postsTitel="pageNotes"></notes-form>
       </b-col>
-      <b-col sm="5">
-        <im-pdf-viewer :pdf="pdf" :checkbox-text="checkboxText"></im-pdf-viewer>
+      <b-col sm="6">
+        <im-pdf-viewer :pdf="encodeURIComponent(pdf)" :checkbox-text="checkboxText"></im-pdf-viewer>
+      </b-col>
+      <b-col sm="2">
+        <PageTable :rowClick="switchPage"></PageTable>
       </b-col>
     </b-row>
 <!--    <NotesForm></NotesForm>-->
@@ -18,10 +21,13 @@
 
 <script>
 
-import {defineComponent} from "vue";
+import {defineComponent,ref} from "vue";
 import NotesForm from "@/components/NotesForm.vue";
+import PageTable from "@/components/PageTable";
 
 export default defineComponent({
+  name:"NewspaperView",
+  expose:["pdf"],
   data() {
     return {
       dialogVisible: false,
@@ -29,16 +35,21 @@ export default defineComponent({
       editionNotes: "Edition notes",
       sectionNotes: "Section notes",
       pageNotes: "Page notes",
-      pdf: "test_pdf.pdf",
-      checkboxText: "Show all pages"
+      checkboxText: "Show all pages",
+      pdf:ref("20210101_aarhusstiftstidende_section01_page001_ast20210101x11#0001.pdf")
     }
   },
   components: {
-    NotesForm
+    NotesForm,
+    PageTable
   },
   methods:{
     hideDialog(){
       this.dialogVisible = true;
+    },
+    switchPage(source){
+      // console.log(this)
+      this.pdf = source
     }
   }
 })

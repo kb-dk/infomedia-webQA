@@ -99,14 +99,10 @@ export default defineComponent({
       }
     },
     goToNewspaper(newspaper){
-      console.log(this.date)
       const year = this.date.slice(0,4)
       const month = this.date.slice(6,7)
       const day = this.date[7,9]
-      console.log(year)
-      console.log(month)
-      console.log(day)
-      this.$router.push({name:"newspaper-view",params:{batchid:"dl_10102023_rt1",newspaperid:"Aarhusstiftidende",year:year,month:month,day:day}})
+      this.$router.push({name:"newspaper-view",params:{batchid:"dl_20210101_rt1",newspaperid:"Aarhusstiftidende",year:2021,month:1,day:day}})
     }
   }
 

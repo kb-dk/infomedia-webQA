@@ -79,7 +79,7 @@ export default defineComponent({
     },
     calendarDayClicked(calendarData, event){
       if(this.isYear){
-        this.$router.push({name:"newspaper-view",params:{batchid:"dl_10102023_rt1",newspaperid:"Aarhusstiftidende",year:calendarData.year,month:calendarData.month,day:calendarData.day}})
+        this.$router.push({name:"newspaper-view",params:{batchid:"dl_20210101_rt1",newspaperid:"Aarhusstiftidende",year:2021,month:1,day:calendarData.day}})
       }else{
         event.stopPropagation()
         this.$parent.showBatchInfo(calendarData)

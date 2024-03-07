@@ -14,8 +14,6 @@
 import { defineComponent,ref,onBeforeUnmount, onMounted } from 'vue';
 import Calendar from '@/components/Calendar.vue'// @ is an alias to /src
 import BatchMetadata from "@/components/BatchMetadata.vue";
-// import {onBeforeUnmount, onMounted} from "vue";
-
 export default defineComponent({
   name: 'CalendarView',
   watch:{
@@ -43,18 +41,6 @@ export default defineComponent({
     }
 
   },
-  // mounted() {
-  //   document.addEventListener('click',(this.$refs.batchMetadataRef as typeof BatchMetadata).close())
-  // },
-  // unmounted() {
-  //   document.removeEventListener('click',(this.$refs.batchMetadataRef as typeof BatchMetadata).close())
-  // }
-
 
 });
-
-
-
-// const attributes = ref(result)
-// import "src/style/stylesheet.scss";
 </script>
