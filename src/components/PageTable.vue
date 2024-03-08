@@ -9,7 +9,7 @@
       </b-thead>
       <b-tbody>
         <b-tr :key="page" v-for="page in pages"  @click="rowClicked(page)">
-          <b-td>{{page.Page}}</b-td>
+          <b-td>{{page.Page}} af {{amountOfPagesInSection(pages,page.Section)}}</b-td>
           <b-td>{{ page.Section }}</b-td>
         </b-tr>
       </b-tbody>
@@ -33,17 +33,23 @@ export default defineComponent({
     return {
       fields: ["Page", "Section"],
       pages: [
-        {"Page": "1", "Section": "1", "src": "20210101_aarhusstiftstidende_section01_page001_ast20210101x11#0001.pdf"},
-        {"Page": "2", "Section": "1", "src": "20210101_aarhusstiftstidende_section01_page002_ast20210101x11#0002.pdf"},
-        {"Page": "3", "Section": "1", "src": "20210101_aarhusstiftstidende_section01_page003_ast20210101x11#0003.pdf"},
-        {"Page": "1", "Section": "4", "src": "20210101_aarhusstiftstidende_section04_page001_ast20210101x14#0001.pdf"},
-        {"Page": "2", "Section": "4", "src": "20210101_aarhusstiftstidende_section04_page002_ast20210101x14#0002.pdf"}
+        {"Page": 1, "Section": 1, "src": "20210101_aarhusstiftstidende_section01_page001_ast20210101x11#0001.pdf"},
+        {"Page": 2, "Section": 1, "src": "20210101_aarhusstiftstidende_section01_page002_ast20210101x11#0002.pdf"},
+        {"Page": 3, "Section": 1, "src": "20210101_aarhusstiftstidende_section01_page003_ast20210101x11#0003.pdf"},
+        {"Page": 1, "Section": 4, "src": "20210101_aarhusstiftstidende_section04_page001_ast20210101x14#0001.pdf"},
+        {"Page": 2, "Section": 4, "src": "20210101_aarhusstiftstidende_section04_page002_ast20210101x14#0002.pdf"}
       ]
     }
   },
   methods: {
     rowClicked(e) {
       this.rowClick(e.src)
+    },
+    amountOfPagesInSection(pages,section){
+      const filtered = pages.filter((p) =>{
+        return p.Section === section
+      })
+      return filtered.length
     }
   }
 })
