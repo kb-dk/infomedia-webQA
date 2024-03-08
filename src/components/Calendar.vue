@@ -52,13 +52,11 @@ export default defineComponent({
       for (let i = 0; i < 12; i++) {
         result[i] = {
           highlight: {
-            color: i % 2 == 0 ? 'red' : 'green',
+            color: i % 2 == 0 ? 'red' : 'teal',
             fillMode: 'solid'
           },
           dates: new Date(2023, 5, i + 1),
-          masks: {
-            title: 'MMMM'
-          },
+
           popover: null,
           datePicker: null,
         }

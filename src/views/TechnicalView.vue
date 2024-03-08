@@ -1,6 +1,8 @@
 <template>
+  <ApproveButton :btn-text="'Send approved batches'"></ApproveButton>
   <div class="home" id="technicalDiv">
 <!--    <h1 v-text="newspaper"></h1>-->
+
     <Calendar :isYear="false" :rows="1" :columns="1" :monthNav="'click'" :monthMask="{title:'MMMM YYYY'}"
               :expanded="true" ref="calendarRef">
     </Calendar>
@@ -14,6 +16,7 @@
 import { defineComponent,ref,onBeforeUnmount, onMounted } from 'vue';
 import Calendar from '@/components/Calendar.vue'// @ is an alias to /src
 import BatchMetadata from "@/components/BatchMetadata.vue";
+import ApproveButton from "@/components/ApproveButton.vue";
 export default defineComponent({
   name: 'CalendarView',
   watch:{
@@ -22,6 +25,7 @@ export default defineComponent({
     }
   },
   components: {
+    ApproveButton,
     Calendar,
     BatchMetadata
   },
