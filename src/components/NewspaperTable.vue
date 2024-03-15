@@ -1,6 +1,17 @@
 <template>
+
   <div>
-    <b-table striped hover :items="items" @row-clicked="rowClicked($event)"></b-table>
+    <b-form-input v-model="filter" placeholder="Search"></b-form-input>
+    <b-table v-model:sort-by="sortBy"
+             v-model:sort-desc="sortDesc"
+             striped hover
+             :items="items"
+             :fields="fields"
+             @row-clicked="rowClicked($event)"
+             :filter="filter"
+             filter-included-fields="newspaperId"
+    filter-debounce="1000">
+    </b-table>
   </div>
 </template>
 
@@ -11,6 +22,18 @@ export default defineComponent({
   name: "NewspaperTable",
   data() {
     return {
+      filter:'',
+      sortBy:'newspaperId',
+      sortDesc:true,
+
+      fields: [{
+        key: 'newspaperId',
+        sortable:true,
+        label:'Newspaper',
+        // sortDesc:true,
+      }
+
+      ],
       items: [
         { newspaperId:"Aarhusstiftidende"},
         { newspaperId:"BT"},
@@ -27,6 +50,11 @@ export default defineComponent({
     rowClicked(event){
       // console.log(event)
       this.$router.push({name:"newspaper-calendar",params:{newspaperid:event.newspaperId}})
+    },
+    filterF(row,filter){
+      console.log(row)
+      console.log(filter)
+      return true
     }
   }
 })
