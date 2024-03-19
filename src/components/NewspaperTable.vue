@@ -1,16 +1,17 @@
 <template>
 
   <div>
-    <b-form-input v-model="filter" placeholder="Search"></b-form-input>
+    <b-form-input v-model="filter" type="search" placeholder="Search"></b-form-input>
     <b-table v-model:sort-by="sortBy"
              v-model:sort-desc="sortDesc"
+             :filterable="true"
              striped hover
              :items="items"
              :fields="fields"
              @row-clicked="rowClicked($event)"
-             :filter="filter"
-             filter-included-fields="newspaperId"
-    filter-debounce="1000">
+              :filter="filter"
+
+    @filtered="filterTest">
     </b-table>
   </div>
 </template>
@@ -22,14 +23,15 @@ export default defineComponent({
   name: "NewspaperTable",
   data() {
     return {
-      filter:'',
+      filter:null,
       sortBy:'newspaperId',
-      sortDesc:true,
+      sortDesc:false,
 
       fields: [{
         key: 'newspaperId',
         sortable:true,
         label:'Newspaper',
+        filterable:true
         // sortDesc:true,
       }
 
@@ -55,6 +57,9 @@ export default defineComponent({
       console.log(row)
       console.log(filter)
       return true
+    },
+    filterTest(items){
+      console.log(items)
     }
   }
 })
