@@ -58,12 +58,16 @@ export default defineComponent({
     },
     next(event) {
       this.loading = true
-      this.date.setMonth(event[0].month - 1);
-      this.date.setYear(event[0].year)
+
+      // this.date.setMonth(event[0].month - 1);
+      // this.date.setYear(event[0].year)
       if (this.isYear) {
+        this.date = new Date(event[0].year,0,1)
         this.$refs.yearPicker.updateModel(this.date)
         console.log("h")
       } else {
+        this.date = new Date(event[0].year,event[0].month-1,1)
+        this.$forceUpdate();
         this.batchesForMonth()
       }
 
@@ -91,7 +95,7 @@ export default defineComponent({
       const apiClient = axios.create({
         baseURL: '/api',
       })
-      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth() + 1}&year=${this.date.getFullYear()}`)
+      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}`)
       res = data
       if (res.length > 0) {
         for (let i = 0; i < res.length; i++) {
