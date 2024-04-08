@@ -1,28 +1,31 @@
 <template>
   <div class="calendar">
-    <YearPicker v-if="isYear" :inputStyle="yearPickerInputStyle" ref="yearPicker" inputId="yearPickerInput" @date-select="yearSelect" id v-model="date" view="year" dateFormat="yy" class="yearPicker">
+    <YearPicker v-if="isYear" :inputStyle="yearPickerInputStyle" ref="yearPicker" inputId="yearPickerInput"
+                @date-select="yearSelect" id v-model="date" view="year" dateFormat="yy" class="yearPicker">
     </YearPicker>
     <!--  <DatePicker :masks="format"/>-->
-    <Calendar locale="da" :initialPage="{day:1,month:1,year:currentYear}"
+    <Calendar locale="da" :initialPage="{day: isYear ? 1: date.getDay(),month: isYear ? 1 : date.getMonth()+1,year:date.getFullYear()}"
               :masks="monthMask" :rows="rows" ref="yearCalendar" class="yearCalendar"
-              :columns="columns" :attributes="testData" :first-day-of-week="2" :nav-visibility="monthNav"
+              :columns="columns" :attributes="calendarAttr" :first-day-of-week="2" :nav-visibility="monthNav"
               expanded
               @did-move="next($event)"
               @dayclick="calendarDayClicked"
-             />
+              @update:pages.once="batchesForMonth()"
+    />
+<!--    {{batchesForMonth()}}-->
     <!--  <Calendar v-model="date"></Calendar>-->
   </div>
 
 </template>
 
 <script>
-import {defineComponent, ref, onMounted, onBeforeUnmount} from "vue";
+import {defineComponent, ref} from "vue";
 import {Calendar} from 'v-calendar';
 import YearPicker from 'primevue/calendar'
+import axios from "axios";
 // import 'v-calendar/style.css';
 import "primevue/resources/themes/lara-light-indigo/theme.css";
-import'v-calendar/style.css'
-import BatchMetadata from "@/components/BatchMetadata";
+import 'v-calendar/style.css'
 // import "src/style/stylesheet.scss";
 
 export default defineComponent({
@@ -31,37 +34,19 @@ export default defineComponent({
     Calendar,
     YearPicker,
   },
-  props:{
+  props: {
     isYear: [Boolean],
-    rows : [Number],
-    columns : [Number],
-    monthNav : [String],
-    monthMask : [Object]
+    rows: [Number],
+    columns: [Number],
+    monthNav: [String],
+    monthMask: [Object]
   },
   data() {
     return {
       currentYear: 2023,
-      date: ref().value = new Date(2023,0,1),
-      yearPickerInputStyle: {'text-align':'center','font-size':'larger','font-weight':'bold'},
-
-    }
-  },
-  computed: {
-    testData() {
-      let result = [];
-      for (let i = 0; i < 12; i++) {
-        result[i] = {
-          highlight: {
-            color: i % 2 == 0 ? 'red' : 'teal',
-            fillMode: 'solid'
-          },
-          dates: new Date(2023, 5, i + 1),
-
-          popover: null,
-          datePicker: null,
-        }
-      }
-      return result;
+      date: ref(new Date()),
+      yearPickerInputStyle: {'text-align': 'center', 'font-size': 'larger', 'font-weight': 'bold'},
+      calendarAttr:ref([{}])
     }
   },
   methods: {
@@ -71,28 +56,63 @@ export default defineComponent({
       this.$refs.yearCalendar.focusDate(createdDate)
 
     },
-    next(event){
-      this.date.value = new Date(event[0].year,0,1)
-      if(this.isYear){
-        this.$refs.yearPicker.updateModel(this.date.value)
+    next(event) {
+      this.loading = true
+      this.date.setMonth(event[0].month - 1);
+      this.date.setYear(event[0].year)
+      if (this.isYear) {
+        this.$refs.yearPicker.updateModel(this.date)
+        console.log("h")
+      } else {
+        this.batchesForMonth()
       }
 
     },
-    calendarDayClicked(calendarData, event){
-      if(this.isYear){
-        this.$router.push({name:"newspaper-view",params:{batchid:"dl_20210101_rt1",newspaperid:"Aarhusstiftidende",year:2021,month:1,day:calendarData.day}})
-      }else{
+    calendarDayClicked(calendarData, event) {
+      if (this.isYear) {
+        this.$router.push({
+          name: "newspaper-view",
+          params: {
+            batchid: "dl_20210101_rt1",
+            newspaperid: "Aarhusstiftidende",
+            year: calendarData.year,
+            month: calendarData.month,
+            day: calendarData.day
+          }
+        })
+      } else {
         event.stopPropagation()
         this.$parent.showBatchInfo(calendarData)
       }
 
     },
-  },
+    async batchesForMonth() {
+      let res = [];
+      const apiClient = axios.create({
+        baseURL: '/api',
+      })
+      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth() + 1}&year=${this.date.getFullYear()}`)
+      res = data
+      if (res.length > 0) {
+        for (let i = 0; i < res.length; i++) {
+          res[i] = {
+            highlight: {
+              color: 'teal',
+              fillMode: 'solid'
+            },
+            dates: new Date(res[i].date),
+            popover: null,
+            datePicker: null
+          }
+        }
+        this.calendarAttr = res
+      }
+    },
 
 
-
-
-})
+  }
+}
+)
 
 </script>
 <style lang="scss" scoped>

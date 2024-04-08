@@ -18,7 +18,7 @@
 
 <script>
 import {defineComponent, ref} from "vue";
-
+import axios from "axios";
 export default defineComponent({
   name: "NewspaperTable",
   data() {
@@ -36,6 +36,7 @@ export default defineComponent({
       }
 
       ],
+      // axios.get("/api/")
       items: [
         { newspaperId:"Aarhusstiftidende"},
         { newspaperId:"BT"},

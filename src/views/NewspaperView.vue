@@ -9,25 +9,46 @@
         <notes-form :postsTitel="pageNotes"></notes-form>
       </b-col>
       <b-col sm="6">
-        <im-pdf-viewer :pdfVal="encodeURIComponent(pdfVal)" :checkbox-text="checkboxText"></im-pdf-viewer>
+        <im-pdf-viewer :pdfSource="getPage"></im-pdf-viewer>
+        <div v-if="displayFrontpages">
+
+        </div>
       </b-col>
       <b-col sm="2">
         <PageTable :rowClick="switchPage"></PageTable>
       </b-col>
     </b-row>
-<!--    <NotesForm></NotesForm>-->
+    {{console.log(test)}}
+    <!--    <NotesForm></NotesForm>-->
   </div>
 </template>
 
 <script>
 
-import {defineComponent,ref} from "vue";
+import {defineComponent, onMounted, ref} from "vue";
 import NotesForm from "@/components/NotesForm.vue";
 import PageTable from "@/components/PageTable";
+import {useRoute} from "vue-router";
+import axios from "axios";
 
 export default defineComponent({
-  name:"NewspaperView",
-  expose:["pdf"],
+  name: "NewspaperView",
+  expose: ["pdf"],
+  setup(){
+    const urlParams = useRoute().params;
+    const test = axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`).then((res) =>{
+      console.log(res.data[0])
+      const newspapers = axios.get(`/api/batches/${res.data[0].id}/newspapers`).then((res) =>{
+        console.log(res.data)
+        return res.data
+      })
+      return newspapers
+    })
+    return {
+      allBatches : async ()=>{return await axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`)},
+      test,
+      urlParams};
+  },
   data() {
     return {
       dialogVisible: false,
@@ -36,21 +57,36 @@ export default defineComponent({
       sectionNotes: "Section notes",
       pageNotes: "Page notes",
       checkboxText: "Show all pages",
-      pdfVal:ref("20210101_aarhusstiftstidende_section01_page001_ast20210101x11#0001.pdf")
+      displayFrontpages: false,
+      pdfCurrentIndex: ref(0),
     }
   },
   components: {
     NotesForm,
     PageTable
   },
-  methods:{
-    hideDialog(){
+  methods: {
+    hideDialog() {
       this.dialogVisible = true;
     },
-    switchPage(source){
+    switchPage(source) {
       // console.log(this)
-      this.pdfVal = source
+      this.pdfCurrent = source
+    },
+    // async allBatches() {
+    //   return await axios.get(`/api/batches?day=${this.urlParams.day}&month=${this.urlParams.month}&year=${this.urlParams.year}`)
+    //   // return axios.get(url);
+    // },
+    // async allPages(){
+    //   const latestBatch = this.allBatches()
+    //
+    // },
+    getPage(index=0){
+      this.pdfCurrent = index;
+      // return this.pdfAllPages[0]
+      return ""
     }
+
   }
 })
 </script>
