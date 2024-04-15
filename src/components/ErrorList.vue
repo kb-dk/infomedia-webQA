@@ -1,5 +1,6 @@
 <template>
-  <b-list-group v-for="(err,index) in errors" :key="err">
+  {{console.log(this.errors)}}}
+  <b-list-group v-for="(err,index) in this.errors" :key="err">
     <b-list-group>
       <b-list-group-item class="errorTypeList" @click="this.switch(index)" >
           {{handleErrorsKey(err)}}
@@ -14,64 +15,30 @@
       </b-list-group-item>
     </b-list-group>
   </b-list-group>
+
 </template>
 
 <script>
 import {defineComponent, ref} from "vue";
+import axios from "axios";
 
 export default defineComponent({
-  name: "PdfErrorList",
+  name: "ErrorList",
   expose:["handleErrors"],
   props:{
     date:[String],
+    batch:[Object],
+    newspapers:[Array],
+    errors:[Object]
   },
   setup() {
     return {
-      errors: ref([
-            {
-              "6.2.4.3": [
-                {"ErrorMessage": "DeviceGray shall only be used if a device independent DefaultGray colour space has been set when the DeviceGray colour space is used, or if a PDF/A OutputIntent is present."}
-                , {
-                  "Newspapers": [
-                    "lemvigfolkeblad",
-                    "jydskevestkystensoenderborg",
-                    "nordjyskestiftstidendeaalborg"
-                  ]
-                }],
-            },
-            {
-              "6.2.4.3.1": [
-                {
-                  "ErrorMessage":
-                      "All properties specified in XMP form shall use either the predefined schemas defined in the XMP Specification, ISO 19005-1 or this part of ISO 19005, or any extension schemas that comply with 6.6.2.3.2."
-                },
-                {
-                  "Newspapers":
-                      [
-                        "lemvigfolkeblad",
-                        "jydskevestkystensoenderborg",
-                        "nordjyskestiftstidendeaalborg"
-                      ]
-                }]
-            }
-            ,
-            {
-              "File name error": [
-                {"ErrorMessage": "File name errors"},
-                {
-                  "Newspapers": [
-                    "fynsamtsavissvendborg",
-                    "dagbladetstruer",
-                    "ekstrabladet"
-                  ]
-                }
-              ]
-        }]),
       currentIndex:ref(-1)
     }
   },
   methods:{
     handleErrorsKey(errors){
+      console.log(errors)
       let key;
       let val;
       for(let i in errors){
@@ -101,7 +68,8 @@ export default defineComponent({
       const month = this.date.slice(6,7)
       const day = this.date[7,9]
       this.$router.push({name:"newspaper-view",params:{batchid:"dl_20210101_rt1",newspaperid:"Aarhusstiftidende",year:2021,month:1,day:day}})
-    }
+    },
+
   }
 
 })

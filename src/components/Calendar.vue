@@ -86,6 +86,7 @@ export default defineComponent({
         })
       } else {
         event.stopPropagation()
+        console.log(calendarData)
         this.$parent.showBatchInfo(calendarData)
       }
 
@@ -97,16 +98,20 @@ export default defineComponent({
       })
       const {data} = await apiClient.get(`/batches?month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}`)
       res = data
+
       if (res.length > 0) {
         for (let i = 0; i < res.length; i++) {
+          const {data} = await apiClient.get(`/batches/${res[i].id}/has_problems`);
           res[i] = {
             highlight: {
-              color: 'teal',
+              color: data ? 'red':'teal',
               fillMode: 'solid'
             },
             dates: new Date(res[i].date),
             popover: null,
-            datePicker: null
+            datePicker: null,
+            batch:res[i]
+
           }
         }
         this.calendarAttr = res
