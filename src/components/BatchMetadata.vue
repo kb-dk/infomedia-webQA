@@ -1,9 +1,10 @@
 <template>
+
   <div v-if="batchMetadata.showBatch.value" class="batchMetadata" :class="{'is-active': batchMetadata.showBatch}" @click.stop>
     <h2 v-text="batchMetadata.currentDay.value" @click.stop></h2>
     <ApproveButton :stateChange="'technicalQAapproved'" :btnText="'Approve Batch'" @click.stop></ApproveButton>
     <div id="errorListDiv">
-    <ErrorList :newspapers="getNewspapers()" :date="batchMetadata.currentDay.value" :batch="batchMetadata.batch"></ErrorList>
+    <ErrorList :problemsLoading="problemsLoading" :date="batchMetadata.currentDay.value" :batch="batchMetadata.batch"></ErrorList>
     </div>
     <div id="roundtripDropdown">
       <b-dropdown :text="dropdownText" dropleft >
@@ -35,7 +36,8 @@ export default defineComponent({
   },
   data(){
     return{
-      dropdownText:ref("rt4")
+      dropdownText:ref("rt4"),
+      problemsLoading:ref(true)
     }
   },
   setup(){
@@ -61,38 +63,31 @@ export default defineComponent({
     showBatchData(event){
       this.batchMetadata.showBatch.value = true
       this.batchMetadata.currentDay.value = event.id
-      this.batchMetadata.batch = event.attributes[0].batch
+      if(event.attributes.length > 0){
+        this.batchMetadata.batch = event.attributes[0].batch
+      }else{
+        this.batchMetadata.batch = {}
+      }
+
     },
     getRoundtrips(date =""){
       return[{name:"rt1"},{name:"rt2"},{name:"rt3"},{name:"rt4"}]
     },
-    // async getErrors() {
-    //   const errorList = {"newspaperErrors":[],"batchErrors":[]}
-    //   for(let newspaper in this.newspapers){
-    //     const {data} = await axios.get(`/api/batches/${this.batchMetadata.batch.id}/newspapers/${newspaper.id}`);
-    //     errorList.newspaperErrors.push(data);
+    // async getNewspapers(){
+    //   const errorList = {newspaperError:[],batchError:[]}
+    //   const newspapers = (await axios.get(`/api/batches/${this.batchMetadata.batch.id}/newspapers`)).data
+    //   for(let i = 0; i < newspapers.length;i++){
+    //     const {data} = await axios.get(`/api/batches/${this.batchMetadata.batch.id}/newspapers/${newspapers[i].id}/problem_count`);
+    //     data.newspaperName = newspapers[i].newspaper_name
+    //     errorList.newspaperError.push(data);
     //   }
     //   const {data} = await axios.get(`/api/batches/${this.batchMetadata.batch.id}/problems-batch`);
     //   for(let batchError in data){
-    //     errorList.batchErrors.push(batchError)
+    //     errorList.batchError.push(batchError)
     //   }
+    //   this.problemsLoading=false;
     //   return errorList;
     // },
-    async getNewspapers(){
-      const errorList = {"batchErrors":[],"newspaperErrors":[]}
-      const newspapers = (await axios.get(`/api/batches/${this.batchMetadata.batch.id}/newspapers`)).data;
-      for(let i = 0; i < newspapers.length;i++){
-        const {data} = await axios.get(`/api/batches/${this.batchMetadata.batch.id}/newspapers/${newspapers[i].id}/problems_newspaper_page`);
-        // console.log(data)
-        errorList.newspaperErrors.push({"newspaper":newspapers[i],"newspaperError":data});
-      }
-      const {data} = await axios.get(`/api/batches/${this.batchMetadata.batch.id}/problems-batch`);
-      for(let batchError in data){
-        errorList.batchErrors.push(batchError)
-      }
-      console.log(errorList)
-      return errorList;
-    }
   }
 
 

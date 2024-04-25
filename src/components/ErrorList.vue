@@ -1,20 +1,45 @@
 <template>
-  {{console.log(this.errors)}}}
-  <b-list-group v-for="(err,index) in this.errors" :key="err">
-    <b-list-group>
-      <b-list-group-item class="errorTypeList" @click="this.switch(index)" >
-          {{handleErrorsKey(err)}}
-        <b-list-group v-for="e in err" :key="e" class="batchInfo"  :class="{'batchInfo-is-active': currentIndex===index}">
-          <b-list-group-item class="errorMessageList">
-            {{handleErrorsVal(err)[0].ErrorMessage}}
-          </b-list-group-item>
-          <b-list-group-item class="newspaperList" v-for="n in handleErrorsVal(err)[1].Newspapers" :key="n" @click="goToNewspaper(n)">
-              {{n}}
-          </b-list-group-item>
-        </b-list-group>
-      </b-list-group-item>
+  <p v-if="loading">LOADING PROBLEMS</p>
+  <template v-if="asyncErrors.newspaperProblems !== undefined">
+    <b-list-group v-for="(err,index) in asyncErrors.newspaperProblems" :key="err">
+      {{ console.log(index) }}
+      {{ console.log(err) }}
+
+      <b-list-group>
+        <b-list-group-item class="errorTypeList" @click="this.switch(index)">
+          {{err.problemCategory}}
+          <b-list-group class="batchInfo"
+                        :class="{'batchInfo-is-active': currentIndex===index}">
+            <b-list-group-item class="errorMessageList">
+              {{ index }}
+            </b-list-group-item>
+            <b-list-group-item class="newspaperList" v-for="n in err.newspapers" :key="n"
+                               @click="goToNewspaper(n)">
+              {{ n.newspaperName }} <br/> contains this problem {{n.count}} times
+            </b-list-group-item>
+          </b-list-group>
+        </b-list-group-item>
+      </b-list-group>
+
     </b-list-group>
-  </b-list-group>
+    <b-list-group v-for="(err,index) in asyncErrors.batchProblems" :key="err">
+      {{ console.log(index) }}
+      {{ console.log(err) }}
+
+      <b-list-group>
+        <b-list-group-item class="errorTypeList" @click="this.switch(index)">
+          {{err.problemCategory}}
+          <b-list-group class="batchInfo"
+                        :class="{'batchInfo-is-active': currentIndex===index}">
+            <b-list-group-item class="errorMessageList">
+              {{ index }}
+            </b-list-group-item>
+          </b-list-group>
+        </b-list-group-item>
+      </b-list-group>
+
+    </b-list-group>
+  </template>
 
 </template>
 
@@ -24,50 +49,109 @@ import axios from "axios";
 
 export default defineComponent({
   name: "ErrorList",
-  expose:["handleErrors"],
-  props:{
-    date:[String],
-    batch:[Object],
-    newspapers:[Array],
-    errors:[Object]
+  expose: ["handleErrors"],
+  props: {
+    date: [String],
+    batch: [Object],
+    newspapers: [Array],
+    errors: [Promise],
+    problemsLoading: [Boolean],
   },
   setup() {
     return {
-      currentIndex:ref(-1)
+      currentIndex: ref(-1),
+      asyncErrors: ref({}),
+      loading: true
     }
   },
-  methods:{
-    handleErrorsKey(errors){
-      console.log(errors)
+  created() {
+    this.asyncErrors = {}
+    if(this.batch.id !== undefined){
+      this.getNewspapers().then((res) => {
+        this.asyncErrors = res;
+        this.loading = false;
+      })
+    }
+
+  },
+  methods: {
+    handleErrorsKey(errors) {
+      // console.log(errors)
       let key;
       let val;
-      for(let i in errors){
+      for (let i in errors) {
         key = i
         val = errors[i]
       }
       return key
     },
-    handleErrorsVal(errors){
+    handleErrorsVal(errors) {
       let key;
       let val;
-      for(let i in errors){
+      for (let i in errors) {
         key = i
         val = errors[i]
       }
       return val
     },
-    switch(index){
-      if(this.currentIndex !== index) {
+    switch(index) {
+      if (this.currentIndex !== index) {
         this.currentIndex = index
-      }else{
+      } else {
         this.currentIndex = -1
       }
     },
-    goToNewspaper(newspaper){
-      const year = this.date.slice(0,4)
-      const month = this.date.slice(6,7)
-      const day = this.date[7,9]
-      this.$router.push({name:"newspaper-view",params:{batchid:"dl_20210101_rt1",newspaperid:"Aarhusstiftidende",year:2021,month:1,day:day}})
+    goToNewspaper(newspaper) {
+      const year = this.date.slice(0, 4)
+      const month = this.date.slice(6, 7)
+      const day = this.date[7, 9]
+      this.$router.push({
+        name: "newspaper-view",
+        params: {batchid: "dl_20210101_rt1", newspaperid: "Aarhusstiftidende", year: 2021, month: 1, day: day}
+      })
+    },
+    handleErrorPromise() {
+
+      return this.errors.then(items => {
+        return items.newspaperError
+      })
+    },
+    async getNewspapers() {
+      // const errorMap = {"newspaperProblems":{"problemDescription":"","ruleId":"","newspapers":[{}]}}
+      let errorMap = {}
+      errorMap["newspaperProblems"] = {}
+      errorMap["batchProblems"] = []
+
+      const errorList = {newspaperError: [], batchError: []}
+      const newspapers = (await axios.get(`/api/batches/${this.batch.id}/newspapers`)).data
+      for (let i = 0; i < newspapers.length; i++) {
+        const {data} = await axios.get(`/api/batches/${this.batch.id}/newspapers/${newspapers[i].id}/problem_count`);
+        for (let j = 0; j < data.length; j++) {
+          let problemSplitted = data[j].problem.split(/=(.*)}/)[1]
+          if (errorMap["newspaperProblems"][problemSplitted]) {
+            errorMap["newspaperProblems"][problemSplitted]["newspapers"].push({
+              "newspaperName": newspapers[i].newspaper_name,
+              "count": data[j].count
+            })
+          } else {
+            console.log(data[j])
+            errorMap["newspaperProblems"][problemSplitted] = {}
+            errorMap["newspaperProblems"][problemSplitted]["problemCategory"] = data[j].problemCategory;
+            errorMap["newspaperProblems"][problemSplitted]["newspapers"] = [{
+              "newspaperName": newspapers[i].newspaper_name,
+              "count": data[j].count
+            }]
+
+          }
+        }
+        data.newspaperName = newspapers[i].newspaper_name
+        errorList.newspaperError.push(data);
+      }
+      const {data} = await axios.get(`/api/batches/${this.batch.id}/problems-batch`);
+      for (let batchError in data) {
+        errorMap.batchProblems.push({"batchProblem":batchError,problemCategory:"batchError"})
+      }
+      return errorMap;
     },
 
   }
