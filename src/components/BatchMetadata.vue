@@ -2,7 +2,7 @@
 
   <div v-if="batchMetadata.showBatch.value" class="batchMetadata" :class="{'is-active': batchMetadata.showBatch}" @click.stop>
     <h2 v-text="batchMetadata.currentDay.value" @click.stop></h2>
-    <ApproveButton :stateChange="'technicalQAapproved'" :btnText="'Approve Batch'" @click.stop></ApproveButton>
+    <ApproveButton :stateChange="'technicalQAapproved'" :btnText="'Approve Batch'" @click.stop="changeState"></ApproveButton>
     <div id="errorListDiv">
     <ErrorList :problemsLoading="problemsLoading" :date="batchMetadata.currentDay.value" :batch="batchMetadata.batch"></ErrorList>
     </div>
@@ -16,7 +16,7 @@
 
   </div>
   <div @click.stop v-if="batchMetadata.showBatch.value" class="batchMetadata batchMetadataNotes">
-    <NotesForm @click.stop></NotesForm>
+    <NotesForm @click.stop :batch="batchMetadata.batch" :notesType="batchMetadata.notesType"></NotesForm>
   </div>
 </template>
 
@@ -26,6 +26,7 @@ import ApproveButton from "@/components/ApproveButton";
 import ErrorList from "@/components/ErrorList"
 import NotesForm from "@/components/NotesForm";
 import axios from "axios";
+import {NotesType} from "@/enums/NotesType"
 
 export default defineComponent({
   name: "BatchMetadata",
@@ -37,7 +38,7 @@ export default defineComponent({
   data(){
     return{
       dropdownText:ref("rt4"),
-      problemsLoading:ref(true)
+      problemsLoading:ref(true),
     }
   },
   setup(){
@@ -45,7 +46,7 @@ export default defineComponent({
       currentDay: ref("null"),
       showBatch: ref(false),
       batch:ref({}),
-
+      notesType:NotesType.BATCHNOTE,
       close:()=>{
         batchMetadata.showBatch.value=false;
       }
@@ -73,21 +74,10 @@ export default defineComponent({
     getRoundtrips(date =""){
       return[{name:"rt1"},{name:"rt2"},{name:"rt3"},{name:"rt4"}]
     },
-    // async getNewspapers(){
-    //   const errorList = {newspaperError:[],batchError:[]}
-    //   const newspapers = (await axios.get(`/api/batches/${this.batchMetadata.batch.id}/newspapers`)).data
-    //   for(let i = 0; i < newspapers.length;i++){
-    //     const {data} = await axios.get(`/api/batches/${this.batchMetadata.batch.id}/newspapers/${newspapers[i].id}/problem_count`);
-    //     data.newspaperName = newspapers[i].newspaper_name
-    //     errorList.newspaperError.push(data);
-    //   }
-    //   const {data} = await axios.get(`/api/batches/${this.batchMetadata.batch.id}/problems-batch`);
-    //   for(let batchError in data){
-    //     errorList.batchError.push(batchError)
-    //   }
-    //   this.problemsLoading=false;
-    //   return errorList;
-    // },
+    changeState(){
+      this.batchMetadata.batch.state = "TechnicalInspectionComplete"
+      axios.put("/api/batches",this.batchMetadata.batch)
+    }
   }
 
 

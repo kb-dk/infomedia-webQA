@@ -1,10 +1,7 @@
 <template>
   <p v-if="loading">LOADING PROBLEMS</p>
   <template v-if="asyncErrors.newspaperProblems !== undefined">
-    <b-list-group v-for="(err,index) in asyncErrors.newspaperProblems" :key="err">
-      {{ console.log(index) }}
-      {{ console.log(err) }}
-
+    <b-list-group ref="errorList" id="errorList" v-for="(err,index) in asyncErrors.newspaperProblems" :key="err">
       <b-list-group>
         <b-list-group-item class="errorTypeList" @click="this.switch(index)">
           {{err.problemCategory}}
@@ -15,7 +12,7 @@
             </b-list-group-item>
             <b-list-group-item class="newspaperList" v-for="n in err.newspapers" :key="n"
                                @click="goToNewspaper(n)">
-              {{ n.newspaperName }} <br/> contains this problem {{n.count}} times
+              {{ n.newspaperName }} <br/> Contains this problem {{n.count}} times
             </b-list-group-item>
           </b-list-group>
         </b-list-group-item>
@@ -23,9 +20,6 @@
 
     </b-list-group>
     <b-list-group v-for="(err,index) in asyncErrors.batchProblems" :key="err">
-      {{ console.log(index) }}
-      {{ console.log(err) }}
-
       <b-list-group>
         <b-list-group-item class="errorTypeList" @click="this.switch(index)">
           {{err.problemCategory}}
@@ -75,31 +69,17 @@ export default defineComponent({
 
   },
   methods: {
-    handleErrorsKey(errors) {
-      // console.log(errors)
-      let key;
-      let val;
-      for (let i in errors) {
-        key = i
-        val = errors[i]
-      }
-      return key
-    },
-    handleErrorsVal(errors) {
-      let key;
-      let val;
-      for (let i in errors) {
-        key = i
-        val = errors[i]
-      }
-      return val
-    },
     switch(index) {
       if (this.currentIndex !== index) {
         this.currentIndex = index
       } else {
         this.currentIndex = -1
       }
+      console.log(this.$el)
+      // this.$refs.errorList.scrollIntoView({behavior:'smooth'})
+      // window.scrollTo(event.target)
+      console.log(this.$refs.errorList)
+      event.target.scrollIntoView({behavior:'smooth'})
     },
     goToNewspaper(newspaper) {
       const year = this.date.slice(0, 4)
@@ -108,12 +88,6 @@ export default defineComponent({
       this.$router.push({
         name: "newspaper-view",
         params: {batchid: "dl_20210101_rt1", newspaperid: "Aarhusstiftidende", year: 2021, month: 1, day: day}
-      })
-    },
-    handleErrorPromise() {
-
-      return this.errors.then(items => {
-        return items.newspaperError
       })
     },
     async getNewspapers() {
@@ -134,7 +108,6 @@ export default defineComponent({
               "count": data[j].count
             })
           } else {
-            console.log(data[j])
             errorMap["newspaperProblems"][problemSplitted] = {}
             errorMap["newspaperProblems"][problemSplitted]["problemCategory"] = data[j].problemCategory;
             errorMap["newspaperProblems"][problemSplitted]["newspapers"] = [{

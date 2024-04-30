@@ -1,7 +1,7 @@
 <template>
   <div class="post__item">
       <div class="output">
-        <div>{{ post.body }}</div>
+        <div>{{ post}}</div>
       </div>
 
     <div>
