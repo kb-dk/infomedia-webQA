@@ -31,7 +31,7 @@ export default defineComponent({
   },
   data(){
     return{
-      newspaper: this.$route.params.newspaperid;
+      newspaper: this.$route.params.newspaperid
     }
 
   },

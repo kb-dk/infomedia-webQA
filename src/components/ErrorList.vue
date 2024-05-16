@@ -103,12 +103,12 @@ export default defineComponent({
       errorMap["newspaperProblems"] = {};
       errorMap["batchProblems"] = [];
 
-      const errorList = {newspaperError: [], batchError: []}
+      const errorList = {newspaperError: [], batchError: []};
       const newspapers = (await axios.get(`/api/batches/${this.batch.id}/newspapers`)).data;
       for (let i = 0; i < newspapers.length; i++) {
         const {data} = await axios.get(`/api/batches/${this.batch.id}/newspapers/${newspapers[i].id}/problem_count`);
         for (let j = 0; j < data.length; j++) {
-          let problemSplitted = data[j].problem.split(/=(.*)}/)[1]
+          let problemSplitted = data[j].problem.split(/=(.*)}/)[1];
           if (errorMap["newspaperProblems"][problemSplitted]) {
             errorMap["newspaperProblems"][problemSplitted]["newspapers"].push({
               "newspaperName": newspapers[i].newspaper_name,
