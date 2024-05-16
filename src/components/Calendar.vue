@@ -86,7 +86,7 @@ export default defineComponent({
         })
       } else {
         event.stopPropagation()
-        console.log(calendarData)
+        // console.log(calendarData)
         this.$parent.showBatchInfo(calendarData)
       }
 

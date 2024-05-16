@@ -1,18 +1,14 @@
 <template>
 
   <div v-if="batchMetadata.showBatch.value" class="batchMetadata" :class="{'is-active': batchMetadata.showBatch}" @click.stop>
-    <h2 v-text="batchMetadata.currentDay.value" @click.stop></h2>
+    <h2 v-text="batchMetadata.currentDay.toLocaleDateString()" @click.stop></h2>
     <ApproveButton :stateChange="'technicalQAapproved'" :btnText="'Approve Batch'" @click.stop="changeState"></ApproveButton>
     <div id="errorListDiv">
-    <ErrorList :problemsLoading="problemsLoading" :date="batchMetadata.currentDay.value" :batch="batchMetadata.batch"></ErrorList>
+    <ErrorList :problemsLoading="problemsLoading" :date="batchMetadata.currentDay" :batch="batchMetadata.batch" ref="errorList"></ErrorList>
     </div>
-    <div id="roundtripDropdown">
-      <b-dropdown :text="dropdownText" dropleft >
-        <b-dropdown-item  v-for="roundtrip in getRoundtrips()" :key="roundtrip" @click="dropdownText = roundtrip.name" :class=" roundtrip.name === dropdownText ? 'roundtripDropdownActive' : '' ">
-          {{roundtrip.name}}
-        </b-dropdown-item>
-      </b-dropdown>
-    </div>
+    <RoundtripDropdown @changeBatch="changeBatch" :date="batchMetadata.currentDay">
+
+    </RoundtripDropdown>
 
   </div>
   <div @click.stop v-if="batchMetadata.showBatch.value" class="batchMetadata batchMetadataNotes">
@@ -27,13 +23,15 @@ import ErrorList from "@/components/ErrorList"
 import NotesForm from "@/components/NotesForm";
 import axios from "axios";
 import {NotesType} from "@/enums/NotesType"
+import RoundtripDropdown from "@/components/RoundtripDropdown";
 
 export default defineComponent({
   name: "BatchMetadata",
   components:{
     ApproveButton,
     ErrorList,
-    NotesForm
+    NotesForm,
+    RoundtripDropdown
   },
   data(){
     return{
@@ -43,7 +41,7 @@ export default defineComponent({
   },
   setup(){
     const batchMetadata={
-      currentDay: ref("null"),
+      currentDay: new Date(),
       showBatch: ref(false),
       batch:ref({}),
       notesType:NotesType.BATCHNOTE,
@@ -63,7 +61,7 @@ export default defineComponent({
   methods:{
     showBatchData(event){
       this.batchMetadata.showBatch.value = true
-      this.batchMetadata.currentDay.value = event.id
+      this.batchMetadata.currentDay = new Date(event.id)
       if(event.attributes.length > 0){
         this.batchMetadata.batch = event.attributes[0].batch
       }else{
@@ -71,12 +69,17 @@ export default defineComponent({
       }
 
     },
-    getRoundtrips(date =""){
-      return[{name:"rt1"},{name:"rt2"},{name:"rt3"},{name:"rt4"}]
-    },
+
     changeState(){
       this.batchMetadata.batch.state = "TechnicalInspectionComplete"
       axios.put("/api/batches",this.batchMetadata.batch)
+    },
+    changeBatch(newBatch){
+      this.batchMetadata.batch = newBatch
+      this.$forceUpdate()
+
+      // this.$refs.errorList.$forceUpdate()
+
     }
   }
 

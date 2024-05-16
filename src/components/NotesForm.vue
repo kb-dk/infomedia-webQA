@@ -48,7 +48,6 @@ export default defineComponent({
   },
   methods: {
     createPost(post: { id: any; body: any }) {
-      console.log(this.batch)
       if (this.batch) {
         switch (this.notesType) {
           case NotesType.BATCHNOTE:
