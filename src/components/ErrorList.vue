@@ -80,11 +80,11 @@ export default defineComponent({
   methods: {
     switch(index) {
       if (this.currentIndex !== index) {
-        this.currentIndex = index
+        this.currentIndex = index;
       } else {
-        this.currentIndex = -1
+        this.currentIndex = -1;
       }
-      event.target.scrollIntoView({behavior: 'smooth'})
+      event.target.scrollIntoView({behavior: 'smooth'});
     },
     goToNewspaper(newspaper) {
       this.$router.push({
@@ -99,13 +99,12 @@ export default defineComponent({
       })
     },
     async getNewspapers() {
-      // const errorMap = {"newspaperProblems":{"problemDescription":"","ruleId":"","newspapers":[{}]}}
-      let errorMap = {}
-      errorMap["newspaperProblems"] = {}
-      errorMap["batchProblems"] = []
+      let errorMap = {};
+      errorMap["newspaperProblems"] = {};
+      errorMap["batchProblems"] = [];
 
       const errorList = {newspaperError: [], batchError: []}
-      const newspapers = (await axios.get(`/api/batches/${this.batch.id}/newspapers`)).data
+      const newspapers = (await axios.get(`/api/batches/${this.batch.id}/newspapers`)).data;
       for (let i = 0; i < newspapers.length; i++) {
         const {data} = await axios.get(`/api/batches/${this.batch.id}/newspapers/${newspapers[i].id}/problem_count`);
         for (let j = 0; j < data.length; j++) {
@@ -114,24 +113,24 @@ export default defineComponent({
             errorMap["newspaperProblems"][problemSplitted]["newspapers"].push({
               "newspaperName": newspapers[i].newspaper_name,
               "count": data[j].count
-            })
+            });
           } else {
             errorMap["newspaperProblems"][problemSplitted] = {}
             errorMap["newspaperProblems"][problemSplitted]["problemCategory"] = data[j].problemCategory;
             errorMap["newspaperProblems"][problemSplitted]["newspapers"] = [{
               "newspaperName": newspapers[i].newspaper_name,
               "count": data[j].count
-            }]
+            }];
 
           }
         }
-        data.newspaperName = newspapers[i].newspaper_name
+        data.newspaperName = newspapers[i].newspaper_name;
         errorList.newspaperError.push(data);
       }
       const {data} = await axios.get(`/api/batches/${this.batch.id}/problems-batch`);
       for (let i = 0;i <data.length;i++) {
-        console.log(data[i])
-        errorMap.batchProblems.push({"batchProblem": data[i].problem, problemCategory: "batchError"})
+        console.log(data[i]);
+        errorMap.batchProblems.push({"batchProblem": data[i].problem, problemCategory: "batchError"});
       }
       return errorMap;
     },

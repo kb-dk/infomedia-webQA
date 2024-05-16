@@ -21,7 +21,7 @@ export default defineComponent({
   name: 'CalendarView',
   watch:{
     '$route'(to,from){
-      this.newspaper = to.params.newspaperid
+      this.newspaper = to.params.newspaperid;
     }
   },
   components: {
@@ -31,17 +31,17 @@ export default defineComponent({
   },
   data(){
     return{
-      newspaper: this.$route.params.newspaperid
+      newspaper: this.$route.params.newspaperid;
     }
 
   },
   methods:{
     showBatchInfo(event: any){
       // this.batchMetadata.active.value = true;
-      (this.$refs.batchMetadataRef as typeof BatchMetadata).showBatchData(event)
+      (this.$refs.batchMetadataRef as typeof BatchMetadata).showBatchData(event);
     },
     closeBatchInfo(){
-      (this.$refs.batchMetadataRef as typeof BatchMetadata).close()
+      (this.$refs.batchMetadataRef as typeof BatchMetadata).close();
     }
 
   },

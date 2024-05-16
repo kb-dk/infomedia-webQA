@@ -50,33 +50,33 @@ export default defineComponent({
       }
     }
     onBeforeUnmount(()=>{
-      document.removeEventListener('click',batchMetadata.close)
+      document.removeEventListener('click',batchMetadata.close);
     })
     onMounted(()=>{
-      document.addEventListener('click',batchMetadata.close)
+      document.addEventListener('click',batchMetadata.close);
     })
-    return {batchMetadata}
+    return {batchMetadata};
 
   },
   methods:{
     showBatchData(event){
-      this.batchMetadata.showBatch.value = true
-      this.batchMetadata.currentDay = new Date(event.id)
+      this.batchMetadata.showBatch.value = true;
+      this.batchMetadata.currentDay = new Date(event.id);
       if(event.attributes.length > 0){
-        this.batchMetadata.batch = event.attributes[0].batch
+        this.batchMetadata.batch = event.attributes[0].batch;
       }else{
-        this.batchMetadata.batch = {}
+        this.batchMetadata.batch = {};
       }
 
     },
 
     changeState(){
-      this.batchMetadata.batch.state = "TechnicalInspectionComplete"
-      axios.put("/api/batches",this.batchMetadata.batch)
+      this.batchMetadata.batch.state = "TechnicalInspectionComplete";
+      axios.put("/api/batches",this.batchMetadata.batch);
     },
     changeBatch(newBatch){
-      this.batchMetadata.batch = newBatch
-      this.$forceUpdate()
+      this.batchMetadata.batch = newBatch;
+      this.$forceUpdate();
 
       // this.$refs.errorList.$forceUpdate()
 

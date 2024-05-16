@@ -29,15 +29,15 @@ export default defineComponent({
   methods:{
     async getRoundtrips(){
       if(this.date){
-        const {data} = await axios.get(`/api/batches?day=${this.date.getDate()}&month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}`)
+        const {data} = await axios.get(`/api/batches?day=${this.date.getDate()}&month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}`);
         this.roundtrips = data;
-        this.dropdownText = data[0].roundtrip
-        return data
+        this.dropdownText = data[0].roundtrip;
+        return data;
       }
     },
     changeBatch(roundtrip,index){
       this.dropdownText = roundtrip;
-      this.$emit("changeBatch",this.roundtrips[index])
+      this.$emit("changeBatch",this.roundtrips[index]);
 
     }
   }
