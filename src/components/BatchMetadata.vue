@@ -2,7 +2,7 @@
 
   <div v-if="batchMetadata.showBatch.value" class="batchMetadata" :class="{'is-active': batchMetadata.showBatch}" @click.stop>
     <h2 v-text="batchMetadata.currentDay.toLocaleDateString()" @click.stop></h2>
-    <ApproveButton :stateChange="'technicalQAapproved'" :btnText="'Approve Batch'" @click.stop="changeState"></ApproveButton>
+    <ApproveButton stateSource="QAChecked" stateDest="BatchInspected" :batch="batchMetadata.batch" :stateChange="'technicalQAapproved'" :btnText="'Approve Batch'" @click.stop="changeState"></ApproveButton>
     <div id="errorListDiv">
     <ErrorList :problemsLoading="problemsLoading" :date="batchMetadata.currentDay" :batch="batchMetadata.batch" ref="errorList"></ErrorList>
     </div>
@@ -71,15 +71,12 @@ export default defineComponent({
     },
 
     changeState(){
-      this.batchMetadata.batch.state = "TechnicalInspectionComplete";
-      axios.put("/api/batches",this.batchMetadata.batch);
+      this.$forceUpdate();
+      (this.$parent).reloadCalendar();
     },
     changeBatch(newBatch){
       this.batchMetadata.batch = newBatch;
       this.$forceUpdate();
-
-      // this.$refs.errorList.$forceUpdate()
-
     }
   }
 

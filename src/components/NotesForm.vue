@@ -47,11 +47,12 @@ export default defineComponent({
     PostList
   },
   methods: {
-    createPost(post: { id: any; body: any }) {
+    async createPost(post: { id: any; body: any }) {
       if (this.batch) {
+        let response = {data:{note_id_created:""}};
         switch (this.notesType) {
           case NotesType.BATCHNOTE:
-            axios({
+            response = await axios({
               method: "POST",
               url: `/api/batches/${this.batch.id}/notes-to-batch?username=gui`,
               data: post.body,
@@ -60,7 +61,7 @@ export default defineComponent({
             break;
           case NotesType.EDITIONNOTE:
             if (this.newspaper) {
-              axios({
+              response = await axios({
                 method: "POST",
                 url: `/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}/notes-to-batch?username=gui`,
                 data: post.body,
@@ -71,7 +72,7 @@ export default defineComponent({
           case NotesType.SECTIONNOTE:
             if (this.newspaper) {
               //TODO add section to url
-              axios({
+              response = await axios({
                 method: "POST",
                 url: `/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}/notes-to-section?username=gui`,
                 data: post.body,
@@ -82,7 +83,7 @@ export default defineComponent({
           case NotesType.PAGENOTE:
             if (this.newspaper) {
               //TODO add section and page_number to url
-              axios({
+              response = await axios({
                 method: "POST",
                 url: `/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}/notes-to-pages?username=gui`,
                 data: post.body,
@@ -94,12 +95,13 @@ export default defineComponent({
             console.log("Incorrect notestype")
         }
 
-        this.posts.push({note:post.body})
+        this.posts.push({note:post.body,id:response.data.note_id_created,batch_id:this.batch.id})
       }
 
     },
-    removePost(post: { id: any; }) {
-      // this.posts = this.posts.filter((p: { id: any; }) => p.id !== post.id)
+    removePost(post: { id: any;batch_id:any;},index:number) {
+      axios.delete(`/api/batches/${post.batch_id}/notes-to-batch/${post.id}`);
+      this.posts.splice(index,1)
     },
     hideDialog() {
       this.dialogVisible = true;

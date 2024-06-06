@@ -39,7 +39,8 @@ export default defineComponent({
     rows: [Number],
     columns: [Number],
     monthNav: [String],
-    monthMask: [Object]
+    monthMask: [Object],
+    batchType:[String]
   },
   data() {
     return {
@@ -49,6 +50,13 @@ export default defineComponent({
       calendarAttr:ref([{}])
     }
   },
+  watch:{
+    batchType(newVal){
+      this.calendarAttr = [{}]
+      this.batchesForMonth();
+    }
+  },
+
   methods: {
     yearSelect() {
       let createdDate = this.date;
@@ -96,7 +104,7 @@ export default defineComponent({
       const apiClient = axios.create({
         baseURL: '/api',
       })
-      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}`)
+      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}&batch_type=${this.batchType}`)
       res = data
 
       if (res.length > 0) {
@@ -105,7 +113,7 @@ export default defineComponent({
           res[i] = {
             highlight: {
               color: data ? 'red':'teal',
-              fillMode: 'solid'
+              fillMode: res[i].state === 'QAChecked'? 'solid': res[i].state === 'BatchInspected'? 'light':'outline'
             },
             dates: new Date(res[i].date),
             popover: null,
