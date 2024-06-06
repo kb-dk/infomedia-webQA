@@ -28,7 +28,8 @@ export default defineComponent({
             url: `/api/batches/`,
             data: changedBatch,
             headers: {'Content-Type': 'application/json'}
-          })
+          });
+          (this.$parent).changeState(this.batch.batch_name,changedBatch.state)
         }
       }
     },
@@ -44,13 +45,13 @@ export default defineComponent({
   },
   computed: {
     changeVariant() {
-      return this.clicked ? "success" : "secondary"
+      return this.clicked;
     },
     clicked() {
       if (this.batch) {
-        return this.batch.state === this.stateDest;
-      } else {
-        return false;
+        return this.batch.state === 'TechnicalInspectionComplete' ? "success" : this.batch.state === 'BatchInspected' ? "warning" : "secondary"
+      }else{
+        return "secondary"
       }
 
     }
