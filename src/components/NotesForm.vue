@@ -12,33 +12,103 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import {defineComponent, PropType, Ref, ref} from 'vue'
 import PostForm from "@/components/PostForm.vue";
 import PostList from "@/components/PostList.vue";
+import {NotesType} from "@/enums/NotesType";
+import axios from "axios";
+import {data} from "v-calendar/dist/types/tests/unit/util/dayData";
 
 export default defineComponent({
+  name:"NotesForm",
+  props: {
+    batch: [Object],
+    postsTitel: [String, Number],
+    notesType: Number as PropType<NotesType>,
+
+    newspaper: [Object]
+  },
   data() {
     return {
-      posts: [] as any[],
+      posts: ref([]) as Ref<Array<object>>,
       dialogVisible: false,
     }
   },
-  props: {
-    postsTitel: [String, Number]
+  created() {
+    if (this.batch?.id !== undefined) {
+      this.getNotes().then((res) => {
+
+        this.posts = res;
+      })
+    }
   },
   components: {
     PostForm,
     PostList
   },
   methods: {
-    createPost(post: { id: any; body: any }) {
-      this.posts.push(post)
+    async createPost(post: { id: any; body: any }) {
+      if (this.batch) {
+        let response = {data:{note_id_created:""}};
+        switch (this.notesType) {
+          case NotesType.BATCHNOTE:
+            response = await axios({
+              method: "POST",
+              url: `/api/batches/${this.batch.id}/notes-to-batch?username=gui`,
+              data: post.body,
+              headers: {'Content-Type': 'Text'}
+            })
+            break;
+          case NotesType.EDITIONNOTE:
+            if (this.newspaper) {
+              response = await axios({
+                method: "POST",
+                url: `/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}/notes-to-batch?username=gui`,
+                data: post.body,
+                headers: {'Content-Type': 'Text'}
+              })
+            }
+            break;
+          case NotesType.SECTIONNOTE:
+            if (this.newspaper) {
+              //TODO add section to url
+              response = await axios({
+                method: "POST",
+                url: `/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}/notes-to-section?username=gui`,
+                data: post.body,
+                headers: {'Content-Type': 'Text'}
+              })
+            }
+            break;
+          case NotesType.PAGENOTE:
+            if (this.newspaper) {
+              //TODO add section and page_number to url
+              response = await axios({
+                method: "POST",
+                url: `/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}/notes-to-pages?username=gui`,
+                data: post.body,
+                headers: {'Content-Type': 'Text'}
+              })
+            }
+            break;
+          default:
+            console.log("Incorrect notestype")
+        }
+
+        this.posts.push({note:post.body,id:response.data.note_id_created,batch_id:this.batch.id})
+      }
+
     },
-    removePost(post: { id: any; }) {
-      this.posts = this.posts.filter((p: { id: any; }) => p.id !== post.id)
+    removePost(post: { id: any;batch_id:any;},index:number) {
+      axios.delete(`/api/batches/${post.batch_id}/notes-to-batch/${post.id}`);
+      this.posts.splice(index,1)
     },
     hideDialog() {
       this.dialogVisible = true;
+    },
+    async getNotes() {
+      const {data} = await axios.get(`/api/batches/${this.batch?.id}/notes-to-batch`);
+      return  data;
     }
   }
 })

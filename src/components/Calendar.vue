@@ -40,7 +40,8 @@ export default defineComponent({
     rows: [Number],
     columns: [Number],
     monthNav: [String],
-    monthMask: [Object]
+    monthMask: [Object],
+    batchType:[String]
   },
   data() {
     return {
@@ -109,6 +110,7 @@ export default defineComponent({
         })
       } else {
         event.stopPropagation()
+        // console.log(calendarData)
         this.$parent.showBatchInfo(calendarData)
       }
 
@@ -119,23 +121,38 @@ export default defineComponent({
         baseURL: '/api',
       })
       //Husk at rette tilbage til +1 i month
-      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth()}&year=${this.date.getFullYear()}`)
+      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}&batch_type=${this.batchType}`)
       res = data
+
       if (res.length > 0) {
         for (let i = 0; i < res.length; i++) {
+          const {data} = await apiClient.get(`/batches/${res[i].id}/has_problems`);
           res[i] = {
             highlight: {
-              color: 'teal',
-              fillMode: 'solid'
+              color: data ? 'red':'teal',
+              fillMode: this.pickFillMode(res[i].state)
             },
             dates: new Date(res[i].date),
             popover: null,
-            datePicker: null
+            datePicker: null,
+            batch:res[i]
+
           }
         }
         this.calendarAttr = res
       }
     },
+    updateBatchState(batchName,newState){
+      for(let i=0; i<this.calendarAttr.length; i++) {
+        if(this.calendarAttr[i].batch.batch_name === batchName){
+          this.calendarAttr[i].batch.state = newState
+          this.calendarAttr[i].highlight.fillMode = this.pickFillMode(newState)
+        }
+      }
+    },
+    pickFillMode(state){
+      return state === 'QAChecked'? 'solid': state === 'BatchInspected'? 'light':'outline'
+    }
 
 
   }
