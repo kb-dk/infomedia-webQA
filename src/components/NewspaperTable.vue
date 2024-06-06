@@ -18,17 +18,16 @@
 
 <script>
 import {defineComponent, ref} from "vue";
-import axios from "axios";
 export default defineComponent({
   name: "NewspaperTable",
   data() {
     return {
       filter:null,
-      sortBy:'newspaperId',
+      sortBy:'newspaperName',
       sortDesc:false,
 
       fields: [{
-        key: 'newspaperId',
+        key: 'newspaperName',
         sortable:true,
         label:'Newspaper',
         filterable:true
@@ -38,13 +37,13 @@ export default defineComponent({
       ],
       // axios.get("/api/")
       items: [
-        { newspaperId:"Aarhusstiftidende"},
-        { newspaperId:"BT"},
-        { newspaperId:"Berlingsketidende"},
-        { newspaperId:"Arbejderen"},
-        { newspaperId:"Ekstrabladet"},
-        { newspaperId:"Information"},
-        { newspaperId:"Politiken"},
+        { newspaperName:"Aarhusstiftstidende"},
+        { newspaperName:"BT"},
+        { newspaperName:"Berlingsketidende"},
+        { newspaperName:"Arbejderen"},
+        { newspaperName:"Ekstrabladet"},
+        { newspaperName:"Information"},
+        { newspaperName:"Politiken"},
 
       ]
     }
@@ -52,7 +51,7 @@ export default defineComponent({
   methods:{
     rowClicked(event){
       // console.log(event)
-      this.$router.push({name:"newspaper-calendar",params:{newspaperid:event.newspaperId}})
+      this.$router.push({name:"newspaper-calendar",params:{newspapername:event.newspaperName}})
     },
     filterF(row,filter){
       console.log(row)

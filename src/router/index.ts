@@ -10,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
     component: HomeView
   },
   {
-    path:'/:newspaperid',
+    path:'/:newspapername',
     name:"newspaper-calendar",
     component:CalendarView
   },

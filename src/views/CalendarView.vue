@@ -9,21 +9,23 @@
 
 <script lang="ts">
 import { defineComponent,ref } from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue';
-import Calendar from '@/components/Calendar.vue'// @ is an alias to /src
+import Calendar from '@/components/Calendar.vue'
+import {useRoute} from "vue-router";
+import axios from "axios";
+// @ is an alias to /src
 export default defineComponent({
   name: 'CalendarView',
   watch:{
     '$route'(to,from){
       this.newspaper = to.params.newspaperid
-    }
+     }
   },
   components: {
     Calendar,
   },
-  data(){
+    data(){
     return{
-      newspaper: this.$route.params.newspaperid
+      newspaper: this.$route.params.newspapername
     }
 
   },

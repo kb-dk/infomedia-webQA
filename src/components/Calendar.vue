@@ -26,6 +26,7 @@ import axios from "axios";
 // import 'v-calendar/style.css';
 import "primevue/resources/themes/lara-light-indigo/theme.css";
 import 'v-calendar/style.css'
+import {useRoute} from "vue-router";
 // import "src/style/stylesheet.scss";
 
 export default defineComponent({
@@ -46,7 +47,10 @@ export default defineComponent({
       currentYear: 2023,
       date: ref(new Date()),
       yearPickerInputStyle: {'text-align': 'center', 'font-size': 'larger', 'font-weight': 'bold'},
-      calendarAttr:ref([{}])
+      calendarAttr:ref([{}]),
+      newspaperName: this.$route.params.newspapername,
+      newspaperId: '',
+      batchid: ''
     }
   },
   methods: {
@@ -72,13 +76,32 @@ export default defineComponent({
       }
 
     },
-    calendarDayClicked(calendarData, event) {
+    async calendarDayClicked(calendarData, event) {
       if (this.isYear) {
+        try {
+          const batchResponse = await axios.get(`/api/batches?day=${calendarData.day}&month=${calendarData.month}&year=${calendarData.year}`);
+          //hvad vil ske hvis vi har flere batches på samme dag?
+          const batchId = batchResponse.data[0].id;
+          if (batchId) {
+            console.log(batchResponse.data[0]);
+            this.batchId = batchId;
+
+            const newspaperResponse = await axios.get(`/api/batches/${batchId}/newspapers`);
+            const filteredNewspaper = newspaperResponse.data.find(elem => elem.newspaper_name === this.newspaperName.toLowerCase());
+            if (filteredNewspaper) {
+              console.log(filteredNewspaper.newspaper_name);
+              this.newspaperId = filteredNewspaper.id;
+            }
+          }
+        } catch (error) {
+          console.error(error);
+        }
+
         this.$router.push({
           name: "newspaper-view",
           params: {
-            batchid: "dl_20210101_rt1",
-            newspaperid: "Aarhusstiftidende",
+            batchid: this.batchId,
+            newspaperid: this.newspaperId,
             year: calendarData.year,
             month: calendarData.month,
             day: calendarData.day
@@ -95,7 +118,8 @@ export default defineComponent({
       const apiClient = axios.create({
         baseURL: '/api',
       })
-      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}`)
+      //Husk at rette tilbage til +1 i month
+      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth()}&year=${this.date.getFullYear()}`)
       res = data
       if (res.length > 0) {
         for (let i = 0; i < res.length; i++) {
