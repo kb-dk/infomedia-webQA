@@ -57,9 +57,14 @@ export default defineComponent({
       // this.batchMetadata.active.value = true;
       (this.$refs.batchMetadataRef as typeof BatchMetadata).showBatchData(event);
     },
-    reloadCalendar(){
+    reloadBatch(batchName:string,newState:string){
         this.$forceUpdate();
-        (this.$refs.calendarRef as typeof Calendar).batchesForMonth();
+        console.log("reload");
+        (this.$refs.calendarRef as typeof Calendar).updateBatchState(batchName,newState);
+    },
+    reloadCalendar(){
+      this.$forceUpdate();
+      (this.$refs.calendarRef as typeof Calendar).batchesForMonth();
     },
     async sendApprovedBatches(){
       const currentDate = (this.$refs.calendarRef as typeof Calendar).date;

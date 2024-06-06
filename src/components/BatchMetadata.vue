@@ -2,7 +2,7 @@
 
   <div v-if="batchMetadata.showBatch.value" class="batchMetadata" :class="{'is-active': batchMetadata.showBatch}" @click.stop>
     <h2 v-text="batchMetadata.currentDay.toLocaleDateString()" @click.stop></h2>
-    <ApproveButton stateSource="QAChecked" stateDest="BatchInspected" :batch="batchMetadata.batch" :stateChange="'technicalQAapproved'" :btnText="'Approve Batch'" @click.stop="changeState"></ApproveButton>
+    <ApproveButton stateSource="QAChecked" stateDest="BatchInspected" :batch="batchMetadata.batch" :stateChange="'technicalQAapproved'" :btnText="'Approve Batch'"></ApproveButton>
     <div id="errorListDiv">
     <ErrorList :problemsLoading="problemsLoading" :date="batchMetadata.currentDay" :batch="batchMetadata.batch" ref="errorList"></ErrorList>
     </div>
@@ -69,10 +69,9 @@ export default defineComponent({
       }
 
     },
-
-    changeState(){
+    changeState(batchName,newState){
       this.$forceUpdate();
-      (this.$parent).reloadCalendar();
+      (this.$parent).reloadBatch(batchName,newState);
     },
     changeBatch(newBatch){
       this.batchMetadata.batch = newBatch;

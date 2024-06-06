@@ -113,7 +113,7 @@ export default defineComponent({
           res[i] = {
             highlight: {
               color: data ? 'red':'teal',
-              fillMode: res[i].state === 'QAChecked'? 'solid': res[i].state === 'BatchInspected'? 'light':'outline'
+              fillMode: this.pickFillMode(res[i].state)
             },
             dates: new Date(res[i].date),
             popover: null,
@@ -125,6 +125,17 @@ export default defineComponent({
         this.calendarAttr = res
       }
     },
+    updateBatchState(batchName,newState){
+      for(let i=0; i<this.calendarAttr.length; i++) {
+        if(this.calendarAttr[i].batch.batch_name === batchName){
+          this.calendarAttr[i].batch.state = newState
+          this.calendarAttr[i].highlight.fillMode = this.pickFillMode(newState)
+        }
+      }
+    },
+    pickFillMode(state){
+      return state === 'QAChecked'? 'solid': state === 'BatchInspected'? 'light':'outline'
+    }
 
 
   }

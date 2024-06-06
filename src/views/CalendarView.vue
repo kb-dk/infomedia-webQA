@@ -9,7 +9,6 @@
 
 <script lang="ts">
 import { defineComponent,ref } from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue';
 import Calendar from '@/components/Calendar.vue'// @ is an alias to /src
 export default defineComponent({
   name: 'CalendarView',
