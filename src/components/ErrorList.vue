@@ -1,7 +1,7 @@
 <template>
   <p v-if="loading">LOADING PROBLEMS</p>
-  <template v-if="asyncErrors.newspaperProblems !== undefined">
-    <b-list-group ref="errorList" id="errorList" v-for="(err,index) in asyncErrors.newspaperProblems" :key="err">
+  <template v-if="asyncErrors.newspaperPageProblems !== undefined">
+    <b-list-group ref="errorList" id="errorList" v-for="(err,index) in asyncErrors.newspaperPageProblems" :key="err">
       <b-list-group>
         <b-list-group-item class="errorTypeList" @click="this.switch(index)">
           {{ err.problemCategory }}
@@ -27,6 +27,20 @@
                         :class="{'batchInfo-is-active': currentIndex===index}">
             <b-list-group-item class="errorMessageList">
               {{err.batchProblem}}
+            </b-list-group-item>
+          </b-list-group>
+        </b-list-group-item>
+      </b-list-group>
+
+    </b-list-group>
+    <b-list-group v-for="(err,index) in asyncErrors.newspaperProblems" :key="err">
+      <b-list-group>
+        <b-list-group-item class="errorTypeList" @click="this.switch(index)">
+          {{ err.problemCategory }}
+          <b-list-group class="batchInfo"
+                        :class="{'batchInfo-is-active': currentIndex===index}">
+            <b-list-group-item class="errorMessageList">
+              {{err.newspaperProblem}}
             </b-list-group-item>
           </b-list-group>
         </b-list-group-item>
@@ -100,8 +114,9 @@ export default defineComponent({
     },
     async getNewspapers() {
       let errorMap = {};
-      errorMap["newspaperProblems"] = {};
+      errorMap["newspaperPageProblems"] = {};
       errorMap["batchProblems"] = [];
+      errorMap["newspaperProblems"] = [];
 
       const errorList = {newspaperError: [], batchError: []};
       const newspapers = (await axios.get(`/api/batches/${this.batch.id}/newspapers`)).data;
@@ -109,15 +124,15 @@ export default defineComponent({
         const {data} = await axios.get(`/api/batches/${this.batch.id}/newspapers/${newspapers[i].id}/problem_count`);
         for (let j = 0; j < data.length; j++) {
           let problemSplitted = data[j].problem.split(/=(.*)}/)[1];
-          if (errorMap["newspaperProblems"][problemSplitted]) {
-            errorMap["newspaperProblems"][problemSplitted]["newspapers"].push({
+          if (errorMap["newspaperPageProblems"][problemSplitted]) {
+            errorMap["newspaperPageProblems"][problemSplitted]["newspapers"].push({
               "newspaperName": newspapers[i].newspaper_name,
               "count": data[j].count
             });
           } else {
-            errorMap["newspaperProblems"][problemSplitted] = {}
-            errorMap["newspaperProblems"][problemSplitted]["problemCategory"] = data[j].problemCategory;
-            errorMap["newspaperProblems"][problemSplitted]["newspapers"] = [{
+            errorMap["newspaperPageProblems"][problemSplitted] = {}
+            errorMap["newspaperPageProblems"][problemSplitted]["problemCategory"] = data[j].problemCategory;
+            errorMap["newspaperPageProblems"][problemSplitted]["newspapers"] = [{
               "newspaperName": newspapers[i].newspaper_name,
               "count": data[j].count
             }];
@@ -126,10 +141,16 @@ export default defineComponent({
         }
         data.newspaperName = newspapers[i].newspaper_name;
         errorList.newspaperError.push(data);
+
+        const newspaperProblems = (await axios.get(`/api/batches/${this.batch.id}/newspapers/${newspapers[i].id}/newspaper_problems`)).data;
+        for(let j = 0; j < newspaperProblems.length; j++) {
+          errorMap.newspaperProblems.push({"newspaperProblem": newspaperProblems[j].problem,problemCategory: "newspaperProblem",newspaperName:newspapers[i].newspaper_name});
+        }
+
+
       }
       const {data} = await axios.get(`/api/batches/${this.batch.id}/problems-batch`);
       for (let i = 0;i <data.length;i++) {
-        console.log(data[i]);
         errorMap.batchProblems.push({"batchProblem": data[i].problem, problemCategory: "batchError"});
       }
       return errorMap;
