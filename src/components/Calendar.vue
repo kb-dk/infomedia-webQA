@@ -121,7 +121,7 @@ export default defineComponent({
         baseURL: '/api',
       })
       //Husk at rette tilbage til +1 i month
-      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}&batch_type=${this.batchType}`)
+      const {data} = await apiClient.get(`/batches?month=${this.date.getMonth()-1}&year=${this.date.getFullYear()}&batch_type=${this.batchType}`)
       res = data
 
       if (res.length > 0) {

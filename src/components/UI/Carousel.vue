@@ -2,7 +2,7 @@
   <Carousel ref="carousel" v-model="currentSlide" snapAlign="start">
     <Slide v-for="(item, index) in carouselVal" :key="index" class="carousel__slide">
       <div class="carousel__item">
-        <img :src=getImage(item) alt="carousel-image"/>
+        <iframe :src=getImage(item) alt="carousel-image"/>
       </div>
     </Slide>
 
