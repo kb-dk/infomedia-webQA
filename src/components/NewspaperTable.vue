@@ -5,13 +5,16 @@
     <b-table v-model:sort-by="sortBy"
              v-model:sort-desc="sortDesc"
              :filterable="true"
+             :responsive = "true"
              striped hover
-             :items="items"
+             :items="handledNewspapers"
              :fields="fields"
              @row-clicked="rowClicked($event)"
-              :filter="filter"
-
-    @filtered="filterTest">
+             :filter="filter"
+             class="newspaperTable"
+             :busy="isBusy"
+             :sticky-header="true"
+             >
     </b-table>
   </div>
 </template>
@@ -19,53 +22,68 @@
 <script>
 import {defineComponent, ref} from "vue";
 import axios from "axios";
+
 export default defineComponent({
   name: "NewspaperTable",
+  props: {
+    newspapers: [Promise],
+    headerName:[String]
+  },
   data() {
     return {
-      filter:null,
-      sortBy:'newspaperId',
-      sortDesc:false,
-
-      fields: [{
-        key: 'newspaperId',
-        sortable:true,
-        label:'Newspaper',
-        filterable:true
-        // sortDesc:true,
-      }
-
+      filter: null,
+      sortBy: 'newspaper_name',
+      sortDesc: false,
+      isBusy: true,
+      fields: [
+        {
+          key: 'newspaper_name',
+          sortable: false,
+          label: 'Newspaper',
+          filterable: true,
+          stickyColumn: true
+        },
       ],
-      // axios.get("/api/")
-      items: [
-        { newspaperId:"Aarhusstiftidende"},
-        { newspaperId:"BT"},
-        { newspaperId:"Berlingsketidende"},
-        { newspaperId:"Arbejderen"},
-        { newspaperId:"Ekstrabladet"},
-        { newspaperId:"Information"},
-        { newspaperId:"Politiken"},
-
-      ]
+      handledNewspapers: []
     }
   },
-  methods:{
-    rowClicked(event){
+  created() {
+    if (this.newspapers) {
+      this.newspapers.then((response) => {
+        this.handledNewspapers = response;
+      }).finally(() => {
+            this.isBusy = false;
+            this.fields[0].label = this.headerName;
+            this.fields[0].sortable = true;
+          }
+      )
+    }
+  },
+  methods: {
+    rowClicked(event) {
       // console.log(event)
-      this.$router.push({name:"newspaper-calendar",params:{newspaperid:event.newspaperId}})
+      this.$router.push({name: "newspaper-calendar", params: {newspaperid: event.id}})
     },
-    filterF(row,filter){
+    filterF(row, filter) {
       console.log(row)
       console.log(filter)
       return true
     },
-    filterTest(items){
+    filterTest(items) {
       console.log(items)
+    },
+    async getNewspaperNames() {
+      const {data} = await axios.get(`/api/newspapers/${'dagsaviser'}`);
+      if (data) {
+        console.log(data)
+        this.isBusy = false;
+      }
+      return data;
     }
   }
 })
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+@import "../style/stylesheet.scss";
 </style>

@@ -7,7 +7,9 @@
   </b-row>
   <b-row>
     <b-col sm="2">
-      <NewspaperTable/>
+      <NewspaperTable :newspapers="getNewspaperNames('dagsaviser')" headerName="Newspapers"/>
+      <NewspaperTable :newspapers="getNewspaperNames('ugeaviser')" headerName="Weekly"/>
+      <NewspaperTable :newspapers="getNewspaperNames('magasiner')" headerName="Magazines"/>
     </b-col>
     <b-col sm="8">
       <router-view/>
@@ -19,10 +21,17 @@
 </template>
 <script>
 import NewspaperTable from "@/components/NewspaperTable";
+import axios from 'axios';
   export default {
     components:{
       NewspaperTable
-    }
+    },
+    methods:{
+      async getNewspaperNames(newspaperType){
+        const {data} = await axios.get(`/api/newspapers/${newspaperType}`);
+        return data;
+      }
+    },
   }
 </script>
 <style lang="scss">
