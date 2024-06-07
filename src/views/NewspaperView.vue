@@ -9,7 +9,8 @@
   </b-row>
   <b-row>
     <b-col sm="8">
-      <im-carousel :carouselVal="frontPages"></im-carousel>
+<!--      <im-carousel :carouselVal="frontPages"></im-carousel>-->
+      <im-pdf-viewer :pdf="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>
     </b-col>
     <b-col sm="2">
       <PageTable :rowClick="switchPage"></PageTable>
