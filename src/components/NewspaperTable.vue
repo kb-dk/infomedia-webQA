@@ -1,6 +1,7 @@
 <template>
 
-  <div>
+  <div  class="newspaperTableDiv">
+    <div v-if="show">
     <b-form-input v-model="filter" type="search" placeholder="Search"></b-form-input>
     <b-table v-model:sort-by="sortBy"
              v-model:sort-desc="sortDesc"
@@ -16,6 +17,7 @@
              :sticky-header="true"
              >
     </b-table>
+    </div>
   </div>
 </template>
 
@@ -27,7 +29,8 @@ export default defineComponent({
   name: "NewspaperTable",
   props: {
     newspapers: [Promise],
-    headerName:[String]
+    headerName:[String],
+    show:[Boolean]
   },
   data() {
     return {

@@ -7,9 +7,13 @@
   </b-row>
   <b-row>
     <b-col sm="2">
-      <NewspaperTable :newspapers="getNewspaperNames('dagsaviser')" headerName="Newspapers"/>
-      <NewspaperTable :newspapers="getNewspaperNames('ugeaviser')" headerName="Weekly"/>
-      <NewspaperTable :newspapers="getNewspaperNames('magasiner')" headerName="Magazines"/>
+      <NewspaperTable :newspapers="getNewspaperNames('dagsaviser')" headerName="Newspapers" :show="true"/>
+      <br/>
+      <b-button @click="showWeekly=!showWeekly">{{showWeekly ? "Hide":"Show Weekly"}}</b-button>
+      <NewspaperTable :newspapers="getNewspaperNames('ugeaviser')" headerName="Weekly" :show="showWeekly"/>
+      <br/>
+      <b-button @click="showMagazine=!showMagazine">{{showMagazine ? "Hide":"Show Magazine"}}</b-button>
+      <NewspaperTable :newspapers="getNewspaperNames('magasiner')" headerName="Magazines" :show="showMagazine"/>
     </b-col>
     <b-col sm="8">
       <router-view/>
@@ -22,9 +26,16 @@
 <script>
 import NewspaperTable from "@/components/NewspaperTable";
 import axios from 'axios';
+import {ref} from "vue";
   export default {
     components:{
       NewspaperTable
+    },
+    data(){
+      return{
+        showWeekly:ref(false),
+        showMagazine:ref(false),
+      }
     },
     methods:{
       async getNewspaperNames(newspaperType){
