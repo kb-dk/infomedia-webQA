@@ -10,7 +10,7 @@
               expanded
               @did-move="next($event)"
               @dayclick="calendarDayClicked"
-              @update:pages.once="batchesForMonth()"
+              @update:pages.once="isYear ? bathesForYear() : batchesForMonth()"
     />
 <!--    {{batchesForMonth()}}-->
     <!--  <Calendar v-model="date"></Calendar>-->
@@ -40,7 +40,8 @@ export default defineComponent({
     columns: [Number],
     monthNav: [String],
     monthMask: [Object],
-    batchType:[String]
+    batchType:[String],
+    newspaperName:[String]
   },
   data() {
     return {
@@ -135,6 +136,22 @@ export default defineComponent({
     },
     pickFillMode(state){
       return state === 'QAChecked'? 'solid': state === 'BatchInspected'? 'light':'outline'
+    },
+    async batchesForYear(){
+      let res = [];
+      // const {data} = await axios.get(`/api/batches?state=QAChecked&year=${this.date.getFullYear()}&newspaper_name=${this.newspaperName}&get_latest=true`);
+      // res = data;
+      // for(let i=0; i<res.length; i++) {
+      //   res[i] = {
+      //     highlight: {
+      //       color:'teal',
+      //       fillMode:̈́'solid'
+      //     },
+      //     dates: new Date(res[i].date),
+      //
+      //   }
+      // }
+      return res;
     }
 
 
