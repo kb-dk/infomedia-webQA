@@ -10,7 +10,7 @@
               expanded
               @did-move="next($event)"
               @dayclick="calendarDayClicked"
-              @update:pages.once="isYear ? bathesForYear() : batchesForMonth()"
+              @update:pages.once="isYear ? batchesForYear() : batchesForMonth()"
     />
 <!--    {{batchesForMonth()}}-->
     <!--  <Calendar v-model="date"></Calendar>-->
