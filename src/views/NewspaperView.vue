@@ -35,7 +35,7 @@ export default defineComponent({
   name: "NewspaperView",
   expose: ["pdf"],
   setup(){
-    const urlParams = useRoute().params;
+      const urlParams = useRoute().params;
     const test = axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`).then((res) =>{
       console.log(res.data[0])
       const newspapers = axios.get(`/api/batches/${res.data[0].id}/newspapers`).then((res) =>{
