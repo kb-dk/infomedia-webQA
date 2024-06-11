@@ -65,7 +65,7 @@ export default defineComponent({
   methods: {
     rowClicked(event) {
       // console.log(event)
-      this.$router.push({name: "newspaper-calendar", params: {newspaperid: event.id}})
+      this.$router.push({name: "newspaper-calendar", params: {newspaperName: event.newspaper_name}})
     },
     filterF(row, filter) {
       console.log(row)
