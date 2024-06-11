@@ -46,6 +46,7 @@ export default defineComponent({
       },
       data() {
         return {
+
           currentYear: 2023,
           date: ref(new Date()),
           yearPickerInputStyle: {'text-align': 'center', 'font-size': 'larger', 'font-weight': 'bold'},
@@ -76,9 +77,9 @@ export default defineComponent({
           // this.date.setMonth(event[0].month - 1);
           // this.date.setYear(event[0].year)
           if (this.isYear) {
-            this.date = new Date(event[0].year, 0, 1)
-            this.$refs.yearPicker.updateModel(this.date)
-            console.log("h")
+            this.date = new Date(event[0].year, 0, 1);
+            this.$refs.yearPicker.updateModel(this.date);
+            this.batchesForYear();
           } else {
             this.date = new Date(event[0].year, event[0].month - 1, 1)
             this.$forceUpdate();
@@ -88,11 +89,13 @@ export default defineComponent({
         },
         calendarDayClicked(calendarData, event) {
           if (this.isYear) {
+            console.log(calendarData)
+            console.log(event)
             this.$router.push({
               name: "newspaper-view",
               params: {
-                batchid: "dl_20210101_rt1",
-                newspaperid: "Aarhusstiftidende",
+                batchid: calendarData.attributes[0].batch.id,
+                newspaperid: calendarData.attributes[0].newspaper.id,
                 year: calendarData.year,
                 month: calendarData.month,
                 day: calendarData.day
@@ -157,7 +160,8 @@ export default defineComponent({
                 dates: new Date(res[i].date),
                 popover: null,
                 datePicker: null,
-                batch: res[i]
+                batch: res[i],
+                newspaper: newspapers[j]
 
               }
             }
