@@ -80,3 +80,11 @@
 .roundtripDropdownActive{
   background-color: rgba(176, 175, 160,0.2);
 }
+.newspaperTable{
+  max-height: 45em;
+  overflow: scroll;
+  overflow-scrolling: auto;
+}
+.newspaperTableDiv{
+  margin-bottom: 5px;
+}
