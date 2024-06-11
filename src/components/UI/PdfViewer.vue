@@ -3,60 +3,62 @@
     <template v-if="isLoading"> Loading...</template>
 
     <template v-else>
-      <span v-if="showAllPages"> {{ pageCount }} page(s) </span>
+      <div v-for="(item, index) in pdfVal" :key="index">
+
+<!--      <span v-if="showAllPages"> {{ pageCount }} page(s) </span>
+
       <span v-else>
         <im-button :disabled="page <= 1" @click="removeOnePage" style="padding: 0px 6px">❮</im-button>
           {{ page }} / {{ pageCount }}
         <im-button :disabled="page >= pageCount" @click="addOnePage" style="padding: 0px 6px">❯</im-button>
       </span>
-      <im-checkbox :text="checkboxText" v-model="showAllPages" style="float: right"/>
+      <im-checkbox :text="checkboxText" v-model="showAllPages" style="float: right"/>-->
+    <div class="pdf-content">
+      <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef" :page="page"></vue-pdf-embed>
+    </div>
+    </div>
     </template>
-  </div>
-  <div class="pdf-content">
-    <VuePdfEmbed :source="pdfSource"></VuePdfEmbed>
-    <div v-if="!showAllPages">-->
-      <VuePdfEmbed :source="pdfSource"></VuePdfEmbed>
-    </div>
-    <div v-if="showAllPages">
-      <VuePdfEmbed :key="frontpage" v-for="frontpage in filterFrontPages()" :source="encodeURIComponent(frontpage.src)"
-                   :height="500" class="pdfFrontpage"></VuePdfEmbed>
-    </div>
-    -->
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue'
+import {defineComponent} from 'vue'
 import VuePdfEmbed from "vue-pdf-embed"
+import axios from "axios";
 
 export default defineComponent({
   name: 'im-pdf-viewer',
   data() {
     return {
-      isLoading: false,
-      page: ref(1),
-      pageCount: 2,
-      showAllPages: false,
+      isLoading: true,
+      page: 0,
+      pageCount: 1,
+      showAllPages: true,
       disabled: false,
+      imageUrls: { }
     }
   },
   components: {
     VuePdfEmbed
   },
   props: {
-    pdfSource: [String],
-    checkboxText: []
+    pdfVal: {
+      type: Array,
+      default: () => [],
+    },
+    pdf: [String],
+    checkboxText: [String]
   },
   watch: {
     showAllPages() {
-      this.page = this.showAllPages ? 1 : 1
+      this.page = this.showAllPages ? 0 : 1
     },
-    // pdfVal: function (newVal, oldVal) {
-    //   this.showAllPages = false;
-    //   console.log(this.pdfSource)
-    //   this.pdfSource = newVal
-    //
-    // },
+    pdfVal: {
+      immediate: true,
+      handler() {
+        this.loadImages();
+      }
+    }
   },
   methods: {
     addOnePage() {
@@ -66,24 +68,42 @@ export default defineComponent({
       this.page = this.page - 1;
     },
     handleDocumentRender(args: any) {
+      console.log(args)
       this.isLoading = false
-
+      this.pageCount = (this.$refs.pdfRef as typeof VuePdfEmbed).pageCount
     },
     updateCheckbox() {
       this.showAllPages = true
     },
-    filterFrontPages() {
-      console.log(this.allPages)
-      if (this.allPages) {
-        return this.allPages.filter((page: { Page: number }) => {
-          return page.Page === 1
+    async loadImages() {
+      try {
+        const apiClient = axios.create({
+          baseURL: '/api',
         })
-
+        for (const item of this.pdfVal) {
+          console.log(encodeURIComponent(item as string)); // Log the URL for the API request
+          const encoded_item = encodeURIComponent(item as string);
+          try {
+            const response = await apiClient.get(`/file/${encoded_item}`, {
+              responseType: 'blob'
+            });
+            const blob = new Blob([response.data], {type: 'application/pdf'});
+            const url = URL.createObjectURL(blob);
+            this.imageUrls = { ...this.imageUrls, [item as string]: url }; // Use spread operator and index signature
+          } catch (error) {
+            console.error(error); // Log any errors that occur during the API request
+          }
+        }
+      }catch (error) {
+        console.error(error);
       }
-      return []
-
+      this.isLoading = false
+    },
+    getImage(item: string) {
+      console.log(item);
+      return (this.imageUrls as { [key: string]: string })[item];
     }
-  }
+  },
 })
 </script>
 
@@ -98,7 +118,7 @@ export default defineComponent({
   box-shadow: 0 2px 8px 4px rgba(0, 0, 0, 0.1);
   background-color: #555;
   color: #ddd;
-  margin: 10px;
+  margin:10px;
 }
 
 .pdf-content {

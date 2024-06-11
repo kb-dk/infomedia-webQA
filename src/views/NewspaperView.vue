@@ -9,8 +9,8 @@
   </b-row>
   <b-row>
     <b-col sm="8">
-<!--      <im-carousel :carouselVal="frontPages"></im-carousel>-->
-      <im-pdf-viewer :pdf="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>
+<im-carousel :carouselVal="frontPages"></im-carousel>
+      <!--      <im-pdf-viewer :pdf-val="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>-->
     </b-col>
     <b-col sm="2">
       <PageTable :rowClick="switchPage"></PageTable>
@@ -31,23 +31,20 @@ import axios from "axios";
 export default defineComponent({
   name: "NewspaperView",
   expose: ["pdf"],
-  setup() {
-    // const urlParams = useRoute().params;
-    // axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`).then((res) =>{
-    //   console.log(res.data[0])
-    //   this.batch = res.data[0];
-    // })
-    //   axios.get(`/api/batches/${this.batch.id}/newspapers`).then((res) => {
-    //     console.log(res.data)
-    //     this.newspapers = res.data;
-    //   })
-    //   axios.get(`/api/batches/${this.batch.id}/newspapers/${urlParams.newspaperid}/newspaper-pages`).then((res) =>{
-    //         console.log(res.data)
-    //         this.frontPages = res.data[0]
-    // })
-    // return {
-    //   allBatches : async ()=>{return await axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`)},
-    //   urlParams};
+  setup(){
+    const urlParams = useRoute().params;
+    const test = axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`).then((res) =>{
+      console.log(res.data[0])
+      const newspapers = axios.get(`/api/batches/${res.data[0].id}/newspapers`).then((res) =>{
+        console.log(res.data)
+        return res.data
+      })
+      return newspapers
+    })
+    return {
+      allBatches : async ()=>{return await axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`)},
+      test,
+      urlParams};
   },
   data() {
     return {
@@ -62,7 +59,6 @@ export default defineComponent({
       newspapersId: '',
       batchId: '',
       errorMessage: '',
-      imageUrls: {}
     }
   },
   components: {
@@ -92,24 +88,6 @@ export default defineComponent({
       } catch (error) {
         console.error(error);
         this.frontPages = []; // Return an empty array in case of error
-      }
-    },
-    async loadImages() {
-      try {
-        const apiClient = axios.create({
-          baseURL: '/api',
-        })
-        console.log(this.carouselVal)
-        for (const item of this.carouselVal) {
-          const response = await apiClient.get(`/file/${item}`, {
-            responseType: 'blob'
-          });
-          const blob = new Blob([response.data], {type: 'application/pdf'});
-          const url = URL.createObjectURL(blob);
-          this.$set(this.imageUrls, item, url);
-        }
-      }catch (error) {
-        console.error(error);
       }
     },
     hideDialog() {

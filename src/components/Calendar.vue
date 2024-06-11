@@ -41,8 +41,7 @@ export default defineComponent({
     columns: [Number],
     monthNav: [String],
     monthMask: [Object],
-    batchType:[String],
-    newspaperName:[String]
+    batchType:[String]
   },
   data() {
     return {
@@ -51,8 +50,7 @@ export default defineComponent({
       yearPickerInputStyle: {'text-align': 'center', 'font-size': 'larger', 'font-weight': 'bold'},
       calendarAttr:ref([{}]),
       newspaperName: this.$route.params.newspapername,
-      newspaperId: '',
-      batchid: ''
+      batchid: '',
     }
   },
   methods: {
