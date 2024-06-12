@@ -22,7 +22,7 @@ export default defineComponent({
 .input {
   width: 100%;
   border: 1px solid teal;
-  padding: 10px 15px;
-  margin-top: 15px;
+  padding: 2px 3px;
+  margin-top: 3px;
 }
 </style>

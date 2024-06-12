@@ -2,25 +2,32 @@
   <Carousel ref="carousel" v-model="currentSlide" snapAlign="start">
     <Slide v-for="(item, index) in carouselVal" :key="index" class="carousel__slide">
       <div class="carousel__item">
-        <iframe :src=getImage(item) alt="carousel-image"/>
+        <div class="pdf-content">
+          <template v-if="isLoading"> Loading...</template>
+          <template v-else>
+            <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef"
+                           :page="page"></vue-pdf-embed>
+          </template>
+        </div>
       </div>
     </Slide>
 
     <template #addons>
-      <Navigation />
+      <Navigation/>
     </template>
   </Carousel>
 
   <div>
     <button @click="prev">Prev</button>
-      <input type="number" min="0" max="9" v-model="currentSlide" />
+    <input type="number" min="0" max="9" v-model="currentSlide"/>
     <button @click="next">Next</button>
   </div>
 </template>
 
 <script>
-import {defineComponent, ref} from 'vue'
-import { Carousel, Navigation, Slide } from 'vue3-carousel'
+import {defineComponent} from 'vue'
+import VuePdfEmbed from "vue-pdf-embed"
+import {Carousel, Navigation, Slide} from 'vue3-carousel'
 
 import 'vue3-carousel/dist/carousel.css'
 import axios from "axios";
@@ -31,6 +38,7 @@ export default defineComponent({
     Carousel,
     Slide,
     Navigation,
+    VuePdfEmbed
   },
   props: {
     carouselVal: {
@@ -40,44 +48,54 @@ export default defineComponent({
   },
   data() {
     return {
+      isLoading: true,
       currentSlide: 0,
+      page: 1,
       imageUrls: {} // Object to store image URLs
-  }
-  },
-  mounted() {
-    console.log(this.carouselVal)
-    this.loadImages();
+    }
   },
   watch: {
-  carouselVal: {
-    immediate: true,
-        handler() {
-      this.loadImages();
+    carouselVal: {
+      immediate: true,
+      handler() {
+        this.loadImages().then(() => {
+          this.isLoading = false;
+        }).catch((error) => {
+              this.isLoading = false;
+            });
+      }
     }
-  }
-},
+  },
   methods: {
+    handleDocumentRender(args) {
+      console.log(args)
+      this.isLoading = false
+    },
     async loadImages() {
       try {
         const apiClient = axios.create({
           baseURL: '/api',
         })
         for (const item of this.carouselVal) {
-          const api_url = apiClient.defaults.baseURL + `/file/${item}`;
-          console.log(encodeURIComponent(item)); // Logg URL-en til API-forespørselen
+          console.log(encodeURIComponent(item)); // Log the URL for the API request
           const encoded_item = encodeURIComponent(item);
-          const response = await apiClient.get(`/file/${encoded_item}`, {
-            responseType: 'blob'
-          });
-          const blob = new Blob([response.data], {type: 'application/pdf'});
-          const url = URL.createObjectURL(blob);
-          this.$set(this.imageUrls, item, url);
+          try {
+            const response = await apiClient.get(`/file/${encoded_item}`, {
+              responseType: 'blob'
+            });
+            const blob = new Blob([response.data], {type: 'application/pdf'});
+            const url = URL.createObjectURL(blob);
+            this.imageUrls = {...this.imageUrls, [item]: url}; // Use spread operator and index signature
+          } catch (error) {
+            console.error(error); // Log any errors that occur during the API request
+          }
         }
-      }catch (error) {
-          console.error(error);
-        }
-      },
+      } catch (error) {
+        console.error(error);
+      }
+    },
     getImage(item) {
+      console.log(item);
       return this.imageUrls[item];
     },
     next() {
@@ -92,9 +110,9 @@ export default defineComponent({
 
 <style>
 .carousel__item {
-  height: 900px;
-  width: 100%;
-  background-color:  #42b983;
+  height: 1100px;
+  width: 900px;
+  background-color: #42b983;
   color: var(--vc-clr-white);
   font-size: 20px;
   border-radius: 8px;
@@ -106,9 +124,25 @@ export default defineComponent({
 .carousel__slide {
   padding: 10px;
 }
+
+.pdf-header {
+  padding: 20px;
+  box-shadow: 0 2px 8px 4px rgba(0, 0, 0, 0.1);
+  background-color: #555;
+  color: #ddd;
+  margin: 10px;
+}
+
+.pdf-content {
+  padding: 24px 16px;
+  width: 100%;
+  height: 100%;
+}
+
 .carousel__pagination {
   width: fit-content
 }
+
 .carousel__prev,
 .carousel__next {
   box-sizing: content-box;

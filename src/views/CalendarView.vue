@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <h1 v-text="newspaper"></h1>
-    <Calendar :isYear="false" :rows="3" :columns="4" :monthNav="null" :monthMask="{title:'MMMM'}" :newspaperName="newspaper"
+    <Calendar :isYear="true" :rows="3" :columns="4" :monthNav="null" :monthMask="{title:'MMMM'}" :newspaperName="newspaper"
               :expanded="false" :batch-type="batchtype">
     </Calendar>
 
