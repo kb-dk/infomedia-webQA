@@ -14,9 +14,9 @@ import {useRoute} from "vue-router";
 import axios from "axios";
 export default defineComponent({
   name: 'CalendarView',
-  watch:{
-    '$route'(to,from){
-      this.newspaper = to.params.newspapername
+  watch: {
+    '$route'(to, from) {
+      this.newspaper = to.params.newspaperName
      }
   },
   components: {
@@ -24,7 +24,7 @@ export default defineComponent({
   },
     data(){
     return{
-      newspaper: this.$route.params.newspapername
+      newspaper: this.$route.params.newspaperName
     }
   },
   methods:{
