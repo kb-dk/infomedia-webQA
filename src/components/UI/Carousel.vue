@@ -1,12 +1,12 @@
 <template>
-  <Carousel ref="carousel" v-model="currentSlide" snapAlign="start">
+  <Carousel ref="carousel" v-model="currentSlide" :items-to-show="2" :wrap-around="true">
     <Slide v-for="(item, index) in carouselVal" :key="index" class="carousel__slide">
       <div class="carousel__item">
         <div class="pdf-content">
           <template v-if="isLoading"> Loading...</template>
           <template v-else>
             <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef"
-                           :page="page" :height="900" :width="700"></vue-pdf-embed>
+                           :page="page" :height="780" :width="580"></vue-pdf-embed>
           </template>
         </div>
       </div>
@@ -17,11 +17,11 @@
     </template>
   </Carousel>
 
-  <div>
-    <button @click="prev">Prev</button>
-    <input  type="number" min="0" max="9" v-model="currentSlide" class="carousel-input"/>
-    <button @click="next">Next</button>
-  </div>
+<!--  <div>-->
+<!--    <button @click="prev">Prev</button>-->
+<!--      <input  type="number" min="0" max="9" v-model="currentSlide" class="carousel-input"/>-->
+<!--    <button @click="next">Next</button>-->
+<!--  </div>-->
 </template>
 
 <script>
@@ -49,7 +49,7 @@ export default defineComponent({
   data() {
     return {
       isLoading: true,
-      currentSlide: 0,
+      currentSlide: 1,
       page: 1,
       imageUrls: {} // Object to store image URLs
     }
@@ -106,12 +106,12 @@ export default defineComponent({
     },
   },
 })
-</script>
+</script>s
 
 <style>
 .carousel__item {
-  height: 960px;
-  width: 100%;
+  height: 800px;
+  width:630px;
   background-color: #42b983;
   color: var(--vc-clr-white);
   font-size: 20px;

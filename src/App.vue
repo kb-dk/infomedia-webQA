@@ -1,4 +1,5 @@
 <template>
+  <div style="padding:15px;">
   <b-row>
     <nav>
       <router-link to="/">Home</router-link> |
@@ -15,13 +16,11 @@
       <b-button @click="showMagazine=!showMagazine">{{showMagazine ? "Hide":"Show Magazine"}}</b-button>
       <NewspaperTable :newspapers="getNewspaperNames('magasiner')" headerName="Magazines" :show="showMagazine"/>
     </b-col>
-    <b-col sm="8">
+    <b-col sm="10">
       <router-view/>
     </b-col>
-
   </b-row>
-
-
+  </div>
 </template>
 <script>
 import NewspaperTable from "@/components/NewspaperTable";
