@@ -6,7 +6,7 @@
           <template v-if="isLoading"> Loading...</template>
           <template v-else>
             <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef"
-                           :page="page" :height="800" :width="600"></vue-pdf-embed>
+                           :page="page" :height="780" :width="580"></vue-pdf-embed>
           </template>
         </div>
       </div>
@@ -16,12 +16,6 @@
       <Navigation/>
     </template>
   </Carousel>
-
-<!--  <div>-->
-<!--    <button @click="prev">Prev</button>-->
-<!--      <input  type="number" min="0" max="9" v-model="currentSlide" class="carousel-input"/>-->
-<!--    <button @click="next">Next</button>-->
-<!--  </div>-->
 </template>
 
 <script>
@@ -103,12 +97,9 @@ export default defineComponent({
 </script>s
 
 <style>
-.carousel {
-
-}
 .carousel__item {
-  height: 820px;
-  width: 650px;
+  height: 800px;
+  width:630px;
   background-color: #42b983;
   color: var(--vc-clr-white);
   font-size: 20px;
@@ -121,36 +112,11 @@ export default defineComponent({
 .carousel__slide {
   padding: 5px;
 }
-.carousel-input {
-  width: 60px;
-  border: 1px solid teal;
-  padding: 2px 3px;
-  margin-top: 3px;
-  text-align: center;
-}
-
-.pdf-header {
-  padding: 20px;
-  box-shadow: 0 2px 8px 4px rgba(0, 0, 0, 0.1);
-  background-color: #555;
-  color: #ddd;
-  margin: 10px;
-}
 
 .pdf-content {
   padding: 20px 15px;
   width: 100%;
   height: 100%;
-  align-items: center;
 }
 
-.carousel__pagination {
-  width: fit-content
-}
-
-.carousel__prev,
-.carousel__next {
-  box-sizing: content-box;
-  border: 5px solid white;
-}
 </style>
