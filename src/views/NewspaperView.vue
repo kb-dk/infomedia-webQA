@@ -15,7 +15,7 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col sm="8" style="width:82%">
+      <b-col sm="10">
         <im-carousel :carouselVal="frontPages"></im-carousel>
         <!--      <im-pdf-viewer :pdf-val="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>

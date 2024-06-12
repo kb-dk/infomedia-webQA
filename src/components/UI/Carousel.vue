@@ -1,12 +1,12 @@
 <template>
-  <Carousel ref="carousel" v-model="currentSlide" :items-to-show="2" :wrap-around="true">
+  <Carousel v-model="currentSlide" :items-to-show="2" :wrap-around="true">
     <Slide v-for="(item, index) in carouselVal" :key="index" class="carousel__slide">
       <div class="carousel__item">
-        <div class="pdf-content">
+        <div>
           <template v-if="isLoading"> Loading...</template>
           <template v-else>
             <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef"
-                           :page="page" :height="780" :width="580"></vue-pdf-embed>
+                           :page="page" :height="800" :width="600"></vue-pdf-embed>
           </template>
         </div>
       </div>
@@ -98,20 +98,17 @@ export default defineComponent({
       console.log(item);
       return this.imageUrls[item];
     },
-    next() {
-      this.$refs.carousel.next()
-    },
-    prev() {
-      this.$refs.carousel.prev()
-    },
   },
 })
 </script>s
 
 <style>
+.carousel {
+
+}
 .carousel__item {
-  height: 800px;
-  width:630px;
+  height: 820px;
+  width: 650px;
   background-color: #42b983;
   color: var(--vc-clr-white);
   font-size: 20px;
@@ -122,7 +119,7 @@ export default defineComponent({
 }
 
 .carousel__slide {
-  padding: 10px;
+  padding: 5px;
 }
 .carousel-input {
   width: 60px;
@@ -144,6 +141,7 @@ export default defineComponent({
   padding: 20px 15px;
   width: 100%;
   height: 100%;
+  align-items: center;
 }
 
 .carousel__pagination {
