@@ -37,6 +37,7 @@ import axios from "axios";
 export default defineComponent({
   name: "NewspaperView",
   expose: ["pdf"],
+
   setup() {
     const urlParams = useRoute().params;
     const allBatches = async () => {

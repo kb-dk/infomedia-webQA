@@ -27,7 +27,6 @@ import axios from "axios";
 // import 'v-calendar/style.css';
 import "primevue/resources/themes/lara-light-indigo/theme.css";
 import 'v-calendar/style.css'
-import {useRoute} from "vue-router";
 // import "src/style/stylesheet.scss";
 
 export default defineComponent({
@@ -87,10 +86,8 @@ export default defineComponent({
           }
 
         },
-        calendarDayClicked(calendarData, event) {
+    calendarDayClicked(calendarData, event) {
           if (this.isYear) {
-            console.log(calendarData)
-            console.log(event)
             this.$router.push({
               name: "newspaper-view",
               params: {
@@ -103,7 +100,6 @@ export default defineComponent({
             })
           } else {
             event.stopPropagation()
-            // console.log(calendarData)
             this.$parent.showBatchInfo(calendarData)
           }
 
