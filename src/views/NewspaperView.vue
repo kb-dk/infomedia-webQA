@@ -1,22 +1,28 @@
 <template>
   <div class="app">
     <b-row>
-      <!--<im-dialog v-model:show="dialogVisible"></im-dialog>-->
-    <b-col><notes-form :postsTitel="dayNotes"></notes-form></b-col>
-      <b-col><notes-form :postsTitel="editionNotes"></notes-form></b-col>
-        <b-col><notes-form :postsTitel="sectionNotes"></notes-form></b-col>
-          <b-col><notes-form :postsTitel="pageNotes"></notes-form></b-col>
-  </b-row>
-  <b-row>
-    <b-col sm="8">
-<im-carousel :carouselVal="frontPages"></im-carousel>
-      <!--      <im-pdf-viewer :pdf-val="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>-->
-    </b-col>
-    <b-col sm="2">
-      <PageTable :rowClick="switchPage"></PageTable>
-    </b-col>
-  </b-row>
-  <!--    <NotesForm></NotesForm>-->
+      <b-col>
+        <notes-form :postsTitel="dayNotes"></notes-form>
+      </b-col>
+      <b-col>
+        <notes-form :postsTitel="editionNotes"></notes-form>
+      </b-col>
+      <b-col>
+        <notes-form :postsTitel="sectionNotes"></notes-form>
+      </b-col>
+      <b-col>
+        <notes-form :postsTitel="pageNotes"></notes-form>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col sm="8">
+        <im-carousel :carouselVal="frontPages"></im-carousel>
+        <!--      <im-pdf-viewer :pdf-val="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>-->
+      </b-col>
+      <b-col sm="2">
+        <PageTable :rowClick="switchPage"></PageTable>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
@@ -31,20 +37,21 @@ import axios from "axios";
 export default defineComponent({
   name: "NewspaperView",
   expose: ["pdf"],
-  setup(){
-      const urlParams = useRoute().params;
-    const test = axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`).then((res) =>{
-      console.log(res.data[0])
-      const newspapers = axios.get(`/api/batches/${res.data[0].id}/newspapers`).then((res) =>{
-        console.log(res.data)
-        return res.data
-      })
-      return newspapers
-    })
-    return {
-      allBatches : async ()=>{return await axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`)},
-      test,
-      urlParams};
+  setup() {
+    const urlParams = useRoute().params;
+    const allBatches = async () => {
+      const res = await axios.get(
+          `/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`
+      );
+      console.log(res.data[0]);
+      const newspapers = await axios.get(
+          `/api/batches/${res.data[0].id}/newspapers`
+      );
+      console.log(newspapers.data);
+      return newspapers.data;
+    };
+
+    return {allBatches, urlParams};
   },
   data() {
     return {
@@ -54,11 +61,7 @@ export default defineComponent({
       sectionNotes: "Section notes",
       pageNotes: "Page notes",
       checkboxText: "Show all pages",
-      pdfCurrentIndex: ref(0),
       frontPages: [],
-      newspapersId: '',
-      batchId: '',
-      errorMessage: '',
     }
   },
   components: {
@@ -72,19 +75,19 @@ export default defineComponent({
     async fetchCarouselData() {
       try {
         const apiClient = axios.create({
-          baseURL: '/api',
-        })
+          baseURL: "/api",
+        });
         const urlParams = useRoute().params;
 
-        const response = await apiClient.get(`/batches/${urlParams.batchid}/newspapers/${urlParams.newspaperid}/newspaper-pages`);
-        const frontPagePaths = response.data
-            .filter(d => d.page_number === 1);
-        this.frontPages = frontPagePaths
-            .map(d => {
-              const filePathParts = d.filepath.split('/');
-              return filePathParts[filePathParts.length - 1];
-            });
-        console.log(this.frontPages );
+        const response = await apiClient.get(
+            `/batches/${urlParams.batchid}/newspapers/${urlParams.newspaperid}/newspaper-pages`
+        );
+        const frontPagePaths = response.data.filter((d) => d.page_number === 1);
+        this.frontPages = frontPagePaths.map((d) => {
+          const filePathParts = d.filepath.split("/");
+          return filePathParts[filePathParts.length - 1];
+        });
+        console.log(this.frontPages);
       } catch (error) {
         console.error(error);
         this.frontPages = []; // Return an empty array in case of error
@@ -93,25 +96,7 @@ export default defineComponent({
     hideDialog() {
       this.dialogVisible = true;
     },
-    switchPage(source) {
-      // console.log(this)
-      this.pdfCurrent = source
-    },
-
-    // async allBatches() {
-    //   return await axios.get(`/api/batches?day=${this.urlParams.day}&month=${this.urlParams.month}&year=${this.urlParams.year}`)
-    //   // return axios.get(url);
-    // },
-    // async allPages(){
-    //   const latestBatch = this.allBatches()
-    //
-    // },
-    getPage(index = 0) {
-      this.pdfCurrent = index;
-      //return this.pdfAllPages[0]
-      return ""
-    },
-    getFrontPages(){
+    getFrontPages() {
       return this.frontPages
     }
   }

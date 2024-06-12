@@ -6,7 +6,7 @@
           <template v-if="isLoading"> Loading...</template>
           <template v-else>
             <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef"
-                           :page="page"></vue-pdf-embed>
+                           :page="page" :height="900" :width="700"></vue-pdf-embed>
           </template>
         </div>
       </div>
@@ -19,7 +19,7 @@
 
   <div>
     <button @click="prev">Prev</button>
-    <input type="number" min="0" max="9" v-model="currentSlide"/>
+    <input  type="number" min="0" max="9" v-model="currentSlide" class="carousel-input"/>
     <button @click="next">Next</button>
   </div>
 </template>
@@ -110,8 +110,8 @@ export default defineComponent({
 
 <style>
 .carousel__item {
-  height: 1100px;
-  width: 900px;
+  height: 960px;
+  width: 100%;
   background-color: #42b983;
   color: var(--vc-clr-white);
   font-size: 20px;
@@ -124,6 +124,13 @@ export default defineComponent({
 .carousel__slide {
   padding: 10px;
 }
+.carousel-input {
+  width: 60px;
+  border: 1px solid teal;
+  padding: 2px 3px;
+  margin-top: 3px;
+  text-align: center;
+}
 
 .pdf-header {
   padding: 20px;
@@ -134,7 +141,7 @@ export default defineComponent({
 }
 
 .pdf-content {
-  padding: 24px 16px;
+  padding: 20px 15px;
   width: 100%;
   height: 100%;
 }
