@@ -1,5 +1,11 @@
 <template>
-  <div style="padding:20px;">
+  <div style="padding:15px;">
+  <b-row>
+    <nav>
+      <router-link to="/">Home</router-link> |
+      <router-link to="/technical">Technical QA</router-link>
+    </nav>
+  </b-row>
   <b-row>
     <b-col sm="2">
       <NewspaperTable :newspapers="getNewspaperNames('dagsaviser')" headerName="Newspapers" :show="true"/>
@@ -11,10 +17,6 @@
       <NewspaperTable :newspapers="getNewspaperNames('magasiner')" headerName="Magazines" :show="showMagazine"/>
     </b-col>
     <b-col sm="10">
-      <nav>
-        <router-link to="/">Home</router-link> |
-        <router-link to="/technical">Technical QA</router-link>
-      </nav>
       <router-view/>
     </b-col>
   </b-row>

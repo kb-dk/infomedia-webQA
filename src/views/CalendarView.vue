@@ -29,14 +29,16 @@ export default defineComponent({
       newspaper: this.$route.params.newspaperName,
       batchtype: "dagsaviser"
     }
+
   },
   methods:{
+
   }
+
 });
 
+
+
+// const attributes = ref(result)
+// import "src/style/stylesheet.scss";
 </script>
-<style>
-.home {
-  align-items: center;
-}
-</style>

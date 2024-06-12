@@ -13,7 +13,7 @@
         <im-button :disabled="page >= pageCount" @click="addOnePage" style="padding: 0px 6px">❯</im-button>
       </span>
       <im-checkbox :text="checkboxText" v-model="showAllPages" style="float: right"/>-->
-    <div class="vue-pdf-embed">
+    <div class="pdf-content">
       <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef" :page="page"></vue-pdf-embed>
     </div>
     </div>
@@ -108,6 +108,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.vue-pdf-embed {
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px 4px rgba(0, 0, 0, 0.1);
+}
+
 .pdf-header {
   padding: 20px;
   box-shadow: 0 2px 8px 4px rgba(0, 0, 0, 0.1);
@@ -116,7 +121,7 @@ export default defineComponent({
   margin:10px;
 }
 
-.vue-pdf-embed {
+.pdf-content {
   padding: 24px 16px;
 }
 

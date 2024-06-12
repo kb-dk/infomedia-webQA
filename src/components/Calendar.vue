@@ -47,6 +47,7 @@ export default defineComponent({
       },
       data() {
         return {
+
           currentYear: 2023,
           date: ref(new Date()),
           yearPickerInputStyle: {'text-align': 'center', 'font-size': 'larger', 'font-weight': 'bold'},
@@ -171,6 +172,8 @@ export default defineComponent({
         }
 
       }
+
+
     }
 )
 
