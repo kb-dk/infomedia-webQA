@@ -75,14 +75,14 @@ export default defineComponent({
     filterTest(items) {
       console.log(items)
     },
-    async getNewspaperNames() {
-      const {data} = await axios.get(`/api/newspapers/${'dagsaviser'}`);
-      if (data) {
-        console.log(data)
-        this.isBusy = false;
-      }
-      return data;
-    }
+    // async getNewspaperNames() {
+    //   const {data} = await axios.get(`/api/newspapers/${'dagsaviser'}`);
+    //   if (data) {
+    //     console.log(data)
+    //     this.isBusy = false;
+    //   }
+    //   return data;
+    // }
   }
 })
 </script>

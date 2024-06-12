@@ -18,7 +18,7 @@ export default defineComponent({
   name: 'CalendarView',
   watch:{
     '$route'(to,from){
-      this.newspaper = to.params.newspaperid
+      this.newspaper = to.params.newspapername
      }
   },
   components: {
