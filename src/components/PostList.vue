@@ -1,8 +1,8 @@
 <template>
   <div v-if="posts.length > 0">
-  <div></div>
-  <post-item v-for="post in posts" :key="post.id" :post="post" @remove="$emit('remove', post)">
-  </post-item>
+    <div></div>
+    <post-item v-for="(post,index) in posts" :key="post" :post="post.note" @remove="$emit('remove', post,index)">
+    </post-item>
   </div>
 </template>
 

@@ -30,24 +30,7 @@ import axios from "axios";
 export default defineComponent({
   name: "NewspaperView",
   expose: ["pdf"],
-  setup() {
-    // const urlParams = useRoute().params;
-    // axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`).then((res) =>{
-    //   console.log(res.data[0])
-    //   this.batch = res.data[0];
-    // })
-    //   axios.get(`/api/batches/${this.batch.id}/newspapers`).then((res) => {
-    //     console.log(res.data)
-    //     this.newspapers = res.data;
-    //   })
-    //   axios.get(`/api/batches/${this.batch.id}/newspapers/${urlParams.newspaperid}/newspaper-pages`).then((res) =>{
-    //         console.log(res.data)
-    //         this.frontPages = res.data[0]
-    // })
-    // return {
-    //   allBatches : async ()=>{return await axios.get(`/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`)},
-    //   urlParams};
-  },
+
   data() {
     return {
       dialogVisible: false,
