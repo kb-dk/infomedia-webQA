@@ -25,7 +25,6 @@ export default defineComponent({
     batch: [Object],
     postsTitel: [String, Number],
     notesType: Number as PropType<NotesType>,
-
     newspaper: [Object]
   },
   data() {

@@ -2,16 +2,16 @@
   <div class="app">
     <b-row>
       <b-col>
-        <notes-form :postsTitel="dayNotes"></notes-form>
+        <notes-form :postsTitel="dayNotes" :batch="this.batchid" :notes-type="NotesType.BATCHNOTE"></notes-form>
       </b-col>
       <b-col>
-        <notes-form :postsTitel="editionNotes"></notes-form>
+        <notes-form :postsTitel="editionNotes" :batch="this.batchid" :notes-type="NotesType.EDITIONNOTE"></notes-form>
       </b-col>
       <b-col>
-        <notes-form :postsTitel="sectionNotes"></notes-form>
+        <notes-form :postsTitel="sectionNotes" :batch="this.batchid" :notes-type="NotesType.SECTIONNOTE"></notes-form>
       </b-col>
       <b-col>
-        <notes-form :postsTitel="pageNotes"></notes-form>
+        <notes-form :postsTitel="pageNotes" :batch="this.batchid" :notes-type="NotesType.PAGENOTE"></notes-form>
       </b-col>
     </b-row>
     <b-row>
@@ -33,9 +33,15 @@ import NotesForm from "@/components/NotesForm.vue";
 import PageTable from "@/components/PageTable";
 import {useRoute} from "vue-router";
 import axios from "axios";
+import {NotesType} from "@/enums/NotesType";
 
 export default defineComponent({
   name: "NewspaperView",
+  computed: {
+    NotesType() {
+      return NotesType
+    }
+  },
   expose: ["pdf"],
 
   setup() {
@@ -63,6 +69,7 @@ export default defineComponent({
       pageNotes: "Page notes",
       checkboxText: "Show all pages",
       frontPages: [],
+      batchid: this.$route.params.batchid,
     }
   },
   components: {

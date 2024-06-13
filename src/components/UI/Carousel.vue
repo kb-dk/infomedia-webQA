@@ -43,7 +43,7 @@ export default defineComponent({
   data() {
     return {
       isLoading: true,
-      currentSlide: 1,
+      currentSlide: 0,
       page: 1,
       imageUrls: {} // Object to store image URLs
     }
