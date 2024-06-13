@@ -17,7 +17,7 @@ export default defineComponent({
 
 <style scoped>
 .im-button {
-  padding: 10px 15px;
+  padding: 2px 3px;
   background: none;
   color: teal;
   border: 1px solid teal;
