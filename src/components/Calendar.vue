@@ -50,7 +50,7 @@ export default defineComponent({
           currentYear: 2023,
           date: ref(new Date()),
           yearPickerInputStyle: {'text-align': 'center', 'font-size': 'larger', 'font-weight': 'bold'},
-          calendarAttr: ref([{}])
+      calendarAttr:ref([{}])
         }
       },
       watch: {
@@ -87,10 +87,8 @@ export default defineComponent({
           }
 
         },
-        calendarDayClicked(calendarData, event) {
+    calendarDayClicked(calendarData, event) {
           if (this.isYear) {
-            console.log(calendarData)
-            console.log(event)
             this.$router.push({
               name: "newspaper-view",
               params: {
@@ -103,7 +101,6 @@ export default defineComponent({
             })
           } else {
             event.stopPropagation()
-            // console.log(calendarData)
             this.$parent.showBatchInfo(calendarData)
           }
 
