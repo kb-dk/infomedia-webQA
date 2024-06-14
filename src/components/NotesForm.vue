@@ -1,5 +1,5 @@
 <template>
-  <p v-if="errorMessage.length > 0" style="color: red">{{errorMessage}}</p>
+  <p v-if="errorMessage.toString().length> 0" style="color: red">{{errorMessage}}</p>
   <form @submit.prevent>
     <div class="form">
       <div class="header">
@@ -22,6 +22,7 @@ import {data} from "v-calendar/dist/types/tests/unit/util/dayData";
 
 export default defineComponent({
   name:"NotesForm",
+
   props: {
     batch: [Object],
     postsTitel: [String, Number],

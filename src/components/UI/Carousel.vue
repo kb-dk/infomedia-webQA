@@ -28,6 +28,7 @@ import axios from "axios";
 
 export default defineComponent({
   name: 'im-carousel',
+  emits: ['currentFilename'],
   components: {
     Carousel,
     Slide,
