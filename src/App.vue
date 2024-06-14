@@ -2,6 +2,7 @@
   <div style="padding:20px;">
   <b-row>
     <b-col sm="2">
+      <p v-if="errorMessage.length > 0" style="color: red">{{errorMessage}}</p>
       <NewspaperTable :newspapers="getNewspaperNames('dagsaviser')" headerName="Newspapers" :show="true"/>
       <br/>
       <b-button @click="showWeekly=!showWeekly">{{showWeekly ? "Hide":"Show Weekly"}}</b-button>
@@ -32,12 +33,19 @@ import {ref} from "vue";
       return{
         showWeekly:ref(false),
         showMagazine:ref(false),
+        errorMessage:ref("")
       }
     },
     methods:{
       async getNewspaperNames(newspaperType){
-        const {data} = await axios.get(`/api/newspapers/${newspaperType}`);
-        return data;
+        try{
+          const {data} = await axios.get(`/api/newspapers/${newspaperType}`);
+          return data;
+        }catch (error){
+          console.log(error);
+          this.errorMessage = "Unable to load newspaper names";
+        }
+
       }
     },
   }
