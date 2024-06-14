@@ -16,7 +16,7 @@
       </div>
       <div>
         <im-button
-            style="align-self: flex-end; margin-top: 15px"
+            style="align-self: flex-end; margin-top: 3px"
             @click="createOnePost"
         >
           Gem
@@ -70,14 +70,14 @@ export default defineComponent({
 }
 
 .post__input {
-  padding: 10px;
+  padding: 2px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .post__select {
-  padding: 10px;
+  padding: 2px;
   display: flex;
 }
 

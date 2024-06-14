@@ -2,7 +2,7 @@
   <form @submit.prevent>
     <div class="form">
       <div class="header">
-        <h4>{{ postsTitel }}</h4>
+        <h6>{{ postsTitel }}</h6>
       </div>
       <post-form @create="createPost">
       </post-form>
@@ -25,7 +25,6 @@ export default defineComponent({
     batch: [Object],
     postsTitel: [String, Number],
     notesType: Number as PropType<NotesType>,
-
     newspaper: [Object]
   },
   data() {
@@ -116,14 +115,14 @@ export default defineComponent({
 
 <style scoped>
 .form {
-  padding: 10px;
+  padding: 2px;
   border: 2px solid teal;
-  margin-top: 10px;
+  margin-top: 2px;
 }
 
 .header {
   text-align: left;
-  padding: 10px;
+  padding: 2px;
 }
 
 </style>

@@ -9,16 +9,14 @@
 
 <script lang="ts">
 import { defineComponent,ref } from 'vue';
-// import Calendar from '@/components/Calendar.vue'// @ is an alias to /src
 import Calendar from '@/components/Calendar.vue'
 import {useRoute} from "vue-router";
 import axios from "axios";
-// @ is an alias to /src
 export default defineComponent({
   name: 'CalendarView',
-  watch:{
-    '$route'(to,from){
-      this.newspaper = to.params.newspapername
+  watch: {
+    '$route'(to, from) {
+      this.newspaper = to.params.newspaperName
      }
   },
   components: {
@@ -26,18 +24,16 @@ export default defineComponent({
   },
     data(){
     return{
-      newspaper: this.$route.params.newspapername
+      newspaper: this.$route.params.newspaperName
     }
-
   },
   methods:{
-
   }
-
 });
 
-
-
-// const attributes = ref(result)
-// import "src/style/stylesheet.scss";
 </script>
+<style>
+.home {
+  align-items: center;
+}
+</style>
