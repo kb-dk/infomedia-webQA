@@ -1,5 +1,6 @@
 <template>
   <div class="calendar">
+    <p v-if="errorMessage.length > 0" style="color:red">{{errorMessage}}</p>
     <YearPicker v-if="isYear" :inputStyle="yearPickerInputStyle" ref="yearPicker" inputId="yearPickerInput"
                 @date-select="yearSelect" id v-model="date" view="year" dateFormat="yy" class="yearPicker">
     </YearPicker>
@@ -49,7 +50,8 @@ export default defineComponent({
           currentYear: 2023,
           date: ref(new Date()),
           yearPickerInputStyle: {'text-align': 'center', 'font-size': 'larger', 'font-weight': 'bold'},
-          calendarAttr: ref([{}])
+          calendarAttr: ref([{}]),
+          errorMessage: ref("")
         }
       },
       watch: {
@@ -57,7 +59,7 @@ export default defineComponent({
           this.calendarAttr = [{}]
           this.batchesForMonth();
         },
-        newspaperName(newVal){
+        newspaperName(newVal) {
           this.calendarAttr[{}];
           this.batchesForYear();
         }
@@ -86,49 +88,57 @@ export default defineComponent({
           }
 
         },
-    calendarDayClicked(calendarData, event) {
-          if (this.isYear) {
-            this.$router.push({
-              name: "newspaper-view",
-              params: {
-                batchid: calendarData.attributes[0].batch.id,
-                newspaperid: calendarData.attributes[0].newspaper.id,
-                year: calendarData.year,
-                month: calendarData.month,
-                day: calendarData.day
-              }
-            })
-          } else {
-            event.stopPropagation()
-            this.$parent.showBatchInfo(calendarData)
-          }
+        calendarDayClicked(calendarData, event) {
 
+          if (calendarData.attributes.length > 0) {
+            if (this.isYear) {
+              this.$router.push({
+                name: "newspaper-view",
+                params: {
+                  batchid: calendarData.attributes[0].batch.id,
+                  newspaperid: calendarData.attributes[0].newspaper.id,
+                  year: calendarData.year,
+                  month: calendarData.month,
+                  day: calendarData.day
+                }
+              })
+            } else {
+              event.stopPropagation()
+              this.$parent.showBatchInfo(calendarData)
+            }
+          }
         },
         async batchesForMonth() {
           let res = [];
-          const apiClient = axios.create({
-            baseURL: '/api',
-          })
-          const {data} = await apiClient.get(`/batches?month=${this.date.getMonth() + 1}&year=${this.date.getFullYear()}&batch_type=${this.batchType}&get_latest=true`)
-          res = data
+          try {
+            const apiClient = axios.create({
+              baseURL: '/api',
+            })
+            const {data} = await apiClient.get(`/batches?month=${this.date.getMonth() + 1}&year=${this.date.getFullYear()}&batch_type=${this.batchType}&get_latest=true`)
+            res = data
 
-          if (res.length > 0) {
-            for (let i = 0; i < res.length; i++) {
-              const {data} = await apiClient.get(`/batches/${res[i].id}/has_problems`);
-              res[i] = {
-                highlight: {
-                  color: data ? 'red' : 'teal',
-                  fillMode: this.pickFillMode(res[i].state)
-                },
-                dates: new Date(res[i].date),
-                popover: null,
-                datePicker: null,
-                batch: res[i]
+            if (res.length > 0) {
+              for (let i = 0; i < res.length; i++) {
+                const {data} = await apiClient.get(`/batches/${res[i].id}/has_problems`);
+                res[i] = {
+                  highlight: {
+                    color: data ? 'red' : 'teal',
+                    fillMode: this.pickFillMode(res[i].state)
+                  },
+                  dates: new Date(res[i].date),
+                  popover: null,
+                  datePicker: null,
+                  batch: res[i]
 
+                }
               }
+              this.calendarAttr = res
             }
-            this.calendarAttr = res
+          } catch (error) {
+            console.log(error)
+            this.errorMessage = "Unable to load batches";
           }
+
         },
         updateBatchState(batchName, newState) {
           for (let i = 0; i < this.calendarAttr.length; i++) {
@@ -143,28 +153,34 @@ export default defineComponent({
         },
         async batchesForYear() {
           let res = [];
-          const {data} = await axios.get(`/api/batches?state=TechnicalInspectionComplete&year=${this.date.getFullYear()}&newspaper_name=${this.newspaperName}&get_latest=true`);
-          res = data;
-          for (let i = 0; i < res.length; i++) {
-            const newspapers = (await axios.get(`/api/batches/${res[i].id}/newspapers?newspaper_name=${this.newspaperName}`)).data
-            for(let j = 0; j < newspapers.length; j++) {
-              res[i] = {
-                highlight: {
-                  color: 'teal',
-                  fillMode: newspapers[j].checked?'light':'solid'
-                },
-                dates: new Date(res[i].date),
-                popover: null,
-                datePicker: null,
-                batch: res[i],
-                newspaper: newspapers[j]
+          try {
+            const {data} = await axios.get(`/api/batches?state=TechnicalInspectionComplete&year=${this.date.getFullYear()}&newspaper_name=${this.newspaperName}&get_latest=true`);
+            res = data;
+            for (let i = 0; i < res.length; i++) {
+              const newspapers = (await axios.get(`/api/batches/${res[i].id}/newspapers?newspaper_name=${this.newspaperName}`)).data
+              for (let j = 0; j < newspapers.length; j++) {
+                res[i] = {
+                  highlight: {
+                    color: 'teal',
+                    fillMode: newspapers[j].checked ? 'light' : 'solid'
+                  },
+                  dates: new Date(res[i].date),
+                  popover: null,
+                  datePicker: null,
+                  batch: res[i],
+                  newspaper: newspapers[j]
 
+                }
               }
             }
-            }
 
-          this.calendarAttr = res;
+            this.calendarAttr = res;
+          } catch (error) {
+            console.log(error);
+            this.errorMessage = "Unable to load batches";
+          }
         }
+
 
       }
     }

@@ -1,4 +1,5 @@
 <template>
+  <p v-if="errorMessage.length > 0" style="color: red">{{errorMessage}}</p>
   <form @submit.prevent>
     <div class="form">
       <div class="header">
@@ -33,6 +34,7 @@ export default defineComponent({
     return {
       posts: ref([]) as Ref<Array<object>>,
       dialogVisible: false,
+      errorMessage: ref("")
     }
   },
   created() {
@@ -50,6 +52,7 @@ export default defineComponent({
   methods: {
     async createPost(post: { id: any; body: any }) {
       if (this.batch) {
+        try{
         let response;
         let url = `/api/batches/${this.batch.id}`;
         switch (this.notesType) {
@@ -82,18 +85,32 @@ export default defineComponent({
           headers: {'Content-Type': 'text/plain'}
         });
         this.posts.push({note:post.body,id:response.data.note_id_created,batch_id:this.batch.id})
-      }
+        }catch (error){
+          console.log(error)
+          this.errorMessage = "Unable to delete a note";
+        }
     },
     removePost(post: { id: any;batch_id:any;},index:number) {
-      axios.delete(`/api/batches/${post.batch_id}/notes-to-batch/${post.id}`);
-      this.posts.splice(index,1)
+      try{
+        axios.delete(`/api/batches/${post.batch_id}/notes-to-batch/${post.id}`);
+        this.posts.splice(index,1)
+    }catch (error){
+      console.log(error)
+      this.errorMessage = "Unable to create a note";
+    }
     },
     hideDialog() {
       this.dialogVisible = true;
     },
     async getNotes() {
-      const {data} = await axios.get(`/api/batches/${this.batch?.id}/notes-to-batch`);
-      return  data;
+      try{
+        const {data} = await axios.get(`/api/bastches/${this.batch?.id}/notes-to-batch`);
+        return  data;
+      }catch (error){
+        this.errorMessage = "Unable to get notes";
+        console.log(error)
+      }
+
     }
   }
 })
