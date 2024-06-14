@@ -19,10 +19,11 @@
       </b-list-group>
 
     </b-list-group>
+    <hr/>
     <b-list-group v-for="(err,index) in asyncErrors.batchProblems" :key="err">
       <b-list-group>
         <b-list-group-item class="errorTypeList" @click="this.switch(index)">
-          {{ err.problemCategory }}
+          {{ err }}
           <b-list-group class="batchInfo"
                         :class="{'batchInfo-is-active': currentIndex===index}">
             <b-list-group-item class="errorMessageList">
@@ -31,16 +32,20 @@
           </b-list-group>
         </b-list-group-item>
       </b-list-group>
-
+    <hr/>
     </b-list-group>
     <b-list-group v-for="(err,index) in asyncErrors.newspaperProblems" :key="err">
       <b-list-group>
         <b-list-group-item class="errorTypeList" @click="this.switch(index)">
-          {{ err.problemCategory }}
-          <b-list-group class="batchInfo"
+          {{ Object.keys(err)[0] }}
+          <b-list-group v-for="(e) in err" :key="e"  class="batchInfo"
                         :class="{'batchInfo-is-active': currentIndex===index}">
             <b-list-group-item class="errorMessageList">
-              {{err.newspaperProblem}}
+              <b-list-group v-for="problem in e.newspaperProblems" :key="problem">
+                <b-list-group-item>
+                  {{problem.problem}}
+                </b-list-group-item>
+              </b-list-group>
             </b-list-group-item>
           </b-list-group>
         </b-list-group-item>
@@ -116,7 +121,7 @@ export default defineComponent({
       let errorMap = {};
       errorMap["newspaperPageProblems"] = {};
       errorMap["batchProblems"] = [];
-      errorMap["newspaperProblems"] = [];
+      errorMap["newspaperProblems"] = {};
 
       const errorList = {newspaperError: [], batchError: []};
       const newspapers = (await axios.get(`/api/batches/${this.batch.id}/newspapers`)).data;
@@ -144,7 +149,10 @@ export default defineComponent({
 
         const newspaperProblems = (await axios.get(`/api/batches/${this.batch.id}/newspapers/${newspapers[i].id}/newspaper_problems`)).data;
         for(let j = 0; j < newspaperProblems.length; j++) {
-          errorMap.newspaperProblems.push({"newspaperProblem": newspaperProblems[j].problem,problemCategory: "newspaperProblem",newspaperName:newspapers[i].newspaper_name});
+          let category = newspaperProblems[j].category
+          errorMap.newspaperProblems = {"newspaperProblemCategory":{}};
+          errorMap.newspaperProblems["newspaperProblemCategory"][category] = {newspaperProblems:[]};
+          errorMap.newspaperProblems["newspaperProblemCategory"][category]["newspaperProblems"].push({"problem": `${newspaperProblems[j].problem} for ${newspapers[j].newspaper_name}`});
         }
 
 
