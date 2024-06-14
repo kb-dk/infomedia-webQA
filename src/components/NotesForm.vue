@@ -1,5 +1,5 @@
 <template>
-  <p v-if="errorMessage.toString().length> 0" style="color: red">{{errorMessage}}</p>
+  <p v-if="errorMessage.toString().length > 0" style="color: red">{{errorMessage}}</p>
   <form @submit.prevent>
     <div class="form">
       <div class="header">
@@ -22,12 +22,13 @@ import {data} from "v-calendar/dist/types/tests/unit/util/dayData";
 
 export default defineComponent({
   name:"NotesForm",
-
   props: {
     batch: [Object],
     postsTitel: [String, Number],
     notesType: Number as PropType<NotesType>,
-    newspaper: [Object]
+    newspaper: [Object],
+    sectiontitle: [String],
+    pagenumber: [Number]
   },
   data() {
     return {
@@ -51,57 +52,42 @@ export default defineComponent({
   methods: {
     async createPost(post: { id: any; body: any }) {
       if (this.batch) {
-        try{
-          let response = {data:{note_id_created:""}};
+        try {
+          let response;
+          let url = `/api/batches/${this.batch.id}`;
           switch (this.notesType) {
             case NotesType.BATCHNOTE:
-              response = await axios({
-                method: "POST",
-                url: `/api/batches/${this.batch.id}/notes-to-batch?username=gui`,
-                data: post.body,
-                headers: {'Content-Type': 'Text'}
-              })
+              url += "/notes-to-batch?username=gui";
               break;
             case NotesType.EDITIONNOTE:
               if (this.newspaper) {
-                response = await axios({
-                  method: "POST",
-                  url: `/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}/notes-to-batch?username=gui`,
-                  data: post.body,
-                  headers: {'Content-Type': 'Text'}
-                })
+                url += `/newspapers/${this.newspaper.id}/notes-to-section?username=gui`;
               }
               break;
             case NotesType.SECTIONNOTE:
-              if (this.newspaper) {
-                //TODO add section to url
-                response = await axios({
-                  method: "POST",
-                  url: `/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}/notes-to-section?username=gui`,
-                  data: post.body,
-                  headers: {'Content-Type': 'Text'}
-                })
+              if (this.newspaper && this.sectiontitle) {
+                url += `/newspapers/${this.newspaper.id}/notes-to-pages?username=gui&section_title=${this.sectiontitle}`;
               }
               break;
             case NotesType.PAGENOTE:
-              if (this.newspaper) {
-                //TODO add section and page_number to url
-                response = await axios({
-                  method: "POST",
-                  url: `/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}/notes-to-pages?username=gui`,
-                  data: post.body,
-                  headers: {'Content-Type': 'Text'}
-                })
+              if (this.newspaper && this.sectiontitle && this.pagenumber) {
+                url += `/newspapers/${this.newspaper.id}/notes-to-pages?username=gui&section_title=${this.sectiontitle}&page_number=${this.pagenumber}`;
               }
               break;
             default:
-              console.log("Incorrect notestype")
+              console.log("Incorrect notestype");
+              return;
           }
-
-          this.posts.push({note:post.body,id:response.data.note_id_created,batch_id:this.batch.id})
-        }catch (error){
+          response = await axios({
+            method: "POST",
+            url: url,
+            data: post.body,
+            headers: {'Content-Type': 'text/plain'}
+          });
+          this.posts.push({note: post.body, id: response.data.note_id_created, batch_id: this.batch.id})
+        } catch (error) {
           console.log(error)
-          this.errorMessage = "Unable to create a note";
+          this.errorMessage = "Unable to delete a note";
         }
 
       }
@@ -111,11 +97,10 @@ export default defineComponent({
       try{
         axios.delete(`/api/batches/${post.batch_id}/notes-to-batch/${post.id}`);
         this.posts.splice(index,1)
-      }catch (error){
-        console.log(error)
-        this.errorMessage = "Unable to delete a note";
-      }
-
+    }catch (error){
+      console.log(error)
+      this.errorMessage = "Unable to create a note";
+    }
     },
     hideDialog() {
       this.dialogVisible = true;

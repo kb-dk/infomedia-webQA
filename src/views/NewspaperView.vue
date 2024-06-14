@@ -5,13 +5,16 @@
         <notes-form :postsTitel="dayNotes" :batch="this.batchid" :notes-type="NotesType.BATCHNOTE"></notes-form>
       </b-col>
       <b-col>
-        <notes-form :postsTitel="editionNotes" :batch="this.batchid" :notes-type="NotesType.EDITIONNOTE"></notes-form>
+        <notes-form :postsTitel="editionNotes" :batch="this.batchid" :notes-type="NotesType.EDITIONNOTE"
+                    :newspaper="this.newspaperid"></notes-form>
       </b-col>
       <b-col>
-        <notes-form :postsTitel="sectionNotes" :batch="this.batchid" :notes-type="NotesType.SECTIONNOTE"></notes-form>
+        <notes-form :postsTitel="sectionNotes" :batch="this.batchid" :notes-type="NotesType.SECTIONNOTE"
+                    :newspaper="this.newspaperid"></notes-form>
       </b-col>
       <b-col>
-        <notes-form :postsTitel="pageNotes" :batch="this.batchid" :notes-type="NotesType.PAGENOTE"></notes-form>
+        <notes-form :postsTitel="pageNotes" :batch="this.batchid" :notes-type="NotesType.PAGENOTE"
+                    :newspaper="this.newspaperid"></notes-form>
       </b-col>
     </b-row>
     <b-row>
@@ -70,6 +73,7 @@ export default defineComponent({
       checkboxText: "Show all pages",
       frontPages: [],
       batchid: this.$route.params.batchid,
+      newspaperid: this.$route.params.newspaperid,
     }
   },
   components: {
