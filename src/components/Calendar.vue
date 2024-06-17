@@ -119,7 +119,7 @@ export default defineComponent({
 
             if (res.length > 0) {
               for (let i = 0; i < res.length; i++) {
-                const {data} = await apiClient.get(`/batches/${res[i].id}/has_problems`);
+                const {data} = await apiClient.get(`/batches/${res[i].id}/has-problems`);
                 res[i] = {
                   highlight: {
                     color: data ? 'red' : 'teal',
@@ -159,9 +159,10 @@ export default defineComponent({
             for (let i = 0; i < res.length; i++) {
               const newspapers = (await axios.get(`/api/batches/${res[i].id}/newspapers?newspaper_name=${this.newspaperName}`)).data
               for (let j = 0; j < newspapers.length; j++) {
+                let hasPage = (await axios.get(`/api/batches/${res[i].id}/newspapers/${newspapers[j].id}/has-page`)).data
                 res[i] = {
                   highlight: {
-                    color: 'teal',
+                    color: hasPage?'teal':'orange',
                     fillMode: newspapers[j].checked ? 'light' : 'solid'
                   },
                   dates: new Date(res[i].date),
@@ -173,7 +174,6 @@ export default defineComponent({
                 }
               }
             }
-
             this.calendarAttr = res;
           } catch (error) {
             console.log(error);

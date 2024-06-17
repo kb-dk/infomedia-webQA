@@ -138,7 +138,7 @@ export default defineComponent({
         }))
         const newspapers = newspapersGet.data;
         for (let i = 0; i < newspapers.length; i++) {
-          const {data} = await axios.get(`/api/batches/${this.batch.id}/newspapers/${newspapers[i].id}/problem_count`).catch((err) => {
+          const {data} = await axios.get(`/api/batches/${this.batch.id}/newspapers/${newspapers[i].id}/problem-count`).catch((err) => {
             this.errorMessage  = "Unable to load problem count";
             console.log(err);
           });
@@ -162,7 +162,7 @@ export default defineComponent({
           data.newspaperName = newspapers[i].newspaper_name;
           errorList.newspaperError.push(data);
 
-          const newspaperProblemsGet = (await axios.get(`/api/batches/${this.batch.id}/newspapers/${newspapers[i].id}/newspaper_problems`).catch(err=>{
+          const newspaperProblemsGet = (await axios.get(`/api/batches/${this.batch.id}/newspapers/${newspapers[i].id}/newspaper-problems`).catch(err=>{
             this.errorMessage  = "Unable to load newspaper problems";
             console.log(err);
           }));
