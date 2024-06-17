@@ -107,7 +107,11 @@ export default defineComponent({
       } else {
         this.currentIndex = -1;
       }
-      event.target.scrollIntoView({behavior: 'smooth'});
+      const eve = event.target;
+      setTimeout(()=>{
+        eve.scrollIntoView({behavior: 'smooth'})
+      },50);
+
     },
     goToNewspaper(newspaper) {
       this.$router.push({
