@@ -1,5 +1,6 @@
 <template>
   <div class="app">
+    <p v-if="errorMessage.length !== 0" style="color: red;">{{ errorMessage }}</p>
     <b-row>
       <b-col>
         <notes-form :postsTitel="dayNotes" :batch="this.batchid" :notes-type="NotesType.BATCHNOTE"></notes-form>
@@ -20,6 +21,12 @@
         <!--      <im-pdf-viewer :pdf-val="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
+        <br>
+        <b-button :variant="newspaper.checked ? 'success':'primary'" class="approveNewspaperBtn"
+                  @click="approveNewspaper()">Approve newspaper
+        </b-button>
+        <br>
+        <br>
         <PageTable :rowClick="switchPage"></PageTable>
       </b-col>
     </b-row>
@@ -46,19 +53,7 @@ export default defineComponent({
 
   setup() {
     const urlParams = useRoute().params;
-    const allBatches = async () => {
-      const res = await axios.get(
-          `/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`
-      );
-      console.log(res.data[0]);
-      const newspapers = await axios.get(
-          `/api/batches/${res.data[0].id}/newspapers`
-      );
-      console.log(newspapers.data);
-      return newspapers.data;
-    };
-
-    return {allBatches, urlParams};
+    return {urlParams};
   },
   data() {
     return {
@@ -70,14 +65,17 @@ export default defineComponent({
       checkboxText: "Show all pages",
       frontPages: [],
       batchid: this.$route.params.batchid,
+      newspaper: {},
+      errorMessage: ""
     }
   },
   components: {
     NotesForm,
-    PageTable
+    PageTable,
   },
   created() {
-    this.fetchCarouselData()
+    this.fetchCarouselData();
+    this.fetchNewspaper();
   },
   methods: {
     async fetchCarouselData() {
@@ -101,11 +99,28 @@ export default defineComponent({
         this.frontPages = []; // Return an empty array in case of error
       }
     },
+    async fetchNewspaper() {
+      const urlParams = useRoute().params;
+      const {data} = await axios.get(`/api/batches/${urlParams.batchid}/newspapers/${urlParams.newspaperid}`).catch((err) => {
+        console.error(err);
+        this.errorMessage = "Unable to load newspaper data";
+      });
+      this.newspaper = data;
+    },
     hideDialog() {
       this.dialogVisible = true;
     },
     getFrontPages() {
       return this.frontPages
+    },
+    async approveNewspaper() {
+      if (!this.newspaper.checked && confirm("Do you want to approve newspaper?")) {
+        this.newspaper.checked = true;
+        axios.put(`/api/batches/${this.newspaper.batch_id}/newspapers/${this.newspaper.id}`).catch(err => {
+          this.errorMessage = "Error approving newspaper";
+          console.log(err)
+        });
+      }
     }
   }
 })
