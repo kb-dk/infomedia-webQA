@@ -1,25 +1,27 @@
 <template>
+  <p v-if="errorMessage.toString().length > 0" style="color: red">{{errorMessage}}</p>
   <div class="app">
     <b-row>
       <b-col>
-        <notes-form :postsTitel="dayNotes" :batch="this.batchid" :notes-type="NotesType.BATCHNOTE"></notes-form>
+        <notes-form :postsTitel="dayNotes" :batch="this.batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
       </b-col>
       <b-col>
-        <notes-form :postsTitel="editionNotes" :batch="this.batchid" :notes-type="NotesType.EDITIONNOTE"
-                    :newspaper="this.newspaperid"></notes-form>
+        <notes-form :postsTitel="editionNotes" :batch="this.batch" :notes-type="NotesType.EDITIONNOTE"
+                    :newspaper="this.newspaper"></notes-form>
       </b-col>
       <b-col>
-        <notes-form :postsTitel="sectionNotes" :batch="this.batchid" :notes-type="NotesType.SECTIONNOTE"
-                    :newspaper="this.newspaperid"></notes-form>
+        <notes-form :postsTitel="sectionNotes" :batch="this.batch" :notes-type="NotesType.SECTIONNOTE"
+                    :newspaper="this.newspaper" :sectiontitle="currentSectionTitle"></notes-form>
       </b-col>
       <b-col>
-        <notes-form :postsTitel="pageNotes" :batch="this.batchid" :notes-type="NotesType.PAGENOTE"
-                    :newspaper="this.newspaperid"></notes-form>
+        <notes-form :postsTitel="pageNotes" :batch="this.batch" :notes-type="NotesType.PAGENOTE"
+                    :newspaper="this.newspaper" :sectiontitle="currentSectionTitle"
+                    :pagenumber="currentPageNumber"></notes-form>
       </b-col>
     </b-row>
     <b-row>
       <b-col sm="10">
-        <im-carousel :carouselVal="frontPages"></im-carousel>
+        <im-carousel :carouselVal="carouselVal" @current-filename-event="handleCurrentFilename"></im-carousel>
         <!--      <im-pdf-viewer :pdf-val="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
@@ -43,26 +45,61 @@ export default defineComponent({
   computed: {
     NotesType() {
       return NotesType
-    }
+    },
   },
-  expose: ["pdf"],
-
   setup() {
     const urlParams = useRoute().params;
-    const allBatches = async () => {
-      const res = await axios.get(
-          `/api/batches?day=${urlParams.day}&month=${urlParams.month}&year=${urlParams.year}`
+
+    const fetchFrontPages = async () => {
+      const response = await axios.get(
+          `/api/batches/${urlParams.batchid}/newspapers/${urlParams.newspaperid}/newspaper-pages`
       );
-      console.log(res.data[0]);
-      const newspapers = await axios.get(
-          `/api/batches/${res.data[0].id}/newspapers`
-      );
-      console.log(newspapers.data);
-      return newspapers.data;
+      const frontPages = response.data
+          .filter((page) => page.page_number === 1)
+          .map((page) => {
+            const filePathParts = page.filepath.split("/");
+            return filePathParts[filePathParts.length - 1];
+          });
+      return frontPages;
     };
 
-    return {allBatches, urlParams};
+    const getCurrentSectionTitle = (frontPage) => {
+      const regex = /section(\d+)/;
+      const match = frontPage.match(regex);
+      return match ? match[0] : null;
+    };
+
+    const getCurrentPageNumber = (frontPage) => {
+      const regex = /page(\d+)/;
+      const match = frontPage.match(regex);
+      return match ? parseInt(match[1], 10) : 0;
+    };
+
+    const carouselVal = ref([]);
+    const currentFrontPage = ref("");
+    const currentSectionTitle = ref("");
+    const currentPageNumber = ref(0);
+
+    const initializeCarousel = async () => {
+      carouselVal.value = await fetchFrontPages();
+      currentFrontPage.value = carouselVal.value[0];
+      currentSectionTitle.value = getCurrentSectionTitle(currentFrontPage.value);
+      console.log(currentSectionTitle.value)
+      currentPageNumber.value = getCurrentPageNumber(currentFrontPage.value);
+      console.log(currentPageNumber.value)
+    };
+
+    initializeCarousel();
+
+    return {
+      urlParams,
+      carouselVal,
+      currentFrontPage,
+      currentSectionTitle,
+      currentPageNumber,
+    };
   },
+
   data() {
     return {
       dialogVisible: false,
@@ -72,17 +109,23 @@ export default defineComponent({
       pageNotes: "Page notes",
       checkboxText: "Show all pages",
       frontPages: [],
-      batchid: this.$route.params.batchid,
-      newspaperid: this.$route.params.newspaperid,
+      batch: {
+        id: useRoute().params.batchid,
+        value: ''
+      },
+      newspaper:{
+        id: useRoute().params.newspaperid,
+        value: ''
+      },
+      currentFileName: '',
+      errorMessage: ref("")
     }
   },
   components: {
     NotesForm,
     PageTable
   },
-  created() {
-    this.fetchCarouselData()
-  },
+
   methods: {
     async fetchCarouselData() {
       try {
@@ -103,15 +146,42 @@ export default defineComponent({
       } catch (error) {
         console.error(error);
         this.frontPages = []; // Return an empty array in case of error
+        this.errorMessage = "Unable to get a frontpages";
       }
     },
     hideDialog() {
       this.dialogVisible = true;
     },
-    getFrontPages() {
-      return this.frontPages
-    }
-  }
+    handleCurrentFilename(filename) {
+      console.log("filename from carousel: " + filename);
+      this.currentFileName = filename;
+      this.initCurrentSectionTitle();
+      this.initCurrentPageNumber();
+    },
+
+    initCurrentSectionTitle() {
+      const regex = /section(\d+)/;
+      const match = this.currentFileName.match(regex);
+      if (match) {
+        this.currentSectionTitle = match[0];
+      }
+    },
+    initCurrentPageNumber() {
+      const regex = /page(\d+)/;
+      const match = this.currentFileName.match(regex);
+      if (match) {
+        const pageNumber = parseInt(match[1], 10);
+        this.currentPageNumber = pageNumber;
+      }
+    },
+    initCurrentFrontPage() {
+      if (this.frontPages.length > 0) {
+        this.currentFileName = this.frontPages[0];
+        this.initCurrentSectionTitle();
+        this.initCurrentPageNumber();
+      }
+    },
+  },
 })
 </script>
 

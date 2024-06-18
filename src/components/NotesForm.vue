@@ -1,122 +1,158 @@
 <template>
-  <p v-if="errorMessage.toString().length > 0" style="color: red">{{errorMessage}}</p>
+  <p v-if="errorMessage.length > 0" style="color: red">{{errorMessage}}</p>
   <form @submit.prevent>
     <div class="form">
       <div class="header">
-        <h6>{{ postsTitel }}</h6>
+        <h6>{{ postsTitle }}</h6>
       </div>
-      <post-form @create="createPost">
-      </post-form>
+      <post-form @create="createPost"></post-form>
       <post-list :posts="posts" @remove="removePost"></post-list>
     </div>
   </form>
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType, Ref, ref} from 'vue'
+import { defineComponent, PropType} from 'vue';
 import PostForm from "@/components/PostForm.vue";
 import PostList from "@/components/PostList.vue";
-import {NotesType} from "@/enums/NotesType";
+import { NotesType } from "@/enums/NotesType";
 import axios from "axios";
-import {data} from "v-calendar/dist/types/tests/unit/util/dayData";
 
 export default defineComponent({
-  name:"NotesForm",
+  name: "NotesForm",
   props: {
-    batch: [Object],
-    postsTitel: [String, Number],
-    notesType: Number as PropType<NotesType>,
-    newspaper: [Object],
-    sectiontitle: [String],
-    pagenumber: [Number]
+    batch: {
+      type: Object as PropType<any>,
+      required: true
+    },
+    postsTitle: {
+      type: String,
+      required: true
+    },
+    notesType: {
+      type: Number as PropType<NotesType>,
+      required: true
+    },
+    newspaper: {
+      type: Object as PropType<any>,
+      default: null
+    },
+    sectiontitle: {
+      type: String,
+      default: null
+    },
+    pagenumber: {
+      type: Number,
+      default: null
+    }
   },
   data() {
     return {
-      posts: ref([]) as Ref<Array<object>>,
-      dialogVisible: false,
-      errorMessage: ref("")
-    }
+      posts: [],
+      errorMessage: ""
+    };
   },
-  created() {
+  async created() {
     if (this.batch?.id !== undefined) {
-      this.getNotes().then((res) => {
-
+      try {
+        const res = await this.getNotes();
         this.posts = res;
-      })
+      } catch (error) {
+        console.error('Error fetching notes:', error);
+      }
     }
-  },
-  components: {
-    PostForm,
-    PostList
   },
   methods: {
-    async createPost(post: { id: any; body: any }) {
-      if (this.batch) {
+    async getNotes() {
+      try {
+        const { batch, notesType, newspaper, sectiontitle, pagenumber } = this;
+        let url = `/api/batches/${batch.id}`;
+
+        switch (notesType) {
+          case NotesType.BATCHNOTE:
+            url += '/notes-to-batch';
+            break;
+          case NotesType.EDITIONNOTE:
+            if (newspaper) {
+              url += `/newspapers/${newspaper.id}/notes-to-edition`;
+            }
+            break;
+          case NotesType.SECTIONNOTE:
+            if (newspaper && sectiontitle) {
+              url += `/newspapers/${newspaper.id}/notes-to-section?section_title=${sectiontitle}`;
+            }
+            break;
+          case NotesType.PAGENOTE:
+            if (newspaper && sectiontitle && pagenumber) {
+              url += `/newspapers/${newspaper.id}/notes-to-pages?section_title=${sectiontitle}&page_number=${pagenumber}`;
+            }
+            break;
+          default:
+            throw new Error("Incorrect notestype");
+        }
+
+        const response = await axios.get(url);
+        console.log("Get Notes From: ", response?.data);
+        return response?.data ?? [];
+      } catch (error) {
+        console.error("Unable to get notes:", error);
+        throw new Error("Unable to get notes");
+      }
+    },
+    async createPost(post: { note: any; }) {
+      const { batch, notesType, newspaper, sectiontitle, pagenumber } = this;
+      if (batch) {
         try {
-          let response;
-          let url = `/api/batches/${this.batch.id}`;
-          switch (this.notesType) {
+          let url = `/api/batches/${batch.id}`;
+          switch (notesType) {
             case NotesType.BATCHNOTE:
               url += "/notes-to-batch?username=gui";
               break;
             case NotesType.EDITIONNOTE:
-              if (this.newspaper) {
-                url += `/newspapers/${this.newspaper.id}/notes-to-section?username=gui`;
+              if (newspaper) {
+                url += `/newspapers/${newspaper.id}/notes-to-edition?username=gui`;
               }
               break;
             case NotesType.SECTIONNOTE:
-              if (this.newspaper && this.sectiontitle) {
-                url += `/newspapers/${this.newspaper.id}/notes-to-pages?username=gui&section_title=${this.sectiontitle}`;
+              if (newspaper && sectiontitle) {
+                url += `/newspapers/${newspaper.id}/notes-to-section?section_title=${sectiontitle}&username=gui`;
               }
               break;
             case NotesType.PAGENOTE:
-              if (this.newspaper && this.sectiontitle && this.pagenumber) {
-                url += `/newspapers/${this.newspaper.id}/notes-to-pages?username=gui&section_title=${this.sectiontitle}&page_number=${this.pagenumber}`;
+              if (newspaper && sectiontitle && pagenumber) {
+                url += `/newspapers/${newspaper.id}/notes-to-pages?username=gui&section_title=${sectiontitle}&page_number=${pagenumber}&username=gui`;
               }
               break;
             default:
               console.log("Incorrect notestype");
               return;
           }
-          response = await axios({
-            method: "POST",
-            url: url,
-            data: post.body,
-            headers: {'Content-Type': 'text/plain'}
+          const response = await axios.post(url, post.note, {
+            headers: { 'Content-Type': 'application/json' }
           });
-          this.posts.push({note: post.body, id: response.data.note_id_created, batch_id: this.batch.id})
+
+          this.posts.push({ note: post.note, id: response.data.note_id_created, batch_id: batch.id } as never);
         } catch (error) {
-          console.log(error)
-          this.errorMessage = "Unable to delete a note";
+          console.log(error);
+          this.errorMessage = "Unable to create a note";
         }
-
       }
-
     },
-    removePost(post: { id: any;batch_id:any;},index:number) {
-      try{
-        axios.delete(`/api/batches/${post.batch_id}/notes-to-batch/${post.id}`);
-        this.posts.splice(index,1)
-    }catch (error){
-      console.log(error)
-      this.errorMessage = "Unable to create a note";
-    }
-    },
-    hideDialog() {
-      this.dialogVisible = true;
-    },
-    async getNotes() {
-      try{
-        const {data} = await axios.get(`/api/bastches/${this.batch?.id}/notes-to-batch`);
-        return  data;
-      }catch (error){
-        this.errorMessage = "Unable to get notes";
-        console.log(error)
+    async removePost(post: { batch_id: any; id: any; }, index: number) {
+      try {
+        await axios.delete(`/api/batches/${post.batch_id}/notes-to-batch/${post.id}`);
+        this.posts.splice(index, 1);
+      } catch (error) {
+        console.log(error);
+        this.errorMessage = "Unable to remove the note";
       }
-
     }
+  },
+  components: {
+    PostForm,
+    PostList
   }
-})
+});
 </script>
 
 <style scoped>
@@ -130,5 +166,4 @@ export default defineComponent({
   text-align: left;
   padding: 2px;
 }
-
 </style>

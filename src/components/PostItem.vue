@@ -28,7 +28,7 @@ export default defineComponent({
 
 <style scoped>
 .post__item {
-  padding: 10px;
+  padding: 2px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -37,8 +37,8 @@ export default defineComponent({
 .output {
   width: 100%;
   border: 1px solid teal;
-  padding: 10px 15px;
-  margin-right: 15px;
+  padding: 2px 3px;
+  margin-right: 3px;
   text-align: left;
 }
 </style>

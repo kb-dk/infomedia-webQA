@@ -9,7 +9,7 @@
     <div class="post__input">
       <div style="width: 100%; margin-right: 15px;">
         <im-input
-            v-model="post.body"
+            v-model="post.note"
             type="text"
             placeholder="Notes"
         />
@@ -33,8 +33,9 @@ export default defineComponent({
   data() {
     return {
       post: {
+        note: '',
         id: 0,
-        body: '',
+        batch_id: '',
       },
       selectedPost: '',
       postOptions: [
@@ -50,15 +51,16 @@ export default defineComponent({
       this.post.id = Date.now();
       this.$emit('create', this.post)
       this.post = {
+        note: '',
         id: 0,
-        body: '',
+        batch_id: '',
       }
     },
   },
   watch: {
     selectedPost(newValue) {
       this.post.id = Date.now();
-      this.post.body = newValue;
+      this.post.note = newValue
     }
   },
 })
