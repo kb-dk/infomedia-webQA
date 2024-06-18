@@ -121,7 +121,7 @@ export default defineComponent({
     },
     async getNotes() {
       try{
-        const {data} = await axios.get(`/api/bastches/${this.batch?.id}/notes-to-batch`);
+        const {data} = await axios.get(`/api/batches/${this.batch?.id}/notes-to-batch`);
         return  data;
       }catch (error){
         this.errorMessage = "Unable to get notes";
