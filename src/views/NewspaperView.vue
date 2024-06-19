@@ -21,10 +21,16 @@
     </b-row>
     <b-row>
       <b-col sm="10">
-        <im-carousel :carouselVal="frontPages" @current-filename-event="handleCurrentFilename"></im-carousel>
+        <im-carousel :carouselVal="frontPages"></im-carousel>
         <!--      <im-pdf-viewer :pdf-val="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
+        <br>
+        <b-button :variant="newspaper.checked ? 'success':'primary'" class="approveNewspaperBtn"
+                  @click="approveNewspaper()">Approve newspaper
+        </b-button>
+        <br>
+        <br>
         <PageTable :rowClick="switchPage"></PageTable>
       </b-col>
     </b-row>
@@ -116,6 +122,14 @@ export default defineComponent({
         this.errorMessage = "Unable to get a frontpages";
       }
     },
+    async fetchNewspaper() {
+      const urlParams = useRoute().params;
+      const {data} = await axios.get(`/api/batches/${urlParams.batchid}/newspapers/${urlParams.newspaperid}`).catch((err) => {
+        console.error(err);
+        this.errorMessage = "Unable to load newspaper data";
+      });
+      this.newspaper = data;
+    },
     hideDialog() {
       this.dialogVisible = true;
     },
@@ -148,7 +162,16 @@ export default defineComponent({
         this.initCurrentPageNumber();
       }
     },
-  },
+    async approveNewspaper() {
+      if (!this.newspaper.checked && confirm("Do you want to approve newspaper?")) {
+        this.newspaper.checked = true;
+        axios.put(`/api/batches/${this.newspaper.batch_id}/newspapers/${this.newspaper.id}`).catch(err => {
+          this.errorMessage = "Error approving newspaper";
+          console.log(err)
+        });
+      }
+    }
+  }
 })
 </script>
 
