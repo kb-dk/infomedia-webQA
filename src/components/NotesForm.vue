@@ -31,7 +31,6 @@ export default defineComponent({
   },
   data() {
     return {
-      isLoading: true,
       posts: ref([]) as Ref<Array<object>>,
       errorMessage: "",
     }
