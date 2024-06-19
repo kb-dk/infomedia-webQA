@@ -27,19 +27,28 @@ import NewspaperView from "@/views/NewspaperView";
 export default defineComponent({
   name: "PageTable",
   props: {
-    rowClick: [Function]
+    rowClick: [Function],
+    pagesFileName: [Array]
   },
   data() {
     return {
       fields: ["Page", "Section"],
       pages: [
-        {"Page": 1, "Section": 1, "src": "20210101_aarhusstiftstidende_section01_page001_ast20210101x11#0001.pdf","index":0},
-        {"Page": 2, "Section": 1, "src": "20210101_aarhusstiftstidende_section01_page002_ast20210101x11#0002.pdf","index":1},
-        {"Page": 3, "Section": 1, "src": "20210101_aarhusstiftstidende_section01_page003_ast20210101x11#0003.pdf","index":2},
-        {"Page": 1, "Section": 4, "src": "20210101_aarhusstiftstidende_section04_page001_ast20210101x14#0001.pdf","index":3},
-        {"Page": 2, "Section": 4, "src": "20210101_aarhusstiftstidende_section04_page002_ast20210101x14#0002.pdf","index":4}
       ],
       focusedPage:ref(0)
+    }
+  },
+  watch:{
+    pagesFileName: {
+      immediate: true,
+      handler(){
+        console.log(this.pagesFileName)
+        for (let i = 0; i < this.pagesFileName.length; i++) {
+          let fileObject = {src:this.pagesFileName[i],index:i,Section:this.getSectionName(this.pagesFileName[i]),Page:this.getPageNumber(this.pagesFileName[i])}
+          console.log(fileObject);
+          this.pages.push(fileObject);
+        }
+      }
     }
   },
   methods: {
@@ -53,6 +62,18 @@ export default defineComponent({
         return p.Section === section
       })
       return filtered.length
+    },
+    getSectionName(filename){
+      let regex = /.*section(\d{2}).*/g;
+
+      let result = regex.exec(filename);
+      console.log(result)
+      return Number(result[1]);
+    },
+    getPageNumber(filename){
+      let regex = /.*page(\d{3}).*/g;
+      let result = regex.exec(filename);
+      return Number(result[1]);
     }
   }
 })

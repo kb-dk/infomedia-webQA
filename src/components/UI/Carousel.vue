@@ -1,6 +1,6 @@
 <template>
-  <Carousel v-model="currentSlide" :items-to-show="2" :wrap-around="true">
-    <Slide v-for="(item, index) in carouselVal" :key="index" class="carousel__slide">
+  <Carousel v-model="currentSlide" :items-to-show="itemsToView" :wrap-around="wrapAround">
+    <Slide  v-for="(item, index) in carouselValHandled" :key="index" class="carousel__slide">
       <div class="carousel__item">
         <div>
           <template v-if="isLoading"> Loading...</template>
@@ -13,7 +13,7 @@
     </Slide>
 
     <template #addons>
-      <Navigation/>
+      <Navigation v-if="frontPageView"/>
     </template>
   </Carousel>
 </template>
@@ -45,14 +45,20 @@ export default defineComponent({
       isLoading: true,
       currentSlide: 0,
       page: 1,
-      imageUrls: {} // Object to store image URLs
+      imageUrls: {},// Object to store image URLs
+      frontPageView:true,
+      itemsToView:2,
+      wrapAround: true,
+      carouselValHandled:[]
     }
   },
   watch: {
     carouselVal: {
       immediate: true,
       handler() {
+        this.carouselValHandled = this.carouselVal;
         this.loadImages().then(() => {
+
           this.isLoading = false;
         }).catch((error) => {
               this.isLoading = false;
@@ -62,7 +68,7 @@ export default defineComponent({
   },
   methods: {
     handleDocumentRender(args) {
-      console.log(args)
+      // console.log(args)
       this.isLoading = false
     },
     async loadImages() {
@@ -71,7 +77,7 @@ export default defineComponent({
           baseURL: '/api',
         })
         for (const item of this.carouselVal) {
-          console.log(encodeURIComponent(item)); // Log the URL for the API request
+          // console.log(encodeURIComponent(item)); // Log the URL for the API request
           const encoded_item = encodeURIComponent(item);
           try {
             const response = await apiClient.get(`/file/${encoded_item}`, {
@@ -89,9 +95,17 @@ export default defineComponent({
       }
     },
     getImage(item) {
-      console.log(item);
+      // console.log(item);
       return this.imageUrls[item];
     },
+    switchPage(fileName){
+      this.carouselValHandled = [fileName]
+      this.itemsToView = 1;
+      this.wrapAround = false;
+      this.frontPageView = false;
+      console.log(fileName);
+      console.log(this.isLoading)
+    }
   },
 })
 </script>s

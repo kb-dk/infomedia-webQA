@@ -17,8 +17,8 @@
     </b-row>
     <b-row>
       <b-col sm="10">
-        <im-carousel :carouselVal="frontPages"></im-carousel>
-        <!--      <im-pdf-viewer :pdf-val="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>-->
+        <im-carousel ref="carousel" :carouselVal="pagesFileName"></im-carousel>
+        <!--      <im-pdf-viewer :pdf-val="pagesFileName" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
         <br>
@@ -27,7 +27,7 @@
         </b-button>
         <br>
         <br>
-        <PageTable :rowClick="switchPage"></PageTable>
+        <PageTable :pagesFileName="pagesFileName" :rowClick="switchPage"></PageTable>
       </b-col>
     </b-row>
   </div>
@@ -63,7 +63,7 @@ export default defineComponent({
       sectionNotes: "Section notes",
       pageNotes: "Page notes",
       checkboxText: "Show all pages",
-      frontPages: [],
+      pagesFileName: [],
       batchid: this.$route.params.batchid,
       newspaper: {},
       errorMessage: ""
@@ -89,14 +89,14 @@ export default defineComponent({
             `/batches/${urlParams.batchid}/newspapers/${urlParams.newspaperid}/newspaper-pages`
         );
         const frontPagePaths = response.data.filter((d) => d.page_number === 1);
-        this.frontPages = frontPagePaths.map((d) => {
+        this.pagesFileName = frontPagePaths.map((d) => {
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
-        console.log(this.frontPages);
+        // console.log(this.pagesFileName);
       } catch (error) {
         console.error(error);
-        this.frontPages = []; // Return an empty array in case of error
+        this.pagesFileName = []; // Return an empty array in case of error
       }
     },
     async fetchNewspaper() {
@@ -110,8 +110,8 @@ export default defineComponent({
     hideDialog() {
       this.dialogVisible = true;
     },
-    getFrontPages() {
-      return this.frontPages
+    getpagesFileName() {
+      return this.pagesFileName
     },
     async approveNewspaper() {
       if (!this.newspaper.checked && confirm("Do you want to approve newspaper?")) {
@@ -121,6 +121,10 @@ export default defineComponent({
           console.log(err)
         });
       }
+    },
+    switchPage(fileName){
+      this.$refs.carousel.switchPage(fileName)
+      // console.log(fileName)
     }
   }
 })
