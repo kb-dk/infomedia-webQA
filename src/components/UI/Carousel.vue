@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import {defineComponent} from 'vue'
+import {defineComponent, defineEmits} from 'vue'
 import VuePdfEmbed from "vue-pdf-embed"
 import {Carousel, Navigation, Slide} from 'vue3-carousel'
 
@@ -28,6 +28,7 @@ import axios from "axios";
 
 export default defineComponent({
   name: 'im-carousel',
+  emits: ['currentFilenameEvent'],
   components: {
     Carousel,
     Slide,
@@ -62,7 +63,6 @@ export default defineComponent({
   },
   methods: {
     handleDocumentRender(args) {
-      console.log(args)
       this.isLoading = false
     },
     async loadImages() {
@@ -89,9 +89,16 @@ export default defineComponent({
       }
     },
     getImage(item) {
-      console.log(item);
+      //console.log(item);
       return this.imageUrls[item];
     },
+  },
+  mounted() {
+    defineEmits(this, ['currentFilenameEvent']);
+  },
+  updated() {
+    const currentFilename = this.carouselVal[this.currentSlide];
+    this.$emit('currentFilenameEvent', currentFilename);
   },
 })
 </script>s

@@ -8,10 +8,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent,ref } from 'vue';
+import { defineComponent } from 'vue';
 import Calendar from '@/components/Calendar.vue'
-import {useRoute} from "vue-router";
-import axios from "axios";
 export default defineComponent({
   name: 'CalendarView',
   watch: {
