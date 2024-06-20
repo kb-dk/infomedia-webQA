@@ -43,7 +43,7 @@
                         :class="{'batchInfo-is-active': currentIndex===index}">
             <b-list-group-item class="errorMessageList">
               <b-list-group v-for="problem in e.newspaperProblems" :key="problem">
-                <b-list-group-item>
+                <b-list-group-item @click="goToNewspaper(e)">
                   {{ problem.problem }}
                 </b-list-group-item>
               </b-list-group>
@@ -114,6 +114,7 @@ export default defineComponent({
 
     },
     goToNewspaper(newspaper) {
+      // console.log(newspaper)
       this.$router.push({
         name: "newspaper-view",
         params: {
@@ -146,6 +147,7 @@ export default defineComponent({
             let problemSplitted = data[j].problem.split(/=(.*)}/)[1];
             if (errorMap["newspaperPageProblems"][problemSplitted]) {
               errorMap["newspaperPageProblems"][problemSplitted]["newspapers"].push({
+                "id":newspapers[i].id,
                 "newspaperName": newspapers[i].newspaper_name,
                 "count": data[j].count
               });
@@ -153,6 +155,7 @@ export default defineComponent({
               errorMap["newspaperPageProblems"][problemSplitted] = {}
               errorMap["newspaperPageProblems"][problemSplitted]["problemCategory"] = data[j].problemCategory;
               errorMap["newspaperPageProblems"][problemSplitted]["newspapers"] = [{
+                "id":newspapers[i].id,
                 "newspaperName": newspapers[i].newspaper_name,
                 "count": data[j].count
               }];
@@ -171,7 +174,7 @@ export default defineComponent({
           for (let j = 0; j < newspaperProblems.length; j++) {
             let category = newspaperProblems[j].category
             errorMap.newspaperProblems = {"newspaperProblemCategory": {}};
-            errorMap.newspaperProblems["newspaperProblemCategory"][category] = {newspaperProblems: []};
+            errorMap.newspaperProblems["newspaperProblemCategory"][category] = {id:newspapers[j].id,newspaperProblems: []};
             errorMap.newspaperProblems["newspaperProblemCategory"][category]["newspaperProblems"].push({"problem": `${newspaperProblems[j].problem} for ${newspapers[j].newspaper_name}`});
           }
 
