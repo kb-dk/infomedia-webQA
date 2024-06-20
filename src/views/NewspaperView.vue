@@ -21,7 +21,8 @@
     </b-row>
     <b-row>
       <b-col sm="10">
-        <im-carousel  ref="carousel" :carouselVal="pagesFileName" @current-filename-event="handleCurrentFilename"></im-carousel>
+        <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
+                     :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
         <!--      <im-pdf-viewer :pdf-val="pagesFileName" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
@@ -31,7 +32,10 @@
         </b-button>
         <br>
         <br>
-        <PageTable :pagesFileName="pagesFileName" :rowClick="switchPage"></PageTable>
+        <PageTable :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
+        <b-button :variant="frontPageView ? 'success':'primary'" class="approveNewspaperBtn"
+                  @click="changeToFrontPageView()">Show Front Pages
+        </b-button>
       </b-col>
     </b-row>
   </div>
@@ -90,9 +94,12 @@ export default defineComponent({
       currentPageNumber: 0,
       currentSectionTitle: "",
       errorMessage: "",
-      pagesFileName: [],
-      frontPages:[],
-      newspaperData: {}
+      pagesNames: [],
+      frontPagesNames: [],
+      currentPagesNames: [],
+      newspaperData: {},
+      frontPageView: true,
+      itemToShow: 2
     }
   },
   components: {
@@ -114,18 +121,19 @@ export default defineComponent({
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         );
         const frontPagePaths = response.data.filter((d) => d.page_number === 1);
-        this.pagesFileName = response.data.map((d) => {
+        this.pagesNames = response.data.map((d) => {
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
-        this.frontPages = frontPagePaths.map((d) => {
+        this.frontPagesNames = frontPagePaths.map((d) => {
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
+        this.currentPagesNames = this.frontPagesNames;
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";
         console.error(this.errorMessage + ": " + error);
-        this.pagesFileName = []; // Return an empty array in case of error
+        this.pagesNames = []; // Return an empty array in case of error
       }
     },
 
@@ -164,8 +172,8 @@ export default defineComponent({
       console.log("current page number: " + this.currentPageNumber)
     },
     initCurrentFrontPage() {
-      if (this.frontPages.length > 0) {
-        this.handleCurrentFilename(this.frontPages[0])
+      if (this.frontPagesNames.length > 0) {
+        this.handleCurrentFilename(this.frontPagesNames[0])
       }
     },
     async approveNewspaper() {
@@ -183,7 +191,16 @@ export default defineComponent({
 
     switchPage(fileName){
       this.$refs.carousel.switchPage(fileName)
+      this.currentPagesNames= this.pagesNames
       this.handleCurrentFilename(fileName)
+      this.frontPageView = false
+      this.itemToShow = 1
+    },
+
+    changeToFrontPageView(){
+      this.currentPagesNames = this.frontPagesNames
+      this.frontPageView = true
+      this.itemToShow = 2;
     }
   }
 })

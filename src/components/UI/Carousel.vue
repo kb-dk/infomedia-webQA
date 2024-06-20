@@ -1,5 +1,5 @@
 <template>
-  <Carousel v-model="currentSlide" :items-to-show="itemsToView" :wrap-around="wrapAround">
+  <Carousel v-model="currentSlide" :items-to-show="itemsToShow" :wrap-around="frontPageView">
     <Slide  v-for="(item, index) in carouselValHandled" :key="index" class="carousel__slide" ref="slide">
       <div class="carousel__item">
         <div>
@@ -40,6 +40,8 @@ export default defineComponent({
       type: Array,
       default: () => [],
     },
+    frontPageView: Boolean,
+    itemsToShow: Number,
   },
   data() {
     return {
@@ -47,9 +49,6 @@ export default defineComponent({
       currentSlide: 0,
       page: 1,
       imageUrls: {},// Object to store image URLs
-      frontPageView:true,
-      itemsToView:2,
-      wrapAround: true,
       carouselValHandled:ref([])
     }
   },
@@ -57,20 +56,18 @@ export default defineComponent({
     carouselVal: {
       immediate: true,
       handler() {
-        // console.log(this.carouselVal.filter((d) => d.page_number === 1))
         this.carouselValHandled = this.carouselVal
         this.loadImages().then(() => {
-          // this.carouselValHandled = this.carouselValHandled.filter((d) => d.page_number === 1)
           this.isLoading = false;
         }).catch((error) => {
               this.isLoading = false;
             });
       }
-    }
+    },
+
   },
   methods: {
     handleDocumentRender(args) {
-      // console.log(args)
       this.isLoading = false
     },
     async loadImages() {
@@ -97,23 +94,13 @@ export default defineComponent({
       }
     },
     getImage(item) {
-      // console.log(item);
       return this.imageUrls[item];
     },
     switchPage(fileName){
       this.carouselValHandled = [fileName]
-      this.itemsToView = 1;
-      this.wrapAround = false;
-      this.frontPageView = false;
       this.loadImages();
-      // this.$refs.slide.$forceUpdate();
-      // this.$forceUpdate();
-      // console.log(fileName);
-      // console.log(this.isLoading)
     },
-    filterFrontpages(){
-      return this.carouselValHandled.filter((d) => d.page_number === 1);
-    }
+
   },
   mounted() {
     defineEmits(this, ['currentFilenameEvent']);
