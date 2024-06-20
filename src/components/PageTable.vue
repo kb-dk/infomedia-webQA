@@ -38,6 +38,7 @@
 <!--    </b-table>-->
   </div>
   <p style="margin-top: 10px;font-weight: bold">Total Pages: {{pages.length}}</p>
+  <p style="font-weight: bold">Total Sections: {{sections.size}}</p>
 </template>
 
 <script>
@@ -57,6 +58,7 @@ export default defineComponent({
       fields: ["Page", "Section"],
       pages: [
       ],
+      sections:new Set(),
       focusedPage:ref(0)
     }
   },
@@ -64,31 +66,19 @@ export default defineComponent({
     pagesFileName: {
       immediate: true,
       handler(){
-        console.log(this.pagesFileName)
         for (let i = 0; i < this.pagesFileName.length; i++) {
           let section= this.getSectionName(this.pagesFileName[i])
           let page= this.getPageNumber(this.pagesFileName[i])
-          let fileObject = {src:this.pagesFileName[i],index:i,Section:section[1],Page:page[1],sectionName:section[0],pageName:page[0]}
-          // console.log(fileObject);
+          let fileObject = {src:this.pagesFileName[i],Section:section[1],Page:page[1],sectionName:section[0],pageName:page[0]}
           this.pages.push(fileObject);
+          this.sections.add(section[1]);
         }
-        console.log("sorted")
-        // console.log(this.sortBySectionAndPage(this.pages))
         this.pages = this.sortBySectionAndPage(this.pages);
-        // let grouped = Object.groupBy(this.pages,({Section})=>{
-        //   return Section
-        // })
-        // this.pages = this.pages.sort((a,b) => {
-        //   return a.Section >= b.Section?4:1 - a.Page >= b.Page ? -2:0;
-        // })
-        // console.log(grouped)
-        // this.pages = this.pages.sort((a,b)=>{return a.Section -b.Section })
       }
     }
   },
   methods: {
     rowClicked(e) {
-      // console.log(event)
       this.focusedPage = e.index
       this.rowClick(e.src)
     },
@@ -117,14 +107,16 @@ export default defineComponent({
             const less = arr[j+1];
             arr[j+1] = arr[j];
             arr[j] = less
-
           }
           else if(arr[j].Section === arr[j+1].Section && arr[j].Page > arr[j+1].Page){
             const less = arr[j+1];
             arr[j+1] = arr[j];
-            arr[j] = less
+            arr[j] = less;
+
           }
+          arr[j].index = j;
         }
+
       }
       return arr;
     }
