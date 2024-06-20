@@ -90,3 +90,9 @@
   margin-bottom: 5px;
   margin-top: 15px;
 }
+.pageTable{
+  //display: inline;
+  max-height: 35em;
+  overflow:scroll;
+  overflow-scrolling: auto;
+}

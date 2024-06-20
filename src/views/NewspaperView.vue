@@ -26,7 +26,7 @@
       </b-col>
       <b-col sm="2">
         <br>
-        <b-button :variant="newspaper.checked ? 'success':'primary'" class="approveNewspaperBtn"
+        <b-button :variant="newspaperData.checked ? 'success':'primary'" class="approveNewspaperBtn"
                   @click="approveNewspaper()">Approve newspaper
         </b-button>
         <br>
@@ -91,13 +91,17 @@ export default defineComponent({
       currentSectionTitle: "",
       errorMessage: "",
       pagesFileName: [],
+      frontPages:[],
+      newspaperData: {}
     }
   },
   components: {
     NotesForm,
     PageTable
   },
-
+  created(){
+    this.fetchNewspaper();
+  },
   methods: {
     async fetchCarouselData() {
       try {
@@ -110,7 +114,11 @@ export default defineComponent({
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         );
         const frontPagePaths = response.data.filter((d) => d.page_number === 1);
-        this.pagesFileName = frontPagePaths.map((d) => {
+        this.pagesFileName = response.data.map((d) => {
+          const filePathParts = d.filepath.split("/");
+          return filePathParts[filePathParts.length - 1];
+        });
+        this.frontPages = frontPagePaths.map((d) => {
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
@@ -125,7 +133,7 @@ export default defineComponent({
       try {
         const { batchid, newspaperid } = useRoute().params;
         const { data } = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
-        this.newspaper = data;
+        this.newspaperData = data;
       } catch (error) {
         console.error(error);
         this.errorMessage = "Unable to load newspaper data";
@@ -155,19 +163,17 @@ export default defineComponent({
       }
       console.log("current page number: " + this.currentPageNumber)
     },
-
     initCurrentFrontPage() {
       if (this.frontPages.length > 0) {
         this.handleCurrentFilename(this.frontPages[0])
       }
     },
-
     async approveNewspaper() {
       if (!this.newspaper.checked && confirm("Do you want to approve the newspaper?")) {
         this.newspaper.checked = true;
         try {
-          const { batch_id, id } = this.newspaper;
-          await axios.put(`/api/batches/${batch_id}/newspapers/${id}`);
+          const { id } = this.newspaper;
+          await axios.put(`/api/batches/${this.batch.id}/newspapers/${id}`);
         } catch (error) {
           this.errorMessage = "Error approving the newspaper";
           console.log(this.errorMessage + ": " + error);

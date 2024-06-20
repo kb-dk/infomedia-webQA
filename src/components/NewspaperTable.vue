@@ -69,8 +69,8 @@ export default defineComponent({
 
     },
     filterF(row, filter) {
-      console.log(row)
-      console.log(filter)
+      // console.log(row)
+      // console.log(filter)
       return true
     },
     filterTest(items) {
