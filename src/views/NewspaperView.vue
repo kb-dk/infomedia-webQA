@@ -21,8 +21,8 @@
     </b-row>
     <b-row>
       <b-col sm="10">
-        <im-carousel :carouselVal="frontPages"></im-carousel>
-        <!--      <im-pdf-viewer :pdf-val="frontPages" :checkbox-text="checkboxText"></im-pdf-viewer>-->
+        <im-carousel ref="carousel" :carouselVal="pagesFileName"></im-carousel>
+        <!--      <im-pdf-viewer :pdf-val="pagesFileName" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
         <br>
@@ -31,7 +31,7 @@
         </b-button>
         <br>
         <br>
-        <PageTable :rowClick="switchPage"></PageTable>
+        <PageTable :pagesFileName="pagesFileName" :rowClick="switchPage"></PageTable>
       </b-col>
     </b-row>
   </div>
@@ -79,7 +79,7 @@ export default defineComponent({
       sectionNotes: "Section notes",
       pageNotes: "Page notes",
       checkboxText: "Show all pages",
-      frontPages: [],
+      // frontPages: [],
       batch: {
         id: this.$route.params.batchid,
         value: ''
@@ -91,7 +91,11 @@ export default defineComponent({
       currentFileName: ref(''),
       currentPageNumber: ref(0),
       currentSectionTitle: ref(''),
-      errorMessage: ref("")
+      errorMessage: ref(""),
+      pagesFileName: [],
+      // batchid: this.$route.params.batchid,
+      // newspaper: {},
+      // errorMessage: ""
     }
   },
   components: {
@@ -111,14 +115,15 @@ export default defineComponent({
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         );
         const frontPagePaths = response.data.filter((d) => d.page_number === 1);
-        this.frontPages = frontPagePaths.map((d) => {
+        this.pagesFileName = frontPagePaths.map((d) => {
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
-        console.log("Geted carousel data: " + this.frontPages);
+        // console.log(this.pagesFileName);
       } catch (error) {
         console.error(error);
-        this.frontPages = []; // Return an empty array in case of error
+        this.pagesFileName = []; // Return an empty array in case of error
+        // this.frontPages = []; // Return an empty array in case of error
         this.errorMessage = "Unable to get a frontpages";
       }
     },
@@ -170,6 +175,10 @@ export default defineComponent({
           console.log(err)
         });
       }
+    },
+    switchPage(fileName){
+      this.$refs.carousel.switchPage(fileName)
+      // console.log(fileName)
     }
   }
 })
