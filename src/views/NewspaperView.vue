@@ -26,7 +26,7 @@
       </b-col>
       <b-col sm="2">
         <br>
-        <b-button :variant="newspaper.checked ? 'success':'primary'" class="approveNewspaperBtn"
+        <b-button :variant="newspaperData.checked ? 'success':'primary'" class="approveNewspaperBtn"
                   @click="approveNewspaper()">Approve newspaper
         </b-button>
         <br>
@@ -93,7 +93,8 @@ export default defineComponent({
       currentSectionTitle: ref(''),
       errorMessage: ref(""),
       pagesFileName: [],
-      frontPages:[]
+      frontPages:[],
+      newspaperData: {}
       // batchid: this.$route.params.batchid,
       // newspaper: {},
       // errorMessage: ""
@@ -103,7 +104,9 @@ export default defineComponent({
     NotesForm,
     PageTable
   },
-
+  created(){
+    this.fetchNewspaper();
+  },
   methods: {
     async fetchCarouselData() {
       try {
@@ -138,7 +141,7 @@ export default defineComponent({
         console.error(err);
         this.errorMessage = "Unable to load newspaper data";
       });
-      this.newspaper = data;
+      this.newspaperData = data;
     },
     hideDialog() {
       this.dialogVisible = true;
@@ -173,9 +176,10 @@ export default defineComponent({
       }
     },
     async approveNewspaper() {
+      console.log(this.newspaper)
       if (!this.newspaper.checked && confirm("Do you want to approve newspaper?")) {
         this.newspaper.checked = true;
-        axios.put(`/api/batches/${this.newspaper.batch_id}/newspapers/${this.newspaper.id}`).catch(err => {
+        axios.put(`/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}`).catch(err => {
           this.errorMessage = "Error approving newspaper";
           console.log(err)
         });
