@@ -1,6 +1,6 @@
 <template>
   <Carousel v-model="currentSlide" :items-to-show="itemsToView" :wrap-around="wrapAround">
-    <Slide  v-for="(item, index) in carouselValHandled" :key="index" class="carousel__slide">
+    <Slide  v-for="(item, index) in carouselValHandled" :key="index" class="carousel__slide" ref="slide">
       <div class="carousel__item">
         <div>
           <template v-if="isLoading"> Loading...</template>
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import {defineComponent, defineEmits} from 'vue'
+import {defineComponent, defineEmits,ref} from 'vue'
 import VuePdfEmbed from "vue-pdf-embed"
 import {Carousel, Navigation, Slide} from 'vue3-carousel'
 
@@ -50,16 +50,17 @@ export default defineComponent({
       frontPageView:true,
       itemsToView:2,
       wrapAround: true,
-      carouselValHandled:[]
+      carouselValHandled:ref([])
     }
   },
   watch: {
     carouselVal: {
       immediate: true,
       handler() {
-        this.carouselValHandled = this.carouselVal;
+        // console.log(this.carouselVal.filter((d) => d.page_number === 1))
+        this.carouselValHandled = this.carouselVal
         this.loadImages().then(() => {
-
+          // this.carouselValHandled = this.carouselValHandled.filter((d) => d.page_number === 1)
           this.isLoading = false;
         }).catch((error) => {
               this.isLoading = false;
@@ -77,7 +78,7 @@ export default defineComponent({
         const apiClient = axios.create({
           baseURL: '/api',
         })
-        for (const item of this.carouselVal) {
+        for (const item of this.carouselValHandled) {
           // console.log(encodeURIComponent(item)); // Log the URL for the API request
           const encoded_item = encodeURIComponent(item);
           try {
@@ -104,8 +105,14 @@ export default defineComponent({
       this.itemsToView = 1;
       this.wrapAround = false;
       this.frontPageView = false;
-      console.log(fileName);
-      console.log(this.isLoading)
+      this.loadImages();
+      // this.$refs.slide.$forceUpdate();
+      // this.$forceUpdate();
+      // console.log(fileName);
+      // console.log(this.isLoading)
+    },
+    filterFrontpages(){
+      return this.carouselValHandled.filter((d) => d.page_number === 1);
     }
   },
   mounted() {
@@ -114,7 +121,7 @@ export default defineComponent({
   updated() {
     const currentFilename = this.carouselVal[this.currentSlide];
     this.$emit('currentFilenameEvent', currentFilename);
-  },
+  }
 })
 </script>s
 

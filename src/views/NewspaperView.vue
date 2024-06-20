@@ -21,7 +21,7 @@
     </b-row>
     <b-row>
       <b-col sm="10">
-        <im-carousel ref="carousel" :carouselVal="pagesFileName"></im-carousel>
+        <im-carousel ref="carousel" :carouselVal="frontPages"></im-carousel>
         <!--      <im-pdf-viewer :pdf-val="pagesFileName" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
@@ -93,6 +93,7 @@ export default defineComponent({
       currentSectionTitle: ref(''),
       errorMessage: ref(""),
       pagesFileName: [],
+      frontPages:[]
       // batchid: this.$route.params.batchid,
       // newspaper: {},
       // errorMessage: ""
@@ -115,7 +116,11 @@ export default defineComponent({
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         );
         const frontPagePaths = response.data.filter((d) => d.page_number === 1);
-        this.pagesFileName = frontPagePaths.map((d) => {
+        this.pagesFileName = response.data.map((d) => {
+          const filePathParts = d.filepath.split("/");
+          return filePathParts[filePathParts.length - 1];
+        });
+        this.frontPages = frontPagePaths.map((d) => {
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
@@ -150,7 +155,7 @@ export default defineComponent({
       if (match) {
         this.currentSectionTitle = match[0];
       }
-      console.log("current section title: " + this.currentSectionTitle)
+      // console.log("current section title: " + this.currentSectionTitle)
     },
     initCurrentPageNumber() {
       const regex = /page(\d+)/;
@@ -158,7 +163,7 @@ export default defineComponent({
       if (match) {
         this.currentPageNumber = parseInt(match[1], 10);
       }
-      console.log("current page number: " + this.currentPageNumber)
+      // console.log("current page number: " + this.currentPageNumber)
     },
     initCurrentFrontPage() {
       if (this.frontPages.length > 0) {
