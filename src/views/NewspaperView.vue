@@ -145,6 +145,7 @@ export default defineComponent({
     },
 
     initCurrentSectionTitle() {
+
       const regex = /section(\d+)/;
       const match = this.currentFileName.match(regex);
       if (match) {
