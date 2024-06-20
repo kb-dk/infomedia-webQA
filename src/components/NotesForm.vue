@@ -22,7 +22,7 @@ import axios from "axios";
 export default defineComponent({
   name: "NotesForm",
   props: {
-    batch: [Object],
+    batch: Object,
     postsTitel: [String, Number],
     notesType: Number as PropType<NotesType>,
     newspaper: Object,
@@ -37,7 +37,7 @@ export default defineComponent({
   },
   mounted() {
     if (this.batch && this.batch.id !== undefined) {
-      this.getNotes()
+      this.getPosts()
           .then((res) => {
             this.posts = res;
           })
@@ -50,7 +50,7 @@ export default defineComponent({
     sectiontitle: {
       immediate: true,
       handler() {
-        this.getNotes().then((fetchedPosts) => { // Step 3: Update the posts data property
+        this.getPosts().then((fetchedPosts) => { // Step 3: Update the posts data property
           this.posts = fetchedPosts;
           console.log("Section title changed: " + this.sectiontitle);
         }).catch((error) => {
@@ -61,7 +61,7 @@ export default defineComponent({
     pagenumber: {
       immediate: true,
       handler() {
-        this.getNotes().then((fetchedPosts) => { // Step 3: Update the posts data property
+        this.getPosts().then((fetchedPosts) => { // Step 3: Update the posts data property
           this.posts = fetchedPosts;
           console.log("Page number changed: " + this.pagenumber);
         }).catch((error) => {
@@ -153,7 +153,7 @@ export default defineComponent({
         this.errorMessage = "Unable to remove a note";
       }
     },
-    async getNotes() {
+    async getPosts() {
       if (!this.batch) {
         return;
       }

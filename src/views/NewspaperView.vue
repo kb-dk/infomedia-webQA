@@ -21,7 +21,7 @@
     </b-row>
     <b-row>
       <b-col sm="10">
-        <im-carousel ref="carousel" :carouselVal="pagesFileName"></im-carousel>
+        <im-carousel  ref="carousel" :carouselVal="pagesFileName" @current-filename-event="handleCurrentFilename"></im-carousel>
         <!--      <im-pdf-viewer :pdf-val="pagesFileName" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
@@ -73,13 +73,11 @@ export default defineComponent({
   },
   data() {
     return {
-      dialogVisible: false,
       dayNotes: "Day notes",
       editionNotes: "Edition notes",
       sectionNotes: "Section notes",
       pageNotes: "Page notes",
       checkboxText: "Show all pages",
-      // frontPages: [],
       batch: {
         id: this.$route.params.batchid,
         value: ''
@@ -88,14 +86,11 @@ export default defineComponent({
         id: this.$route.params.newspaperid,
         value: ''
       },
-      currentFileName: ref(''),
-      currentPageNumber: ref(0),
-      currentSectionTitle: ref(''),
-      errorMessage: ref(""),
+      currentFileName: "",
+      currentPageNumber: 0,
+      currentSectionTitle: "",
+      errorMessage: "",
       pagesFileName: [],
-      // batchid: this.$route.params.batchid,
-      // newspaper: {},
-      // errorMessage: ""
     }
   },
   components: {
@@ -119,25 +114,24 @@ export default defineComponent({
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
-        // console.log(this.pagesFileName);
       } catch (error) {
-        console.error(error);
-        this.pagesFileName = []; // Return an empty array in case of error
-        // this.frontPages = []; // Return an empty array in case of error
         this.errorMessage = "Unable to get a frontpages";
+        console.error(this.errorMessage + ": " + error);
+        this.pagesFileName = []; // Return an empty array in case of error
       }
     },
+
     async fetchNewspaper() {
-      const urlParams = useRoute().params;
-      const {data} = await axios.get(`/api/batches/${urlParams.batchid}/newspapers/${urlParams.newspaperid}`).catch((err) => {
-        console.error(err);
+      try {
+        const { batchid, newspaperid } = useRoute().params;
+        const { data } = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
+        this.newspaper = data;
+      } catch (error) {
+        console.error(error);
         this.errorMessage = "Unable to load newspaper data";
-      });
-      this.newspaper = data;
+      }
     },
-    hideDialog() {
-      this.dialogVisible = true;
-    },
+
     handleCurrentFilename(filename) {
       this.currentFileName = filename;
       this.initCurrentSectionTitle();
@@ -145,7 +139,6 @@ export default defineComponent({
     },
 
     initCurrentSectionTitle() {
-
       const regex = /section(\d+)/;
       const match = this.currentFileName.match(regex);
       if (match) {
@@ -153,6 +146,7 @@ export default defineComponent({
       }
       console.log("current section title: " + this.currentSectionTitle)
     },
+
     initCurrentPageNumber() {
       const regex = /page(\d+)/;
       const match = this.currentFileName.match(regex);
@@ -161,30 +155,33 @@ export default defineComponent({
       }
       console.log("current page number: " + this.currentPageNumber)
     },
+
     initCurrentFrontPage() {
       if (this.frontPages.length > 0) {
-        this.currentFileName = this.frontPages[0];
-        this.initCurrentSectionTitle();
-        this.initCurrentPageNumber();
+        this.handleCurrentFilename(this.frontPages[0])
       }
     },
+
     async approveNewspaper() {
-      if (!this.newspaper.checked && confirm("Do you want to approve newspaper?")) {
+      if (!this.newspaper.checked && confirm("Do you want to approve the newspaper?")) {
         this.newspaper.checked = true;
-        axios.put(`/api/batches/${this.newspaper.batch_id}/newspapers/${this.newspaper.id}`).catch(err => {
-          this.errorMessage = "Error approving newspaper";
-          console.log(err)
-        });
+        try {
+          const { batch_id, id } = this.newspaper;
+          await axios.put(`/api/batches/${batch_id}/newspapers/${id}`);
+        } catch (error) {
+          this.errorMessage = "Error approving the newspaper";
+          console.log(this.errorMessage + ": " + error);
+        }
       }
     },
+
     switchPage(fileName){
       this.$refs.carousel.switchPage(fileName)
-      // console.log(fileName)
+      this.handleCurrentFilename(fileName)
     }
   }
 })
 </script>
-
 
 <style lang="scss">
 
