@@ -38,6 +38,7 @@
 <!--    </b-table>-->
   </div>
   <p style="margin-top: 10px;font-weight: bold">Total Pages: {{pages.length}}</p>
+  <p style="font-weight: bold">Total Sections: {{sections.size}}</p>
 </template>
 
 <script>
@@ -57,6 +58,7 @@ export default defineComponent({
       fields: ["Page", "Section"],
       pages: [
       ],
+      sections:new Set(),
       focusedPage:ref(0)
     }
   },
@@ -69,9 +71,9 @@ export default defineComponent({
           let page= this.getPageNumber(this.pagesFileName[i])
           let fileObject = {src:this.pagesFileName[i],Section:section[1],Page:page[1],sectionName:section[0],pageName:page[0]}
           this.pages.push(fileObject);
+          this.sections.add(section[1]);
         }
         this.pages = this.sortBySectionAndPage(this.pages);
-
       }
     }
   },
