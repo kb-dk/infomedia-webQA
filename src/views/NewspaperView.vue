@@ -21,7 +21,8 @@
     </b-row>
     <b-row>
       <b-col sm="10">
-        <im-carousel ref="carousel" :carouselVal="frontPages"></im-carousel>
+        <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
+                     :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
         <!--      <im-pdf-viewer :pdf-val="pagesFileName" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
@@ -31,7 +32,10 @@
         </b-button>
         <br>
         <br>
-        <PageTable :pagesFileName="pagesFileName" :rowClick="switchPage"></PageTable>
+        <PageTable :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
+        <b-button :variant="frontPageView ? 'success':'primary'" class="changeCarouselView"
+                  @click="changeToFrontPageView()">Show Front Pages
+        </b-button>
       </b-col>
     </b-row>
   </div>
@@ -73,13 +77,11 @@ export default defineComponent({
   },
   data() {
     return {
-      dialogVisible: false,
       dayNotes: "Day notes",
       editionNotes: "Edition notes",
       sectionNotes: "Section notes",
       pageNotes: "Page notes",
       checkboxText: "Show all pages",
-      // frontPages: [],
       batch: {
         id: this.$route.params.batchid,
         value: ''
@@ -88,16 +90,16 @@ export default defineComponent({
         id: this.$route.params.newspaperid,
         value: ''
       },
-      currentFileName: ref(''),
-      currentPageNumber: ref(0),
-      currentSectionTitle: ref(''),
-      errorMessage: ref(""),
-      pagesFileName: [],
-      frontPages:[],
-      newspaperData: {}
-      // batchid: this.$route.params.batchid,
-      // newspaper: {},
-      // errorMessage: ""
+      currentFileName: "",
+      currentPageNumber: 0,
+      currentSectionTitle: "",
+      errorMessage: "",
+      pagesNames: [],
+      frontPagesNames: [],
+      currentPagesNames: [],
+      newspaperData: {},
+      frontPageView: true,
+      itemToShow: 2
     }
   },
   components: {
@@ -119,33 +121,33 @@ export default defineComponent({
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         );
         const frontPagePaths = response.data.filter((d) => d.page_number === 1);
-        this.pagesFileName = response.data.map((d) => {
+        this.pagesNames = response.data.map((d) => {
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
-        this.frontPages = frontPagePaths.map((d) => {
+        this.frontPagesNames = frontPagePaths.map((d) => {
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
-        // console.log(this.pagesFileName);
+        this.currentPagesNames = this.frontPagesNames;
       } catch (error) {
-        console.error(error);
-        this.pagesFileName = []; // Return an empty array in case of error
-        // this.frontPages = []; // Return an empty array in case of error
         this.errorMessage = "Unable to get a frontpages";
+        console.error(this.errorMessage + ": " + error);
+        this.pagesNames = []; // Return an empty array in case of error
       }
     },
+
     async fetchNewspaper() {
-      const urlParams = useRoute().params;
-      const {data} = await axios.get(`/api/batches/${urlParams.batchid}/newspapers/${urlParams.newspaperid}`).catch((err) => {
-        console.error(err);
+      try {
+        const { batchid, newspaperid } = useRoute().params;
+        const { data } = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
+        this.newspaperData = data;
+      } catch (error) {
+        console.error(error);
         this.errorMessage = "Unable to load newspaper data";
-      });
-      this.newspaperData = data;
+      }
     },
-    hideDialog() {
-      this.dialogVisible = true;
-    },
+
     handleCurrentFilename(filename) {
       this.currentFileName = filename;
       this.initCurrentSectionTitle();
@@ -158,41 +160,51 @@ export default defineComponent({
       if (match) {
         this.currentSectionTitle = match[0];
       }
-      // console.log("current section title: " + this.currentSectionTitle)
+      console.log("current section title: " + this.currentSectionTitle)
     },
+
     initCurrentPageNumber() {
       const regex = /page(\d+)/;
       const match = this.currentFileName.match(regex);
       if (match) {
         this.currentPageNumber = parseInt(match[1], 10);
       }
-      // console.log("current page number: " + this.currentPageNumber)
+      console.log("current page number: " + this.currentPageNumber)
     },
     initCurrentFrontPage() {
-      if (this.frontPages.length > 0) {
-        this.currentFileName = this.frontPages[0];
-        this.initCurrentSectionTitle();
-        this.initCurrentPageNumber();
+      if (this.frontPagesNames.length > 0) {
+        this.handleCurrentFilename(this.frontPagesNames[0])
       }
     },
     async approveNewspaper() {
-      console.log(this.newspaper)
-      if (!this.newspaper.checked && confirm("Do you want to approve newspaper?")) {
+      if (!this.newspaper.checked && confirm("Do you want to approve the newspaper?")) {
         this.newspaper.checked = true;
-        axios.put(`/api/batches/${this.batch.id}/newspapers/${this.newspaper.id}`).catch(err => {
-          this.errorMessage = "Error approving newspaper";
-          console.log(err)
-        });
+        try {
+          const { id } = this.newspaper;
+          await axios.put(`/api/batches/${this.batch.id}/newspapers/${id}`);
+        } catch (error) {
+          this.errorMessage = "Error approving the newspaper";
+          console.log(this.errorMessage + ": " + error);
+        }
       }
     },
+
     switchPage(fileName){
       this.$refs.carousel.switchPage(fileName)
-      // console.log(fileName)
+      this.currentPagesNames= this.pagesNames
+      this.handleCurrentFilename(fileName)
+      this.frontPageView = false
+      this.itemToShow = 1
+    },
+
+    changeToFrontPageView(){
+      this.currentPagesNames = this.frontPagesNames
+      this.frontPageView = true
+      this.itemToShow = 2;
     }
   }
 })
 </script>
-
 
 <style lang="scss">
 
