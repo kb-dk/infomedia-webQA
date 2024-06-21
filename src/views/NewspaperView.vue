@@ -33,7 +33,7 @@
         <br>
         <br>
         <PageTable :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
-        <b-button :variant="frontPageView ? 'success':'primary'" class="approveNewspaperBtn"
+        <b-button :variant="frontPageView ? 'success':'primary'" class="changeCarouselView"
                   @click="changeToFrontPageView()">Show Front Pages
         </b-button>
       </b-col>
