@@ -1,24 +1,28 @@
 <template>
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
-    <b-row>
-      <b-col>
-        <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
-      </b-col>
-      <b-col>
-        <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
-                    :newspaper="newspaper"></notes-form>
-      </b-col>
-      <b-col>
-        <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
-                    :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
-      </b-col>
-      <b-col>
-        <notes-form :postsTitel="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
-                    :newspaper="newspaper" :sectiontitle="currentSectionTitle"
-                    :pagenumber="currentPageNumber"></notes-form>
-      </b-col>
-    </b-row>
+    <div class="showNotesDiv" @mouseover="showNotes = true" @mouseleave="showNotes = false" name="expandNotes">
+      DISPLAY NOTES
+      <b-row v-if="showNotes">
+        <b-col>
+          <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
+        </b-col>
+        <b-col>
+          <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
+                      :newspaper="newspaper"></notes-form>
+        </b-col>
+        <b-col>
+          <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
+                      :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
+        </b-col>
+        <b-col>
+          <notes-form :postsTitel="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
+                      :newspaper="newspaper" :sectiontitle="currentSectionTitle"
+                      :pagenumber="currentPageNumber"></notes-form>
+        </b-col>
+      </b-row>
+    </div>
+
     <b-row>
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
@@ -99,7 +103,8 @@ export default defineComponent({
       currentPagesNames: [],
       newspaperData: {},
       frontPageView: true,
-      itemToShow: 2
+      itemToShow: 2,
+      showNotes:false
     }
   },
   components: {
@@ -228,4 +233,30 @@ nav {
     }
   }
 }
+.showNotesDiv{
+  width: 100%;
+  height: 3em;
+  background-color: #ddbc14;
+  border-radius: 3px;
+  box-shadow: 1px 1px 3px black;
+  //max-height: 30em;
+  cursor: pointer;
+  text-align:center;
+  padding:10px;
+  color: white;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px black;
+}
+.showNotesDiv >*{
+  position: absolute;
+  z-index: 1;
+  background-color: white;
+  width: 70%;
+  border-radius: 3px;
+  border: 1px solid rgba(90, 89, 89, 0.71);
+  text-shadow:1px 1px 1px white;
+  color:black;
+  font-weight: normal;
+}
+
 </style>
