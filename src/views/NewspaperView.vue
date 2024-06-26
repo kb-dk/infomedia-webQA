@@ -1,6 +1,7 @@
 <template>
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
+    <b-button class="otherBatchButton" @click="previousBatch()">PREV</b-button>
     <div class="showNotesDiv" @mouseover="showNotes = true" @mouseleave="showNotes = false" name="expandNotes">
       DISPLAY NOTES
       <b-row v-if="showNotes">
@@ -22,7 +23,7 @@
         </b-col>
       </b-row>
     </div>
-
+    <b-button class="otherBatchButton" @click="nextBatch()">NEXT</b-button>
     <b-row>
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
@@ -206,6 +207,40 @@ export default defineComponent({
       this.currentPagesNames = this.frontPagesNames
       this.frontPageView = true
       this.itemToShow = 2;
+    },
+    previousBatch(){
+      const { year, month,day } = this.$route.params;
+      let currentDay = new Date(`${year}/${month}/${day}`);
+      currentDay.setDate(currentDay.getDate() -1);
+      this.getOtherBatch(currentDay);
+    },
+    nextBatch(){
+      const { year, month,day } = this.$route.params;
+      let currentDay = new Date(`${year}/${month}/${day}`);
+      currentDay.setDate(currentDay.getDate() +1);
+      this.getOtherBatch(currentDay);
+    },
+    async getOtherBatch(newDate){
+      const newBatch = await axios.get(`/api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth()+1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
+      const batchData = newBatch.data;
+      console.log("batchData", batchData[0].id);
+      if(batchData.length > 0) {
+      const newNewspaper = await axios.get(`/api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
+      const newspaperData = newNewspaper.data;
+      if(newspaperData.length > 0) {
+        this.$router.push({
+          name: "newspaper-view",
+          params: {
+            batchid: batchData[0].id,
+            newspaperid: newspaperData.id,
+            year: newDate.getFullYear(),
+            month: newDate.getMonth()+1,
+            day: newDate.getDate()
+          }
+        })
+      }
+      }
+
     }
   }
 })
@@ -233,8 +268,17 @@ nav {
     }
   }
 }
+.otherBatchButton{
+height: 3em;
+border-radius: 3px;
+box-shadow: 1px 1px 3px black;padding: 10px;
+//display: inline-block;
+margin:3px;
+  vertical-align: baseline;
+
+}
 .showNotesDiv{
-  width: 100%;
+  width: 90%;
   height: 3em;
   background-color: #ddbc14;
   border-radius: 3px;
@@ -246,6 +290,7 @@ nav {
   color: white;
   font-weight: bold;
   text-shadow: 1px 1px 3px black;
+  display: inline-block;
 }
 .showNotesDiv >*{
   position: absolute;
