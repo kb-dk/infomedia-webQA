@@ -38,15 +38,26 @@ export default defineComponent({
         batch_id: '',
       },
       selectedPost: '',
-      postOptions: [
-        {name: "Test note 1"},
-        {name: "Test note 2"},
-        {name: "Test note 3"}
-      ]
+      postOptions: []
     }
   },
+  mounted() {
+    {
+      this.loadPostOptions();
+    }
+  },
+
   emits: ['create'],
   methods: {
+    async loadPostOptions() {
+      try {
+        const response = await fetch('/webQAconfig.json');
+        const data = await response.json();
+        this.postOptions = data.postOptions;
+      } catch (error) {
+        console.error('Failed to load postOptions:', error);
+      }
+    },
     createOnePost() {
       this.post.id = Date.now();
       this.$emit('create', this.post)
@@ -55,7 +66,7 @@ export default defineComponent({
         id: 0,
         batch_id: '',
       }
-    },
+    }
   },
   watch: {
     selectedPost(newValue) {

@@ -1,7 +1,7 @@
 <template>
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
-    <b-row>
+    <b-row class="row">
       <b-col>
         <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
       </b-col>
@@ -23,7 +23,6 @@
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
                      :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
-        <!--      <im-pdf-viewer :pdf-val="pagesFileName" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
         <br>
@@ -33,7 +32,7 @@
         <br>
         <br>
         <PageTable :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
-        <b-button :variant="frontPageView ? 'success':'primary'" class="changeCarouselView"
+        <b-button v-if="!frontPageView" class="changeCarouselView"
                   @click="changeToFrontPageView()">Show Front Pages
         </b-button>
       </b-col>
@@ -43,7 +42,7 @@
 
 <script>
 
-import {defineComponent, getCurrentInstance, onMounted, ref} from "vue";
+import {defineComponent, getCurrentInstance, onMounted} from "vue";
 import NotesForm from "@/components/NotesForm.vue";
 import PageTable from "@/components/PageTable";
 import {useRoute} from "vue-router";
@@ -60,16 +59,10 @@ export default defineComponent({
   setup() {
     const instance = getCurrentInstance();
 
-    const callFetchCarouselData = () => {
-      instance.proxy.fetchCarouselData();
-    };
-    const callInitCurrentFrontPage = () => {
-      instance.proxy.initCurrentFrontPage();
-    };
     onMounted(async function () {
       try {
-        callFetchCarouselData();
-        callInitCurrentFrontPage();
+        await instance.proxy.fetchCarouselData();
+        await instance.proxy.initCurrentFrontPage();
       } catch (error) {
         console.error(error);
       }
@@ -130,6 +123,7 @@ export default defineComponent({
           return filePathParts[filePathParts.length - 1];
         });
         this.currentPagesNames = this.frontPagesNames;
+        console.log("fetch carousel data: " + this.currentPagesNames)
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";
         console.error(this.errorMessage + ": " + error);
@@ -150,13 +144,14 @@ export default defineComponent({
 
     handleCurrentFilename(filename) {
       this.currentFileName = filename;
+      console.log("current file name: " + this.currentFileName)
       this.initCurrentSectionTitle();
       this.initCurrentPageNumber();
     },
 
     initCurrentSectionTitle() {
       const regex = /section(\d+)/;
-      const match = this.currentFileName.match(regex);
+      const match = this.currentFileName && this.currentFileName.match(regex);
       if (match) {
         this.currentSectionTitle = match[0];
       }
@@ -165,12 +160,13 @@ export default defineComponent({
 
     initCurrentPageNumber() {
       const regex = /page(\d+)/;
-      const match = this.currentFileName.match(regex);
+      const match = this.currentFileName && this.currentFileName.match(regex);
       if (match) {
         this.currentPageNumber = parseInt(match[1], 10);
       }
       console.log("current page number: " + this.currentPageNumber)
     },
+
     initCurrentFrontPage() {
       if (this.frontPagesNames.length > 0) {
         this.handleCurrentFilename(this.frontPagesNames[0])
@@ -188,15 +184,13 @@ export default defineComponent({
         }
       }
     },
-
-    switchPage(fileName){
-      this.$refs.carousel.switchPage(fileName)
-      this.currentPagesNames= this.pagesNames
-      this.handleCurrentFilename(fileName)
-      this.frontPageView = false
-      this.itemToShow = 1
+    switchPage(fileName) {
+      this.$refs.carousel.switchPage(fileName);
+      this.handleCurrentFilename(fileName);
+      this.currentPagesNames = [fileName];
+      this.frontPageView = false;
+      this.itemToShow = 1;
     },
-
     changeToFrontPageView(){
       this.currentPagesNames = this.frontPagesNames
       this.frontPageView = true
@@ -216,16 +210,7 @@ export default defineComponent({
   color: #2c3e50;
 }
 
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.row {
+  margin: 10px;
 }
 </style>

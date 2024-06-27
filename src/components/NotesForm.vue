@@ -105,7 +105,7 @@ export default defineComponent({
             return;
         }
         const response = await axios.post(url, post.note, {
-          headers: {'Content-Type': 'application/json'},
+          headers: {'Content-Type': 'text/plain'},
         });
 
         if (!Array.isArray(this.posts)) {
