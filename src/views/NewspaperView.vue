@@ -208,13 +208,30 @@ export default defineComponent({
       this.frontPageView = true
       this.itemToShow = 2;
     },
-    previousBatch(){
+    async previousBatch(){
       const { year, month,day } = this.$route.params;
-      let currentDay = new Date(`${year}/${month}/${day}`);
-      currentDay.setDate(currentDay.getDate() -1);
-      this.getOtherBatch(currentDay);
+      const {data} = await axios.get(`/newspapers/prev?
+                                                            newspaper_name=${this.newspaperData.newspaper_name}&
+                                                            year=${year}&month=${month}&
+                                                            day=${day}&
+                                                            batch_type=dagsaviser`);
+      if(data){
+        this.$router.push({
+          name: "newspaper-view",
+          params: {
+            batchid: data.batch_id,
+            newspaperid: data.id,
+            year: newDate.getFullYear(),
+            month: newDate.getMonth()+1,
+            day: newDate.getDate()
+          }
+        })
+      }
+      // let currentDay = new Date(`${year}/${month}/${day}`);
+      // currentDay.setDate(currentDay.getDate() -1);
+      // this.getOtherBatch(currentDay);
     },
-    nextBatch(){
+    async nextBatch(){
       const { year, month,day } = this.$route.params;
       let currentDay = new Date(`${year}/${month}/${day}`);
       currentDay.setDate(currentDay.getDate() +1);
