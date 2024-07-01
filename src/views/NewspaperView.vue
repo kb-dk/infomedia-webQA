@@ -1,25 +1,30 @@
 <template>
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
-    <b-row class="row">
-      <b-col>
-        <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
-      </b-col>
-      <b-col>
-        <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
-                    :newspaper="newspaper"></notes-form>
-      </b-col>
-      <b-col>
-        <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
-                    :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
-      </b-col>
-      <b-col>
-        <notes-form :postsTitel="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
-                    :newspaper="newspaper" :sectiontitle="currentSectionTitle"
-                    :pagenumber="currentPageNumber"></notes-form>
-      </b-col>
-    </b-row>
-    <b-row>
+    <b-button class="otherBatchButton" @click="previousBatch()">PREV</b-button>
+    <div class="showNotesDiv" @mouseenter="showNotes = true" name="expandNotes">
+      DISPLAY NOTES
+      <b-row v-if="showNotes">
+        <b-col >
+          <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
+        </b-col>
+        <b-col >
+          <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
+                      :newspaper="newspaper"></notes-form>
+        </b-col>
+        <b-col >
+          <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
+                      :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
+        </b-col>
+        <b-col>
+          <notes-form :postsTitel="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
+                      :newspaper="newspaper" :sectiontitle="currentSectionTitle"
+                      :pagenumber="currentPageNumber"></notes-form>
+        </b-col>
+      </b-row>
+    </div>
+    <b-button class="otherBatchButton" @click="nextBatch()">NEXT</b-button>
+    <b-row @mouseenter="showNotes = false">
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
                      :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
@@ -92,7 +97,8 @@ export default defineComponent({
       currentPagesNames: [],
       newspaperData: {},
       frontPageView: true,
-      itemToShow: 2
+      itemToShow: 2,
+      showNotes: false
     }
   },
   components: {
@@ -123,7 +129,6 @@ export default defineComponent({
           return filePathParts[filePathParts.length - 1];
         });
         this.currentPagesNames = this.frontPagesNames;
-        console.log("fetch carousel data: " + this.currentPagesNames)
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";
         console.error(this.errorMessage + ": " + error);
@@ -133,7 +138,7 @@ export default defineComponent({
 
     async fetchNewspaper() {
       try {
-        const { batchid, newspaperid } = useRoute().params;
+        const { batchid, newspaperid } = this.$route.params;
         const { data } = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
         this.newspaperData = data;
       } catch (error) {
@@ -144,7 +149,6 @@ export default defineComponent({
 
     handleCurrentFilename(filename) {
       this.currentFileName = filename;
-      console.log("current file name: " + this.currentFileName)
       this.initCurrentSectionTitle();
       this.initCurrentPageNumber();
     },
@@ -155,7 +159,7 @@ export default defineComponent({
       if (match) {
         this.currentSectionTitle = match[0];
       }
-      console.log("current section title: " + this.currentSectionTitle)
+      // console.log("current section title: " + this.currentSectionTitle)
     },
 
     initCurrentPageNumber() {
@@ -164,9 +168,8 @@ export default defineComponent({
       if (match) {
         this.currentPageNumber = parseInt(match[1], 10);
       }
-      console.log("current page number: " + this.currentPageNumber)
+      // console.log("current page number: " + this.currentPageNumber)
     },
-
     initCurrentFrontPage() {
       if (this.frontPagesNames.length > 0) {
         this.handleCurrentFilename(this.frontPagesNames[0])
@@ -191,10 +194,45 @@ export default defineComponent({
       this.frontPageView = false;
       this.itemToShow = 1;
     },
-    changeToFrontPageView(){
+    changeToFrontPageView() {
       this.currentPagesNames = this.frontPagesNames
       this.frontPageView = true
       this.itemToShow = 2;
+    },
+    async previousBatch() {
+      const {year, month, day} = this.$route.params;
+      let currentDay = new Date(`${year}/${month}/${day}`);
+      currentDay.setDate(currentDay.getDate() - 1);
+      this.getOtherBatch(currentDay);
+    },
+    async nextBatch() {
+      const {year, month, day} = this.$route.params;
+      let currentDay = new Date(`${year}/${month}/${day}`);
+      currentDay.setDate(currentDay.getDate() + 1);
+      this.getOtherBatch(currentDay);
+    },
+    async getOtherBatch(newDate) {
+      const newBatch = await axios.get(`/api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
+      const batchData = newBatch.data;
+      if (batchData.length > 0) {
+        const newNewspaper = await axios.get(`/api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
+        const newspaperData = newNewspaper.data;
+        if (newspaperData.length > 0) {
+          this.$router.push({
+            name: "newspaper-view",
+            replace: true,
+            params: {
+              batchid: batchData[0].id,
+              newspaperid: newspaperData[0].id,
+              year: newDate.getFullYear(),
+              month: newDate.getMonth() + 1,
+              day: newDate.getDate()
+            }
+          });
+          // this.fetchNewspaper();
+        }
+      }
+
     }
   }
 })
@@ -213,4 +251,44 @@ export default defineComponent({
 .row {
   margin: 10px;
 }
+
+.otherBatchButton {
+  height: 3em;
+  border-radius: 3px;
+  box-shadow: 1px 1px 3px black;
+  padding: 10px;
+  //display: inline-block;
+  margin: 3px;
+  vertical-align: baseline;
+
+}
+
+.showNotesDiv {
+  width: 90%;
+  height: 3em;
+  background-color: #dbc23eb2;
+  border-radius: 3px;
+  box-shadow: 1px 1px 3px black;
+  //max-height: 30em;
+  cursor: pointer;
+  text-align: center;
+  padding: 10px;
+  color: white;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px black;
+  display: inline-block;
+}
+
+.showNotesDiv > * {
+  position: absolute;
+  z-index: 1;
+  background-color: white;
+  width: 70%;
+  border-radius: 3px;
+  border: 1px solid rgba(90, 89, 89, 0.71);
+  text-shadow: 1px 1px 1px white;
+  color: black;
+  font-weight: normal;
+}
+
 </style>
