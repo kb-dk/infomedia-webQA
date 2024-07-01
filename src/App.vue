@@ -17,7 +17,7 @@
     </b-col>
     <b-col sm="10">
 
-      <router-view/>
+      <router-view :key="$route.fullPath"/>
     </b-col>
   </b-row>
   </div>

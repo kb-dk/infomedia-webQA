@@ -105,14 +105,14 @@ export default defineComponent({
       newspaperData: {},
       frontPageView: true,
       itemToShow: 2,
-      showNotes:false
+      showNotes: false
     }
   },
   components: {
     NotesForm,
     PageTable
   },
-  created(){
+  created() {
     this.fetchNewspaper();
   },
   methods: {
@@ -145,8 +145,8 @@ export default defineComponent({
 
     async fetchNewspaper() {
       try {
-        const { batchid, newspaperid } = useRoute().params;
-        const { data } = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
+        const {batchid, newspaperid} = useRoute().params;
+        const {data} = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
         this.newspaperData = data;
       } catch (error) {
         console.error(error);
@@ -186,7 +186,7 @@ export default defineComponent({
       if (!this.newspaper.checked && confirm("Do you want to approve the newspaper?")) {
         this.newspaper.checked = true;
         try {
-          const { id } = this.newspaper;
+          const {id} = this.newspaper;
           await axios.put(`/api/batches/${this.batch.id}/newspapers/${id}`);
         } catch (error) {
           this.errorMessage = "Error approving the newspaper";
@@ -195,67 +195,70 @@ export default defineComponent({
       }
     },
 
-    switchPage(fileName){
+    switchPage(fileName) {
       this.$refs.carousel.switchPage(fileName)
-      this.currentPagesNames= this.pagesNames
+      this.currentPagesNames = this.pagesNames
       this.handleCurrentFilename(fileName)
       this.frontPageView = false
       this.itemToShow = 1
     },
 
-    changeToFrontPageView(){
+    changeToFrontPageView() {
       this.currentPagesNames = this.frontPagesNames
       this.frontPageView = true
       this.itemToShow = 2;
     },
-    async previousBatch(){
-      const { year, month,day } = this.$route.params;
-      const {data} = await axios.get(`/newspapers/prev?
-                                                            newspaper_name=${this.newspaperData.newspaper_name}&
-                                                            year=${year}&month=${month}&
-                                                            day=${day}&
-                                                            batch_type=dagsaviser`);
-      if(data){
-        this.$router.push({
-          name: "newspaper-view",
-          params: {
-            batchid: data.batch_id,
-            newspaperid: data.id,
-            year: newDate.getFullYear(),
-            month: newDate.getMonth()+1,
-            day: newDate.getDate()
-          }
-        })
-      }
-      // let currentDay = new Date(`${year}/${month}/${day}`);
-      // currentDay.setDate(currentDay.getDate() -1);
-      // this.getOtherBatch(currentDay);
-    },
-    async nextBatch(){
-      const { year, month,day } = this.$route.params;
+    async previousBatch() {
+      const {year, month, day} = this.$route.params;
       let currentDay = new Date(`${year}/${month}/${day}`);
-      currentDay.setDate(currentDay.getDate() +1);
+      currentDay.setDate(currentDay.getDate() - 1);
+      this.getOtherBatch(currentDay);
+      // const {data} = await axios.get(`/newspapers/prev?
+      //                                                       newspaper_name=${this.newspaperData.newspaper_name}&
+      //                                                       year=${year}&month=${month}&
+      //                                                       day=${day}&
+      //                                                       batch_type=dagsaviser`);
+      // if(data){
+      //   this.$router.push({
+      //     name: "newspaper-view",
+      //     params: {
+      //       batchid: data.batch_id,
+      //       newspaperid: data.id,
+      //       year: newDate.getFullYear(),
+      //       month: newDate.getMonth()+1,
+      //       day: newDate.getDate()
+      //     }
+      //   })
+      // }
+
+    },
+    async nextBatch() {
+      const {year, month, day} = this.$route.params;
+      let currentDay = new Date(`${year}/${month}/${day}`);
+      currentDay.setDate(currentDay.getDate() + 1);
       this.getOtherBatch(currentDay);
     },
-    async getOtherBatch(newDate){
-      const newBatch = await axios.get(`/api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth()+1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
+    async getOtherBatch(newDate) {
+      const newBatch = await axios.get(`/api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
       const batchData = newBatch.data;
       console.log("batchData", batchData[0].id);
-      if(batchData.length > 0) {
-      const newNewspaper = await axios.get(`/api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
-      const newspaperData = newNewspaper.data;
-      if(newspaperData.length > 0) {
-        this.$router.push({
-          name: "newspaper-view",
-          params: {
-            batchid: batchData[0].id,
-            newspaperid: newspaperData.id,
-            year: newDate.getFullYear(),
-            month: newDate.getMonth()+1,
-            day: newDate.getDate()
-          }
-        })
-      }
+      if (batchData.length > 0) {
+        const newNewspaper = await axios.get(`/api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
+        const newspaperData = newNewspaper.data;
+        if (newspaperData.length > 0) {
+          this.$router.push({
+            name: "newspaper-view",
+            replace: true,
+            params: {
+              batchid: batchData[0].id,
+              newspaperid: newspaperData.id,
+              year: newDate.getFullYear(),
+              month: newDate.getMonth() + 1,
+              day: newDate.getDate()
+            }
+          });
+          this.fetchNewspaper();
+        }
       }
 
     }
@@ -285,16 +288,19 @@ nav {
     }
   }
 }
-.otherBatchButton{
-height: 3em;
-border-radius: 3px;
-box-shadow: 1px 1px 3px black;padding: 10px;
-//display: inline-block;
-margin:3px;
+
+.otherBatchButton {
+  height: 3em;
+  border-radius: 3px;
+  box-shadow: 1px 1px 3px black;
+  padding: 10px;
+  //display: inline-block;
+  margin: 3px;
   vertical-align: baseline;
 
 }
-.showNotesDiv{
+
+.showNotesDiv {
   width: 90%;
   height: 3em;
   background-color: #ddbc14;
@@ -302,22 +308,23 @@ margin:3px;
   box-shadow: 1px 1px 3px black;
   //max-height: 30em;
   cursor: pointer;
-  text-align:center;
-  padding:10px;
+  text-align: center;
+  padding: 10px;
   color: white;
   font-weight: bold;
   text-shadow: 1px 1px 3px black;
   display: inline-block;
 }
-.showNotesDiv >*{
+
+.showNotesDiv > * {
   position: absolute;
   z-index: 1;
   background-color: white;
   width: 70%;
   border-radius: 3px;
   border: 1px solid rgba(90, 89, 89, 0.71);
-  text-shadow:1px 1px 1px white;
-  color:black;
+  text-shadow: 1px 1px 1px white;
+  color: black;
   font-weight: normal;
 }
 
