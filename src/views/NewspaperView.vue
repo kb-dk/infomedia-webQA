@@ -1,6 +1,7 @@
 <template>
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
+    <b-row class="row">
     <b-button class="otherBatchButton" @click="previousBatch()">PREV</b-button>
     <div class="showNotesDiv" @mouseover="showNotes = true" @mouseleave="showNotes = false" name="expandNotes">
       DISPLAY NOTES
@@ -23,12 +24,12 @@
         </b-col>
       </b-row>
     </div>
+    </b-row>
     <b-button class="otherBatchButton" @click="nextBatch()">NEXT</b-button>
     <b-row>
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
                      :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
-        <!--      <im-pdf-viewer :pdf-val="pagesFileName" :checkbox-text="checkboxText"></im-pdf-viewer>-->
       </b-col>
       <b-col sm="2">
         <br>
@@ -38,7 +39,7 @@
         <br>
         <br>
         <PageTable :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
-        <b-button :variant="frontPageView ? 'success':'primary'" class="changeCarouselView"
+        <b-button v-if="!frontPageView" class="changeCarouselView"
                   @click="changeToFrontPageView()">Show Front Pages
         </b-button>
       </b-col>
@@ -48,7 +49,7 @@
 
 <script>
 
-import {defineComponent, getCurrentInstance, onMounted, ref} from "vue";
+import {defineComponent, getCurrentInstance, onMounted} from "vue";
 import NotesForm from "@/components/NotesForm.vue";
 import PageTable from "@/components/PageTable";
 import {useRoute} from "vue-router";
@@ -65,16 +66,10 @@ export default defineComponent({
   setup() {
     const instance = getCurrentInstance();
 
-    const callFetchCarouselData = () => {
-      instance.proxy.fetchCarouselData();
-    };
-    const callInitCurrentFrontPage = () => {
-      instance.proxy.initCurrentFrontPage();
-    };
     onMounted(async function () {
       try {
-        callFetchCarouselData();
-        callInitCurrentFrontPage();
+        await instance.proxy.fetchCarouselData();
+        await instance.proxy.initCurrentFrontPage();
       } catch (error) {
         console.error(error);
       }
@@ -112,7 +107,7 @@ export default defineComponent({
     NotesForm,
     PageTable
   },
-  created() {
+  created(){
     this.fetchNewspaper();
   },
   methods: {
@@ -145,8 +140,8 @@ export default defineComponent({
 
     async fetchNewspaper() {
       try {
-        const {batchid, newspaperid} = useRoute().params;
-        const {data} = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
+        const { batchid, newspaperid } = useRoute().params;
+        const { data } = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
         this.newspaperData = data;
       } catch (error) {
         console.error(error);
@@ -162,7 +157,7 @@ export default defineComponent({
 
     initCurrentSectionTitle() {
       const regex = /section(\d+)/;
-      const match = this.currentFileName.match(regex);
+      const match = this.currentFileName && this.currentFileName.match(regex);
       if (match) {
         this.currentSectionTitle = match[0];
       }
@@ -171,7 +166,7 @@ export default defineComponent({
 
     initCurrentPageNumber() {
       const regex = /page(\d+)/;
-      const match = this.currentFileName.match(regex);
+      const match = this.currentFileName && this.currentFileName.match(regex);
       if (match) {
         this.currentPageNumber = parseInt(match[1], 10);
       }
@@ -186,7 +181,7 @@ export default defineComponent({
       if (!this.newspaper.checked && confirm("Do you want to approve the newspaper?")) {
         this.newspaper.checked = true;
         try {
-          const {id} = this.newspaper;
+          const { id } = this.newspaper;
           await axios.put(`/api/batches/${this.batch.id}/newspapers/${id}`);
         } catch (error) {
           this.errorMessage = "Error approving the newspaper";
@@ -194,15 +189,13 @@ export default defineComponent({
         }
       }
     },
-
     switchPage(fileName) {
-      this.$refs.carousel.switchPage(fileName)
-      this.currentPagesNames = this.pagesNames
-      this.handleCurrentFilename(fileName)
-      this.frontPageView = false
-      this.itemToShow = 1
+      this.$refs.carousel.switchPage(fileName);
+      this.handleCurrentFilename(fileName);
+      this.currentPagesNames = [fileName];
+      this.frontPageView = false;
+      this.itemToShow = 1;
     },
-
     changeToFrontPageView() {
       this.currentPagesNames = this.frontPagesNames
       this.frontPageView = true
@@ -276,17 +269,8 @@ export default defineComponent({
   color: #2c3e50;
 }
 
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.row {
+  margin: 10px;
 }
 
 .otherBatchButton {

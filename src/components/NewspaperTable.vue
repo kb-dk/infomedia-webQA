@@ -16,6 +16,11 @@
              :busy="isBusy"
              :sticky-header="true"
              >
+      <template #cell(newspaper_name)="row">
+        <div :class="{ 'selected-newspaper': row.item.newspaper_name === selectedNewspaper }">
+          {{ row.value }}
+        </div>
+      </template>
     </b-table>
     </div>
   </div>
@@ -23,7 +28,6 @@
 
 <script>
 import {defineComponent, ref} from "vue";
-import axios from "axios";
 
 export default defineComponent({
   name: "NewspaperTable",
@@ -38,56 +42,65 @@ export default defineComponent({
       sortBy: 'newspaper_name',
       sortDesc: false,
       isBusy: true,
+      handledNewspapers: [],
       fields: [
         {
-          key: 'newspaper_name',
+          key: "newspaper_name",
           sortable: false,
-          label: 'Newspaper',
+          label: "Newspaper",
           filterable: true,
-          stickyColumn: true
-        },
+          stickyColumn: true,
+        }
       ],
-      handledNewspapers: []
+      selectedNewspaper: null,
     }
   },
   created() {
-    if (this.newspapers) {
-      this.newspapers.then((response) => {
-        this.handledNewspapers = response;
-      }).finally(() => {
-            this.isBusy = false;
-            this.fields[0].label = this.headerName;
-            this.fields[0].sortable = true;
-          }
-      )
-    }
+    this.handleNewspapers();
+  },
+  computed: {
+    filteredNewspapers() {
+      if (this.filter) {
+        return this.handledNewspapers.filter((row) =>
+            this.filterF(row, this.filter)
+        );
+      } else {
+        return this.handledNewspapers;
+      }
+    },
   },
   methods: {
+    async handleNewspapers() {
+      try {
+        const response = await this.newspapers;
+        this.handledNewspapers = response;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.isBusy = false;
+        this.fields[0].label = this.headerName;
+        this.fields[0].sortable = true;
+      }
+    },
     rowClicked(event) {
       // console.log(event)
-      this.$router.push({name: "newspaper-calendar", params: {newspaperName: event.newspaper_name}})
-
+      this.selectedNewspaper = event.newspaper_name;
+      this.$router.push({
+        name: "newspaper-calendar",
+        params: {
+          newspaperName: event.newspaper_name,
+          newspaperid: event.id
+        }
+      })
     },
-    filterF(row, filter) {
-      // console.log(row)
-      // console.log(filter)
-      return true
-    },
-    filterTest(items) {
-      console.log(items)
-    },
-    // async getNewspaperNames() {
-    //   const {data} = await axios.get(`/api/newspapers/${'dagsaviser'}`);
-    //   if (data) {
-    //     console.log(data)
-    //     this.isBusy = false;
-    //   }
-    //   return data;
-    // }
   }
 })
 </script>
 
 <style lang="scss" scoped>
 @import "../style/stylesheet.scss";
+.selected-newspaper {
+  font-weight: bold;
+  color: blue;
+}
 </style>

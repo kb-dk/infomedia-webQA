@@ -48,7 +48,7 @@ export default defineComponent({
       isLoading: true,
       currentSlide: 0,
       page: 1,
-      imageUrls: {},// Object to store image URLs
+      imageUrls: new Map(), // Object to store image URLs
       carouselValHandled:ref([])
     }
   },
@@ -56,15 +56,21 @@ export default defineComponent({
     carouselVal: {
       immediate: true,
       handler() {
-        this.carouselValHandled = this.carouselVal
-        this.loadImages().then(() => {
-          this.isLoading = false;
-        }).catch((error) => {
-              this.isLoading = false;
-            });
+        if (this.carouselValHandled !== this.carouselValue && this.carouselVal.length > 0) {
+          this.carouselValHandled = this.carouselVal;
+          console.log("carousel value: " + this.carouselValHandled.value);
+          this.loadImages().then(() => {
+            this.isLoading = false;
+            this.imagesLoaded = true;
+          }).catch((error) => {
+            console.error(error);
+            this.isLoading = false;
+          });
+        } else {
+          this.imagesLoaded = true;
+        }
       }
-    },
-
+    }
   },
   methods: {
     handleDocumentRender(args) {
@@ -76,17 +82,18 @@ export default defineComponent({
           baseURL: '/api',
         })
         for (const item of this.carouselValHandled) {
-          // console.log(encodeURIComponent(item)); // Log the URL for the API request
-          const encoded_item = encodeURIComponent(item);
-          try {
-            const response = await apiClient.get(`/file/${encoded_item}`, {
-              responseType: 'blob'
-            });
-            const blob = new Blob([response.data], {type: 'application/pdf'});
-            const url = URL.createObjectURL(blob);
-            this.imageUrls = {...this.imageUrls, [item]: url}; // Use spread operator and index signature
-          } catch (error) {
-            console.error(error); // Log any errors that occur during the API request
+          if (!this.imageUrls.has(item)) {
+            const encoded_item = encodeURIComponent(item);
+            try {
+              const response = await apiClient.get(`/file/${encoded_item}`, {
+                responseType: 'blob'
+              });
+              const blob = new Blob([response.data], {type: 'application/pdf'});
+              const url = URL.createObjectURL(blob);
+              this.imageUrls.set(item, url); // Use spread operator and index signature
+            } catch (error) {
+              console.error(error); // Log any errors that occur during the API request
+            }
           }
         }
       } catch (error) {
@@ -94,13 +101,12 @@ export default defineComponent({
       }
     },
     getImage(item) {
-      return this.imageUrls[item];
+      return this.imageUrls.get(item);
     },
     switchPage(fileName){
-      this.carouselValHandled = [fileName]
-      this.loadImages();
+      this.carouselValHandled = [fileName];
+      this.imageUrls.clear();
     },
-
   },
   mounted() {
     defineEmits(this, ['currentFilenameEvent']);
@@ -110,7 +116,7 @@ export default defineComponent({
     this.$emit('currentFilenameEvent', currentFilename);
   }
 })
-</script>s
+</script>
 
 <style>
 .carousel__item {
