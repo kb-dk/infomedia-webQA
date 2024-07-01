@@ -1,7 +1,6 @@
 <template>
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
-    <b-row class="row">
     <b-button class="otherBatchButton" @click="previousBatch()">PREV</b-button>
     <div class="showNotesDiv" @mouseover="showNotes = true" @mouseleave="showNotes = false" name="expandNotes">
       DISPLAY NOTES
@@ -24,7 +23,6 @@
         </b-col>
       </b-row>
     </div>
-    </b-row>
     <b-button class="otherBatchButton" @click="nextBatch()">NEXT</b-button>
     <b-row>
       <b-col sm="10">
@@ -140,7 +138,7 @@ export default defineComponent({
 
     async fetchNewspaper() {
       try {
-        const { batchid, newspaperid } = useRoute().params;
+        const { batchid, newspaperid } = this.$route.params;
         const { data } = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
         this.newspaperData = data;
       } catch (error) {
@@ -206,24 +204,6 @@ export default defineComponent({
       let currentDay = new Date(`${year}/${month}/${day}`);
       currentDay.setDate(currentDay.getDate() - 1);
       this.getOtherBatch(currentDay);
-      // const {data} = await axios.get(`/newspapers/prev?
-      //                                                       newspaper_name=${this.newspaperData.newspaper_name}&
-      //                                                       year=${year}&month=${month}&
-      //                                                       day=${day}&
-      //                                                       batch_type=dagsaviser`);
-      // if(data){
-      //   this.$router.push({
-      //     name: "newspaper-view",
-      //     params: {
-      //       batchid: data.batch_id,
-      //       newspaperid: data.id,
-      //       year: newDate.getFullYear(),
-      //       month: newDate.getMonth()+1,
-      //       day: newDate.getDate()
-      //     }
-      //   })
-      // }
-
     },
     async nextBatch() {
       const {year, month, day} = this.$route.params;
@@ -234,7 +214,6 @@ export default defineComponent({
     async getOtherBatch(newDate) {
       const newBatch = await axios.get(`/api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
       const batchData = newBatch.data;
-      console.log("batchData", batchData[0].id);
       if (batchData.length > 0) {
         const newNewspaper = await axios.get(`/api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
         const newspaperData = newNewspaper.data;
@@ -244,13 +223,13 @@ export default defineComponent({
             replace: true,
             params: {
               batchid: batchData[0].id,
-              newspaperid: newspaperData.id,
+              newspaperid: newspaperData[0].id,
               year: newDate.getFullYear(),
               month: newDate.getMonth() + 1,
               day: newDate.getDate()
             }
           });
-          this.fetchNewspaper();
+          // this.fetchNewspaper();
         }
       }
 
@@ -287,7 +266,7 @@ export default defineComponent({
 .showNotesDiv {
   width: 90%;
   height: 3em;
-  background-color: #ddbc14;
+  background-color: #dbc23eb2;
   border-radius: 3px;
   box-shadow: 1px 1px 3px black;
   //max-height: 30em;
