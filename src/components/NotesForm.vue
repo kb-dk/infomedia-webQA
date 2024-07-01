@@ -52,7 +52,7 @@ export default defineComponent({
       handler() {
         this.getPosts().then((fetchedPosts) => { // Step 3: Update the posts data property
           this.posts = fetchedPosts;
-          console.log("Section title changed: " + this.sectiontitle);
+          // console.log("Section title changed: " + this.sectiontitle);
         }).catch((error) => {
           console.error('Error fetching sections notes:', error);
         });
@@ -63,7 +63,7 @@ export default defineComponent({
       handler() {
         this.getPosts().then((fetchedPosts) => { // Step 3: Update the posts data property
           this.posts = fetchedPosts;
-          console.log("Page number changed: " + this.pagenumber);
+          // console.log("Page number changed: " + this.pagenumber);
         }).catch((error) => {
           console.error('Error fetching page notes:', error);
         });
@@ -162,24 +162,24 @@ export default defineComponent({
         switch (this.notesType) {
           case NotesType.BATCHNOTE:
             result = await axios.get(`/api/batches/${this.batch?.id}/notes-to-batch`);
-            console.log("BATCHNOTE: " + result?.data)
+            // console.log("BATCHNOTE: " + result?.data)
             break;
           case NotesType.EDITIONNOTE:
             if (this.newspaper) {
               result = await axios.get(`/api/batches/${this.batch?.id}/newspapers/${this.newspaper.id}/notes-to-edition`);
-              console.log("EDITIONNOTE: " + result?.data)
+              // console.log("EDITIONNOTE: " + result?.data)
             }
             break;
           case NotesType.SECTIONNOTE:
             if (this.newspaper && this.sectiontitle) {
               result = await axios.get(`/api/batches/${this.batch?.id}/newspapers/${this.newspaper.id}/notes-to-section?section_title=${this.sectiontitle}`);
-              console.log("SECTIONNOTE: " + result?.data)
+              // console.log("SECTIONNOTE: " + result?.data)
             }
             break;
           case NotesType.PAGENOTE:
             if (this.newspaper && this.sectiontitle && this.pagenumber) {
               result = await axios.get(`/api/batches/${this.batch?.id}/newspapers/${this.newspaper.id}/notes-to-pages?section_title=${this.sectiontitle}&page_number=${this.pagenumber}`);
-              console.log("PAGENOTE: " + result?.data)
+              // console.log("PAGENOTE: " + result?.data)
             }
             break;
           default:

@@ -2,17 +2,17 @@
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
     <b-button class="otherBatchButton" @click="previousBatch()">PREV</b-button>
-    <div class="showNotesDiv" @mouseover="showNotes = true" @mouseleave="showNotes = false" name="expandNotes">
+    <div class="showNotesDiv" @mouseenter="showNotes = true" name="expandNotes">
       DISPLAY NOTES
       <b-row v-if="showNotes">
-        <b-col>
+        <b-col >
           <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
         </b-col>
-        <b-col>
+        <b-col >
           <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
                       :newspaper="newspaper"></notes-form>
         </b-col>
-        <b-col>
+        <b-col >
           <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
                       :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
         </b-col>
@@ -24,7 +24,7 @@
       </b-row>
     </div>
     <b-button class="otherBatchButton" @click="nextBatch()">NEXT</b-button>
-    <b-row>
+    <b-row @mouseenter="showNotes = false">
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
                      :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
@@ -159,7 +159,7 @@ export default defineComponent({
       if (match) {
         this.currentSectionTitle = match[0];
       }
-      console.log("current section title: " + this.currentSectionTitle)
+      // console.log("current section title: " + this.currentSectionTitle)
     },
 
     initCurrentPageNumber() {
@@ -168,7 +168,7 @@ export default defineComponent({
       if (match) {
         this.currentPageNumber = parseInt(match[1], 10);
       }
-      console.log("current page number: " + this.currentPageNumber)
+      // console.log("current page number: " + this.currentPageNumber)
     },
     initCurrentFrontPage() {
       if (this.frontPagesNames.length > 0) {
