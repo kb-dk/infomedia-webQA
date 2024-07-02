@@ -201,6 +201,7 @@ export default defineComponent({
   padding: 2px;
   border: 2px solid teal;
   margin-top: 2px;
+  border-radius: 10px;
 }
 
 .header {

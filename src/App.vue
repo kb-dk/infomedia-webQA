@@ -45,7 +45,6 @@ import {ref} from "vue";
           console.log(error);
           this.errorMessage = "Unable to load newspaper names";
         }
-
       }
     },
   }
