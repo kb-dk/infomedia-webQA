@@ -1,12 +1,12 @@
 <template>
-  <Carousel v-model="currentSlide" :items-to-show="itemsToShow" :wrap-around="frontPageView">
+  <Carousel v-model="currentSlide" :items-to-show="itemsToShow" :wrap-around="frontPageView" class="custom__carousel">
     <Slide  v-for="(item, index) in carouselValHandled" :key="index" class="carousel__slide" ref="slide">
       <div class="carousel__item">
         <div>
           <template v-if="isLoading"> Loading...</template>
           <template v-else>
             <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef"
-                           :page="page" :height="780" :width="580"></vue-pdf-embed>
+                           :page="page" width="600"></vue-pdf-embed>
           </template>
         </div>
       </div>
@@ -119,9 +119,12 @@ export default defineComponent({
 </script>
 
 <style>
+.custom__carousel {
+  margin-top: 15px;
+}
 .carousel__item {
-  height: 800px;
-  width:630px;
+  height: 90vh;
+  width: 100%;
   background-color: #42b983;
   color: var(--vc-clr-white);
   font-size: 20px;
@@ -135,10 +138,8 @@ export default defineComponent({
   padding: 5px;
 }
 
-.pdf-content {
-  padding: 20px 15px;
-  width: 100%;
-  height: 100%;
+.vue-pdf-embed canvas {
+  height: calc(100% - 20px) !important; /* adjust the 20px value to match the carousel's padding or margin */
+  flex: 1;
 }
-
 </style>
