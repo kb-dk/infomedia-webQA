@@ -83,14 +83,14 @@ export default defineComponent({
 }
 
 .post__input {
-  padding: 2px;
+  padding: 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .post__select {
-  padding: 2px;
+  padding: 5px;
   display: flex;
 }
 

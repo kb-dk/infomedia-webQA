@@ -198,7 +198,7 @@ export default defineComponent({
 
 <style scoped>
 .form {
-  padding: 5px;
+  padding: 10px;
   border: 2px solid teal;
   margin-top: 2px;
   border-radius: 10px;
