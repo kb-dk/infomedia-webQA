@@ -1,6 +1,5 @@
 <template>
-
-  <div  class="newspaperTableDiv">
+  <div class="newspaper-table-container">
     <div v-if="show">
     <b-form-input v-model="filter" type="search" placeholder="Search"></b-form-input>
     <b-table v-model:sort-by="sortBy"

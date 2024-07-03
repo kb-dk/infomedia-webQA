@@ -198,15 +198,16 @@ export default defineComponent({
 
 <style scoped>
 .form {
-  padding: 2px;
+  padding: 5px;
   border: 2px solid teal;
   margin-top: 2px;
   border-radius: 10px;
+  background-color: white;
 }
 
 .header {
   text-align: left;
-  padding: 2px;
+  padding: 5px;
 }
 
 </style>
