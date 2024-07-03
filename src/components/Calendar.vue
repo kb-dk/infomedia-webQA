@@ -25,10 +25,8 @@ import {defineComponent, ref} from "vue";
 import {Calendar} from 'v-calendar';
 import YearPicker from 'primevue/calendar'
 import axios from "axios";
-// import 'v-calendar/style.css';
 import "primevue/resources/themes/lara-light-indigo/theme.css";
 import 'v-calendar/style.css'
-// import "src/style/stylesheet.scss";
 
 export default defineComponent({
       name: "year-calendar",
@@ -170,7 +168,6 @@ export default defineComponent({
                   datePicker: null,
                   batch: res[i],
                   newspaper: newspapers[j]
-
                 }
               }
             }

@@ -1,29 +1,37 @@
 <template>
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
-    <b-button class="otherBatchButton" @click="previousBatch()">PREV</b-button>
-    <div class="showNotesDiv" @mouseenter="showNotes = true" name="expandNotes">
-      DISPLAY NOTES
-      <b-row v-if="showNotes">
-        <b-col >
-          <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
-        </b-col>
-        <b-col >
-          <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
-                      :newspaper="newspaper"></notes-form>
-        </b-col>
-        <b-col >
-          <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
-                      :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
-        </b-col>
-        <b-col>
-          <notes-form :postsTitel="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
-                      :newspaper="newspaper" :sectiontitle="currentSectionTitle"
-                      :pagenumber="currentPageNumber"></notes-form>
-        </b-col>
-      </b-row>
-    </div>
-    <b-button class="otherBatchButton" @click="nextBatch()">NEXT</b-button>
+    <b-row style="height: 50px;">
+      <b-col sm="1">
+        <b-button class="batch-button  previous" @click="previousBatch()">Prev</b-button>
+      </b-col>
+      <b-col sm="10">
+        <div class="notes-container" @mouseenter="showNotes = true" name="expandNotes">
+          Display Notes
+          <b-row v-if="showNotes">
+            <b-col>
+              <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
+            </b-col>
+            <b-col>
+              <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
+                          :newspaper="newspaper"></notes-form>
+            </b-col>
+            <b-col>
+              <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
+                          :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
+            </b-col>
+            <b-col>
+              <notes-form :postsTitel="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
+                          :newspaper="newspaper" :sectiontitle="currentSectionTitle"
+                          :pagenumber="currentPageNumber"></notes-form>
+            </b-col>
+          </b-row>
+        </div>
+      </b-col>
+      <b-col sm="1">
+        <b-button class="batch-button next" @click="nextBatch">Next</b-button>
+      </b-col>
+    </b-row>
     <b-row @mouseenter="showNotes = false">
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
@@ -105,7 +113,7 @@ export default defineComponent({
     NotesForm,
     PageTable
   },
-  created(){
+  created() {
     this.fetchNewspaper();
   },
   methods: {
@@ -138,8 +146,8 @@ export default defineComponent({
 
     async fetchNewspaper() {
       try {
-        const { batchid, newspaperid } = this.$route.params;
-        const { data } = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
+        const {batchid, newspaperid} = this.$route.params;
+        const {data} = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
         this.newspaperData = data;
       } catch (error) {
         console.error(error);
@@ -179,7 +187,7 @@ export default defineComponent({
       if (!this.newspaper.checked && confirm("Do you want to approve the newspaper?")) {
         this.newspaper.checked = true;
         try {
-          const { id } = this.newspaper;
+          const {id} = this.newspaper;
           await axios.put(`/api/batches/${this.batch.id}/newspapers/${id}`);
         } catch (error) {
           this.errorMessage = "Error approving the newspaper";
@@ -212,6 +220,7 @@ export default defineComponent({
       this.getOtherBatch(currentDay);
     },
     async getOtherBatch(newDate) {
+      try {
       const newBatch = await axios.get(`/api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
       const batchData = newBatch.data;
       if (batchData.length > 0) {
@@ -229,66 +238,51 @@ export default defineComponent({
               day: newDate.getDate()
             }
           });
-          // this.fetchNewspaper();
         }
       }
-
+      } catch (error) {
+        this.errorMessage = "An error occurred while fetching data. Please try again later.";
+        console.log(this.errorMessage + ": " + error);
+      }
     }
   }
 })
 </script>
 
 <style lang="scss">
-
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
 .row {
   margin: 10px;
 }
-
-.otherBatchButton {
+.batch-button {
   height: 3em;
   border-radius: 3px;
   box-shadow: 1px 1px 3px black;
-  padding: 10px;
-  //display: inline-block;
-  margin: 3px;
   vertical-align: baseline;
-
+  width: 6em;
 }
-
-.showNotesDiv {
-  width: 90%;
+.notes-container {
+  width: 100%;
   height: 3em;
   background-color: #dbc23eb2;
   border-radius: 3px;
   box-shadow: 1px 1px 3px black;
-  //max-height: 30em;
   cursor: pointer;
   text-align: center;
-  padding: 10px;
   color: white;
   font-weight: bold;
   text-shadow: 1px 1px 3px black;
   display: inline-block;
+  padding-top: 10px;
 }
-
-.showNotesDiv > * {
-  position: absolute;
-  z-index: 1;
-  background-color: white;
-  width: 70%;
+.notes-container > * {
+  display: inline-block;
+  position: relative; /* or absolute */
+  z-index: 1000;
+  flex-grow: 1;
   border-radius: 3px;
-  border: 1px solid rgba(90, 89, 89, 0.71);
+  //border: 1px solid rgba(90, 89, 89, 0.71);
   text-shadow: 1px 1px 1px white;
   color: black;
   font-weight: normal;
 }
-
 </style>

@@ -3,16 +3,19 @@
   align-self: center;
 }
 .calendar {
-  height: 100%;
+  height: 65vh !important;
   width: 100%;
   max-width: 80%;
   display: inline-table;
 }
-#technicalDiv>.calendar{
-  max-height: 100%;
-  width:50%;
-  height: 50%;
+
+#technicalDiv .calendar{
+  display: inline-flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 20px;
 }
+
 .vc.day.content{
   width: 100%;
 }
@@ -23,9 +26,15 @@
   width: 25em;
   height: 40em;
   outline: solid 1px black;
-  top:10%;
-  right:39%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 10px;
+  margin-right: 2em; /* Tilføjer en afstand på 2em til højre for .batchMetadata */
+}
+.batchMetadataNotes{
+  left: calc(50% + 25em + 2em); /* Placerer elementet til højre for .batchMetadata med en afstand på 2em */
+  padding: 10px;
 }
 .batchInfo{
   display:none;
@@ -44,20 +53,14 @@
   border-right: 1px solid #2c3e50;
   border-bottom: 1px solid #2c3e50;
   cursor: default;
-
 }
 .errorTypeList{
   cursor: pointer;
   overflow: scroll;
   max-height: 100%;
 }
-
-.batchMetadataNotes{
-  right:17%
-}
 .focusedPageRow>*{
   background-color: rgba(176, 175, 160,0.2);
-
 }
 .focusedPageRow{
   box-shadow: 0px 1px 3px #6c6b6b;
@@ -86,7 +89,7 @@
   overflow: scroll;
   overflow-scrolling: auto;
 }
-.newspaperTableDiv{
+.newspaper-table-container{
   margin-bottom: 5px;
   margin-top: 15px;
 }
@@ -99,4 +102,41 @@
 .selected-newspaper {
   font-weight: bold;
   color: red;
+}
+.custom-form-group {
+  margin-bottom: 20px !important; /* Tilføj en margin mellem form-grupperne */
+  margin-top: 20px !important;
+}
+.custom-card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding:30px;
+}
+.button-container {
+  bottom: 0;
+  width: 80%;
+  display: flex;
+  padding-bottom: 10px;
+  justify-content: center;
+  position:fixed;
+}
+.button-container .btn {
+  margin-right: 20px; /* Add margin to the right */
+  margin-left: 20px;
+}
+.bold-label {
+  font-weight: bold;
+}
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  height: 100vh; /* Sætter højden til 100% af viewporthøjden */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }

@@ -1,6 +1,8 @@
 <template>
-  <b-button :variant="changeVariant" @click="approveState" v-text="btnText">
+  <b-button id="button" :variant="changeVariant" @click="approveState" v-text="btnText"
+            v-b-tooltip.hover :title="title">
   </b-button>
+
 </template>
 
 <script>
@@ -14,7 +16,8 @@ export default defineComponent({
     btnText: [String],
     batch: [Object],
     stateSource: [String],
-    stateDest: [String]
+    stateDest: [String],
+    title: [String]
   },
 
   methods: {
@@ -60,5 +63,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 </style>

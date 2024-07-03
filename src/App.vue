@@ -31,31 +31,29 @@
 import NewspaperTable from "@/components/NewspaperTable";
 import axios from 'axios';
 import {ref} from "vue";
-
-export default {
-  components: {
-    NewspaperTable
-  },
-  data() {
-    return {
-      showWeekly: ref(false),
-      showMagazine: ref(false),
-      errorMessage: ref("")
-    }
-  },
-  methods: {
-    async getNewspaperNames(newspaperType) {
-      try {
-        const {data} = await axios.get(`/api/newspapers/${newspaperType}`);
-        return data;
-      } catch (error) {
-        console.log(error);
-        this.errorMessage = "Unable to load newspaper names";
+  export default {
+    components:{
+      NewspaperTable
+    },
+    data(){
+      return{
+        showWeekly:ref(false),
+        showMagazine:ref(false),
+        errorMessage:ref("")
       }
-
-    }
-  },
-}
+    },
+    methods:{
+      async getNewspaperNames(newspaperType){
+        try{
+          const {data} = await axios.get(`/api/newspapers/${newspaperType}`);
+          return data;
+        }catch (error){
+          console.log(error);
+          this.errorMessage = "Unable to load newspaper names";
+        }
+      }
+    },
+  }
 </script>
 <style lang="scss">
 

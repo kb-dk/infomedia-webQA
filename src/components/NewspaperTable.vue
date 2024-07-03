@@ -1,6 +1,5 @@
 <template>
-
-  <div  class="newspaperTableDiv">
+  <div class="newspaper-table-container">
     <div v-if="show">
     <b-form-input v-model="filter" type="search" placeholder="Search"></b-form-input>
     <b-table v-model:sort-by="sortBy"
@@ -57,17 +56,21 @@ export default defineComponent({
   },
   created() {
     this.handleNewspapers();
+    const storedSelectedNewspaper = localStorage.getItem("selectedNewspaper");
+    if (storedSelectedNewspaper) {
+      this.selectedNewspaper = storedSelectedNewspaper;
+    }
   },
-  computed: {
-    filteredNewspapers() {
-      if (this.filter) {
-        return this.handledNewspapers.filter((row) =>
-            this.filterF(row, this.filter)
-        );
-      } else {
-        return this.handledNewspapers;
-      }
-    },
+  mounted() {
+    const storedSelectedNewspaper = localStorage.getItem("selectedNewspaper");
+    if (storedSelectedNewspaper) {
+      this.selectedNewspaper = storedSelectedNewspaper;
+    }
+  },
+  watch: {
+    filter(newValue) {
+      this.filterNewspapers(newValue);
+     },
   },
   methods: {
     async handleNewspapers() {
@@ -85,6 +88,7 @@ export default defineComponent({
     rowClicked(event) {
       // console.log(event)
       this.selectedNewspaper = event.newspaper_name;
+      localStorage.setItem("selectedNewspaper", event.newspaper_name);
       this.$router.push({
         name: "newspaper-calendar",
         params: {
@@ -92,8 +96,21 @@ export default defineComponent({
           newspaperid: event.id
         }
       })
+
     },
-  }
+    filterF(row, filter) {
+      return row.newspaper_name.toLowerCase().includes(filter.toLowerCase());
+    },
+    filterNewspapers(filter) {
+      if (filter) {
+        this.filteredNewspapers = this.handledNewspapers.filter((row) =>
+            this.filterF(row, filter)
+        );
+      } else {
+        this.filteredNewspapers = this.handledNewspapers;
+      }
+    },
+  },
 })
 </script>
 
