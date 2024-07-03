@@ -116,9 +116,10 @@
 .button-container {
   bottom: 0;
   width: 80%;
-  display: inline-flex;
+  display: flex;
+  padding-bottom: 10px;
   justify-content: center;
-  padding:30px;
+  position:fixed;
 }
 .button-container .btn {
   margin-right: 20px; /* Add margin to the right */
