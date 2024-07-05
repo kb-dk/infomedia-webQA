@@ -35,6 +35,7 @@
     <b-row @mouseenter="showNotes = false">
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
+                     :additionalCarouselVal="pagesNames"
                      :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
       </b-col>
       <b-col sm="2">
@@ -45,7 +46,10 @@
         <br>
         <br>
         <PageTable :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
-        <b-button v-if="!frontPageView" class="changeCarouselView"
+        <b-button v-if="randomPageView" class="changeCarouselView"
+                  @click="changeToRandomSectionPageView()">Show Random Section Pages
+        </b-button>
+        <b-button v-if="!frontPageView || !randomPageView" class="changeCarouselView"
                   @click="changeToFrontPageView()">Show Front Pages
         </b-button>
       </b-col>
@@ -58,7 +62,6 @@
 import {defineComponent, getCurrentInstance, onMounted} from "vue";
 import NotesForm from "@/components/NotesForm.vue";
 import PageTable from "@/components/PageTable";
-import {useRoute} from "vue-router";
 import axios from "axios";
 import {NotesType} from "@/enums/NotesType";
 
@@ -76,6 +79,7 @@ export default defineComponent({
       try {
         await instance.proxy.fetchCarouselData();
         await instance.proxy.initCurrentFrontPage();
+        await instance.proxy.fetchSectionPages();
       } catch (error) {
         console.error(error);
       }
@@ -103,10 +107,12 @@ export default defineComponent({
       pagesNames: [],
       frontPagesNames: [],
       currentPagesNames: [],
+      sectionPages: [],
       newspaperData: {},
       frontPageView: true,
+      randomPageView: true,
       itemToShow: 2,
-      showNotes: false
+      showNotes: false,
     }
   },
   components: {
@@ -178,11 +184,13 @@ export default defineComponent({
       }
       // console.log("current page number: " + this.currentPageNumber)
     },
+
     initCurrentFrontPage() {
       if (this.frontPagesNames.length > 0) {
         this.handleCurrentFilename(this.frontPagesNames[0])
       }
     },
+
     async approveNewspaper() {
       if (!this.newspaper.checked && confirm("Do you want to approve the newspaper?")) {
         this.newspaper.checked = true;
@@ -195,57 +203,108 @@ export default defineComponent({
         }
       }
     },
+
     switchPage(fileName) {
       this.$refs.carousel.switchPage(fileName);
       this.handleCurrentFilename(fileName);
       this.currentPagesNames = [fileName];
       this.frontPageView = false;
+      this.randomPageView = false;
       this.itemToShow = 1;
     },
+
     changeToFrontPageView() {
       this.currentPagesNames = this.frontPagesNames
       this.frontPageView = true
+      this.randomPageView = true;
       this.itemToShow = 2;
     },
+
     async previousBatch() {
       const {year, month, day} = this.$route.params;
       let currentDay = new Date(`${year}/${month}/${day}`);
       currentDay.setDate(currentDay.getDate() - 1);
-      this.getOtherBatch(currentDay);
+      await this.getOtherBatch(currentDay);
     },
+
     async nextBatch() {
       const {year, month, day} = this.$route.params;
       let currentDay = new Date(`${year}/${month}/${day}`);
       currentDay.setDate(currentDay.getDate() + 1);
-      this.getOtherBatch(currentDay);
+      await this.getOtherBatch(currentDay);
     },
+
     async getOtherBatch(newDate) {
       try {
-      const newBatch = await axios.get(`/api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
-      const batchData = newBatch.data;
-      if (batchData.length > 0) {
-        const newNewspaper = await axios.get(`/api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
-        const newspaperData = newNewspaper.data;
-        if (newspaperData.length > 0) {
-          this.$router.push({
-            name: "newspaper-view",
-            replace: true,
-            params: {
-              batchid: batchData[0].id,
-              newspaperid: newspaperData[0].id,
-              year: newDate.getFullYear(),
-              month: newDate.getMonth() + 1,
-              day: newDate.getDate()
-            }
-          });
+        const newBatch = await axios.get(`/api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
+        const batchData = newBatch.data;
+        if (batchData.length > 0) {
+          const newNewspaper = await axios.get(`/api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
+          const newspaperData = newNewspaper.data;
+          if (newspaperData.length > 0) {
+            this.$router.push({
+              name: "newspaper-view",
+              replace: true,
+              params: {
+                batchid: batchData[0].id,
+                newspaperid: newspaperData[0].id,
+                year: newDate.getFullYear(),
+                month: newDate.getMonth() + 1,
+                day: newDate.getDate()
+              }
+            });
+          }
         }
-      }
       } catch (error) {
         this.errorMessage = "An error occurred while fetching data. Please try again later.";
         console.log(this.errorMessage + ": " + error);
       }
-    }
-  }
+    },
+
+    changeToRandomSectionPageView() {
+      const randomPagesNames = this.sectionPages.map(({ sectionNumber, pageCount }) => {
+        const randomPageNumber = Math.floor(Math.random() * pageCount);
+        return this.findFileName(sectionNumber, randomPageNumber);
+      });
+
+      this.randomPageView = false;
+      this.currentPagesNames = randomPagesNames;
+    },
+
+    findFileName(sectionName, randomPageNumber) {
+      let fileName = null;
+      for (let i = 0; i < this.pagesNames.length; i++) {
+        let sectionNumber = this.pagesNames[i].match(/section(\d+)/)[1];
+        let pageNumber = this.pagesNames[i].match(/page(\d+)/)[1];
+        if (sectionNumber === sectionName && pageNumber === String(randomPageNumber).padStart(3, '0')) {
+          fileName = this.pagesNames[i];
+          break;
+        }
+      }
+      return fileName;
+    },
+    async fetchSectionPages() {
+      for (let i = 0; i < this.pagesNames.length; i++) {
+        let pageName = this.pagesNames[i];
+        //Extract the section number using a regular expression
+        let sectionNumber = pageName.match(/section(\d+)/)[1];
+
+        // Check if the section number already exists in the sectionPages array
+        let sectionIndex = this.sectionPages.findIndex((section) => section.sectionNumber === sectionNumber);
+
+        if (sectionIndex !== -1) {
+          // If the section number exists, increment the page count for that section
+          this.sectionPages[sectionIndex].pageCount++;
+        } else {
+          // If the section number does not exist, add a new entry to the sectionPages array
+          this.sectionPages.push({
+            sectionNumber: sectionNumber,
+            pageCount: 1
+          });
+        }
+      }
+    },
+  },
 })
 </script>
 
@@ -253,6 +312,7 @@ export default defineComponent({
 .row {
   margin: 10px;
 }
+
 .batch-button {
   height: 3em;
   border-radius: 3px;
@@ -260,6 +320,7 @@ export default defineComponent({
   vertical-align: baseline;
   width: 6em;
 }
+
 .notes-container {
   width: 100%;
   height: 3em;
@@ -274,6 +335,7 @@ export default defineComponent({
   display: inline-block;
   padding-top: 10px;
 }
+
 .notes-container > * {
   display: inline-block;
   position: relative; /* or absolute */

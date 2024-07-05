@@ -56,23 +56,24 @@ export default defineComponent({
   },
   created() {
     this.handleNewspapers();
-    const storedSelectedNewspaper = localStorage.getItem("selectedNewspaper");
-    if (storedSelectedNewspaper) {
-      this.selectedNewspaper = storedSelectedNewspaper;
-    }
+    this.selectedNewspaper = localStorage.getItem("selectedNewspaper") ?? this.selectedNewspaper;
   },
+
   mounted() {
-    const storedSelectedNewspaper = localStorage.getItem("selectedNewspaper");
-    if (storedSelectedNewspaper) {
-      this.selectedNewspaper = storedSelectedNewspaper;
-    }
+    this.selectedNewspaper = localStorage.getItem("selectedNewspaper") ?? this.selectedNewspaper;
   },
+
   watch: {
     filter(newValue) {
       this.filterNewspapers(newValue);
      },
   },
   methods: {
+    clearSelectedNewspaper() {
+      this.selectedNewspaper = null;
+      localStorage.removeItem("selectedNewspaper");
+    },
+
     async handleNewspapers() {
       try {
         const response = await this.newspapers;
@@ -85,6 +86,7 @@ export default defineComponent({
         this.fields[0].sortable = true;
       }
     },
+
     rowClicked(event) {
       // console.log(event)
       this.selectedNewspaper = event.newspaper_name;
@@ -96,11 +98,12 @@ export default defineComponent({
           newspaperid: event.id
         }
       })
-
     },
+
     filterF(row, filter) {
       return row.newspaper_name.toLowerCase().includes(filter.toLowerCase());
     },
+
     filterNewspapers(filter) {
       if (filter) {
         this.filteredNewspapers = this.handledNewspapers.filter((row) =>

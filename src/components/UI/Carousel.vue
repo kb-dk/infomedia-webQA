@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import {defineComponent, defineEmits,ref} from 'vue'
+import {defineComponent, defineEmits, ref} from 'vue'
 import VuePdfEmbed from "vue-pdf-embed"
 import {Carousel, Navigation, Slide} from 'vue3-carousel'
 
@@ -49,7 +49,8 @@ export default defineComponent({
       currentSlide: 0,
       page: 1,
       imageUrls: new Map(), // Object to store image URLs
-      carouselValHandled:ref([])
+      carouselValHandled:ref([]),
+      sectionPages: ref([]),
     }
   },
   watch: {
@@ -61,16 +62,13 @@ export default defineComponent({
           console.log("carousel value: " + this.carouselValHandled.value);
           this.loadImages().then(() => {
             this.isLoading = false;
-            this.imagesLoaded = true;
           }).catch((error) => {
             console.error(error);
             this.isLoading = false;
           });
-        } else {
-          this.imagesLoaded = true;
         }
       }
-    }
+    },
   },
   methods: {
     handleDocumentRender(args) {
@@ -123,7 +121,7 @@ export default defineComponent({
   margin-top: 15px;
 }
 .carousel__item {
-  height: 90vh;
+  height: 85vh;
   width: 100%;
   background-color: #42b983;
   color: var(--vc-clr-white);
