@@ -263,12 +263,16 @@ export default defineComponent({
 
     changeToRandomSectionPageView() {
       const randomPagesNames = this.sectionPages.map(({ sectionNumber, pageCount }) => {
-        const randomPageNumber = Math.floor(Math.random() * pageCount);
+        const randomPageNumber = this.generateRandomPageNumber(pageCount);
         return this.findFileName(sectionNumber, randomPageNumber);
       });
 
       this.randomPageView = false;
       this.currentPagesNames = randomPagesNames;
+    },
+
+    generateRandomPageNumber(pageCount) {
+     return Math.floor(Math.random() * (pageCount - 2 + 1)) + 2;
     },
 
     findFileName(sectionName, randomPageNumber) {
