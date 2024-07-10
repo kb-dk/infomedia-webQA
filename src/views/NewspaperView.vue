@@ -47,6 +47,7 @@
                 @click="changeToRandomSectionPagesView()">Show Random Section Pages
       </b-button>
       <b-button v-if="!frontPageView && !(randomPagesView && !oneRandomPageView)" class="changeCarouselView"
+                :variant="isRandomPageButtonClicked ? 'success' : 'secondary'"
                 @click="changeToRandomSectionPageView()">Show Random Page From Section {{ parseInt(currentSectionNumber).toString() }}
       </b-button>
       <b-button v-if="!frontPageView || !randomPagesView" class="changeCarouselView"
@@ -117,6 +118,7 @@ export default defineComponent({
       oneRandomPageView: false,
       itemToShow: 2,
       showNotes: false,
+      isRandomPageButtonClicked: false,
     }
   },
   components: {
@@ -217,6 +219,7 @@ export default defineComponent({
       this.oneRandomPageView = true;
       this.itemToShow = 1;
       this.currentSectionNumber = this.getSectionNumber(fileName);
+      this.isRandomPageButtonClicked = false;
     },
 
     changeToFrontPageView() {
@@ -225,6 +228,7 @@ export default defineComponent({
       this.randomPagesView = true;
       this.oneRandomPageView = false;
       this.itemToShow = 2;
+      this.isRandomPageButtonClicked = false;
     },
 
     async previousBatch() {
@@ -290,6 +294,7 @@ export default defineComponent({
 
         this.currentPagesNames = [randomPageName];
       }
+      this.isRandomPageButtonClicked = true;
     },
 
     getSectionNumber(currentFileName) {
@@ -390,4 +395,5 @@ export default defineComponent({
   margin-right: 10px; /* Add margin to the right */
   margin-left: 10px;
 }
+
 </style>
