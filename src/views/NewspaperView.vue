@@ -39,21 +39,23 @@
                      :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
       </b-col>
       <b-col sm="2">
-        <br>
-        <b-button :variant="newspaperData.checked ? 'success':'primary'" class="approveNewspaperBtn"
-                  @click="approveNewspaper()">Approve newspaper
-        </b-button>
-        <br>
-        <br>
         <PageTable :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
-        <b-button v-if="randomPageView" class="changeCarouselView"
-                  @click="changeToRandomSectionPageView()">Show Random Section Pages
-        </b-button>
-        <b-button v-if="!frontPageView || !randomPageView" class="changeCarouselView"
-                  @click="changeToFrontPageView()">Show Front Pages
-        </b-button>
       </b-col>
     </b-row>
+    <div class="button-container">
+      <b-button v-if="randomPagesView && !oneRandomPageView" class="changeCarouselView"
+                @click="changeToRandomSectionPagesView()">Show Random Section Pages
+      </b-button>
+      <b-button v-if="!frontPageView && !(randomPagesView && !oneRandomPageView)" class="changeCarouselView"
+                @click="changeToRandomSectionPageView()">Show Random Page From Section {{ parseInt(currentSectionNumber).toString() }}
+      </b-button>
+      <b-button v-if="!frontPageView || !randomPagesView" class="changeCarouselView"
+                @click="changeToFrontPageView()">Show Front Pages
+      </b-button>
+      <b-button :variant="newspaperData.checked ? 'success':'primary'" class="approveNewspaperBtn"
+                @click="approveNewspaper()">Approve newspaper
+      </b-button>
+    </div>
   </div>
 </template>
 
@@ -103,6 +105,7 @@ export default defineComponent({
       currentFileName: "",
       currentPageNumber: 0,
       currentSectionTitle: "",
+      currentSectionNumber: 0,
       errorMessage: "",
       pagesNames: [],
       frontPagesNames: [],
@@ -110,7 +113,8 @@ export default defineComponent({
       sectionPages: [],
       newspaperData: {},
       frontPageView: true,
-      randomPageView: true,
+      randomPagesView: true,
+      oneRandomPageView: false,
       itemToShow: 2,
       showNotes: false,
     }
@@ -209,14 +213,17 @@ export default defineComponent({
       this.handleCurrentFilename(fileName);
       this.currentPagesNames = [fileName];
       this.frontPageView = false;
-      this.randomPageView = false;
+      this.randomPagesView = false;
+      this.oneRandomPageView = true;
       this.itemToShow = 1;
+      this.currentSectionNumber = this.getSectionNumber(fileName);
     },
 
     changeToFrontPageView() {
       this.currentPagesNames = this.frontPagesNames
       this.frontPageView = true
-      this.randomPageView = true;
+      this.randomPagesView = true;
+      this.oneRandomPageView = false;
       this.itemToShow = 2;
     },
 
@@ -261,14 +268,32 @@ export default defineComponent({
       }
     },
 
-    changeToRandomSectionPageView() {
+    changeToRandomSectionPagesView() {
       const randomPagesNames = this.sectionPages.map(({ sectionNumber, pageCount }) => {
         const randomPageNumber = this.generateRandomPageNumber(pageCount);
         return this.findFileName(sectionNumber, randomPageNumber);
       });
 
-      this.randomPageView = false;
+      this.randomPagesView = false;
+      this.oneRandomPageView = true;
       this.currentPagesNames = randomPagesNames;
+    },
+
+    changeToRandomSectionPageView() {
+      let sectionNumber = this.getSectionNumber(this.currentFileName);
+      let sectionIndex = this.sectionPages.findIndex(page => page.sectionNumber === sectionNumber);
+
+      if (sectionIndex !== -1) {
+        let pageCount = this.sectionPages[sectionIndex].pageCount;
+        let randomPageNumber = this.generateRandomPageNumber(pageCount);
+        let randomPageName = this.findFileName(sectionNumber, randomPageNumber);
+
+        this.currentPagesNames = [randomPageName];
+      }
+    },
+
+    getSectionNumber(currentFileName) {
+      return currentFileName.match(/section(\d+)/)[1];
     },
 
     generateRandomPageNumber(pageCount) {
@@ -278,7 +303,7 @@ export default defineComponent({
     findFileName(sectionName, randomPageNumber) {
       let fileName = null;
       for (let i = 0; i < this.pagesNames.length; i++) {
-        let sectionNumber = this.pagesNames[i].match(/section(\d+)/)[1];
+        let sectionNumber = this.getSectionNumber(this.pagesNames[i]);
         let pageNumber = this.pagesNames[i].match(/page(\d+)/)[1];
         if (sectionNumber === sectionName && pageNumber === String(randomPageNumber).padStart(3, '0')) {
           fileName = this.pagesNames[i];
@@ -291,7 +316,7 @@ export default defineComponent({
       for (let i = 0; i < this.pagesNames.length; i++) {
         let pageName = this.pagesNames[i];
         //Extract the section number using a regular expression
-        let sectionNumber = pageName.match(/section(\d+)/)[1];
+        let sectionNumber = this.getSectionNumber(pageName);
 
         // Check if the section number already exists in the sectionPages array
         let sectionIndex = this.sectionPages.findIndex((section) => section.sectionNumber === sectionNumber);
@@ -350,5 +375,19 @@ export default defineComponent({
   text-shadow: 1px 1px 1px white;
   color: black;
   font-weight: normal;
+}
+
+.button-container {
+  bottom: 0;
+  width: 80%;
+  display: flex;
+  padding-bottom: 20px;
+  padding-top: 5px;
+  justify-content: center;
+  position:fixed;
+}
+.button-container .btn {
+  margin-right: 10px; /* Add margin to the right */
+  margin-left: 10px;
 }
 </style>

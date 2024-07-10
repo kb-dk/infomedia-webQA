@@ -118,10 +118,10 @@ export default defineComponent({
 
 <style>
 .custom__carousel {
-  margin-top: 15px;
+  margin-top: 5px;
 }
 .carousel__item {
-  height: 85vh;
+  height: 83vh;
   width: 100%;
   background-color: #42b983;
   color: var(--vc-clr-white);

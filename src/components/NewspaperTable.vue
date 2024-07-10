@@ -48,7 +48,6 @@ export default defineComponent({
           sortable: false,
           label: "Newspaper",
           filterable: true,
-          stickyColumn: true,
         }
       ],
       selectedNewspaper: null,
