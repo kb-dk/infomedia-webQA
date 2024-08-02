@@ -39,7 +39,7 @@
                      :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
       </b-col>
       <b-col sm="2">
-        <PageTable :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
+        <PageTable ref="pagetable" :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
       </b-col>
     </b-row>
     <div class="button-container">
@@ -291,14 +291,19 @@ export default defineComponent({
         let pageCount = this.sectionPages[sectionIndex].pageCount;
         let randomPageNumber = this.generateRandomPageNumber(pageCount);
         let randomPageName = this.findFileName(sectionNumber, randomPageNumber);
+        this.isRandomPageButtonClicked = true;
+        this.$refs.pagetable.highlightPage(parseInt(sectionNumber), parseInt(randomPageNumber));
 
         this.currentPagesNames = [randomPageName];
       }
-      this.isRandomPageButtonClicked = true;
     },
 
     getSectionNumber(currentFileName) {
       return currentFileName.match(/section(\d+)/)[1];
+    },
+
+    getPageNumber(currentFileName) {
+      return currentFileName.match(/page(\d+)/)[1];
     },
 
     generateRandomPageNumber(pageCount) {
@@ -309,7 +314,7 @@ export default defineComponent({
       let fileName = null;
       for (let i = 0; i < this.pagesNames.length; i++) {
         let sectionNumber = this.getSectionNumber(this.pagesNames[i]);
-        let pageNumber = this.pagesNames[i].match(/page(\d+)/)[1];
+        let pageNumber = this.getPageNumber(this.pagesNames[i]);
         if (sectionNumber === sectionName && pageNumber === String(randomPageNumber).padStart(3, '0')) {
           fileName = this.pagesNames[i];
           break;
