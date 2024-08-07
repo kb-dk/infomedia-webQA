@@ -38,6 +38,9 @@
           :disabled="isProcessButtonDisabled"
           title="Change batch status from Batch Inspected to Ready To Be Processed"
       ></ApproveButton>
+      <b-button class="changeCarouselView"
+                @click="exportNotes">Export Notes
+      </b-button>
     </div>
   </div>
 </template>
@@ -111,6 +114,76 @@ export default defineComponent({
         // Display the error message to the user
         this.errorMessage = 'An error occurred while sending approved batches. Please try again later.';
       }
+    },
+    async exportNotes() {
+      try {
+        const { calendarRef } = this.$refs;
+        const currentDate = (calendarRef as typeof Calendar).date;
+
+        const approvedBatches = await this.fetchBatch(currentDate);
+        const batchInfos = this.extractBatchIds(approvedBatches);
+        const batchNotes = await this.fetchAllNotesForBatches(batchInfos);
+
+        const notes = batchNotes.flatMap(noteArray => noteArray);
+        this.exportToCSV(notes, currentDate);
+        alert('Notes exported to ' + this.getCSVFilename(currentDate));
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async fetchBatch(currentDate: Date) {
+      try {
+        const response = await axios.get(`/api/batches?month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}&batch_type=dagsaviser&get_latest=false`);
+        return response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    extractBatchIds(approvedBatches: any[]) {
+      return approvedBatches.map(batch => ({ id: batch.id, batch_name: batch.batch_name }));
+    },
+    async fetchAllNotesForBatches(batchInfos: any[]) {
+      const notes = [];
+
+      for (const batchInfo of batchInfos) {
+        const response = await axios.get(`/api/batches/${batchInfo.id}/all-notes-to-batch`);
+        const noteArray = response.data;
+
+        if (noteArray.length != 0) {
+          for (const note of noteArray) {
+            note.batchName = batchInfo.batch_name;
+
+            if (note.newspaper_id) {
+              const newspaperResponse = await axios.get(`/api/batches/${batchInfo.id}/newspapers/${note.newspaper_id}`);
+              note.newspaperName = newspaperResponse.data.newspaper_name;
+            }else {
+              note.newspaperName = null;
+            }
+            notes.push(note);
+          }
+        }
+      }
+      return notes;
+    },
+    exportToCSV(notes: any[], currentDate: Date) {
+      let csvContent = "Note Text,Batch Name,Newspaper Title,Section Title,Page Number\n";
+
+      notes.forEach(note => {
+        csvContent += `${note.note},${note.batchName},${note.newspaperName},${note.section_title},${note.page_number}\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      const link = document.createElement('a');
+      link.setAttribute('href', URL.createObjectURL(blob));
+      link.setAttribute('download', this.getCSVFilename(currentDate));
+      document.body.appendChild(link);
+      link.click();
+    },
+
+    getCSVFilename(date: Date): string {
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      return `notes_${month}_${year}.csv`;
     },
 
     closeBatchInfo() {

@@ -1,29 +1,35 @@
 <template>
-  <div>
-    <div style="display: inline-block; width: 50%">
-      <p style=" display: inline-block; font-weight: bold;">{{fields[0]}}</p>
+  <div style="margin-top: 5px;">
+    <div style="display: inline-block; width: 50%;">
+      <p style=" display: inline-block; font-weight: bold;">{{ fields[0] }}</p>
     </div>
     <div style="display: inline-block; width: 50%">
-      <p style="  font-weight: bold;">{{fields[1]}}</p>
+      <p style="  font-weight: bold;">{{ fields[1] }}</p>
     </div>
-
   </div>
   <div class="pageTable">
-    <b-table-simple responsive="md">
-      <b-tbody >
-        <b-tr :key="page.index" v-for="(page, index) in pages" @click="rowClicked(page)" :class="focusedPage === index ? 'focusedPageRow' : ''">
+    <b-table-simple responsive ref="table">
+      <b-tbody>
+        <b-tr :key="page.index" v-for="(page, index) in pages" @click="rowClicked(page)"
+              :class="focusedPage === index ? 'focusedPageRow' : ''">
           <b-td>{{ page.Page }} af {{ amountOfPagesInSection(pages, page.Section) }}</b-td>
           <b-td>{{ page.Section }}</b-td>
         </b-tr>
       </b-tbody>
     </b-table-simple>
   </div>
-  <p style="margin-top: 10px;font-weight: bold">Total Pages: {{pages.length}}</p>
-  <p style="font-weight: bold">Total Sections: {{sections.size}}</p>
+  <div style="margin-top: 25px;">
+    <div>
+      <p style="font-weight: bold; ">Total Pages: {{ pages.length }}</p>
+    </div>
+    <div>
+      <p style="font-weight: bold; ">Total Sections: {{ sections.size }}</p>
+    </div>
+  </div>
 </template>
 
 <script>
-import {defineComponent,ref} from 'vue'
+import {defineComponent, ref} from 'vue'
 
 export default defineComponent({
   name: "PageTable",
@@ -35,19 +41,19 @@ export default defineComponent({
     return {
       fields: ["Page", "Section"],
       pages: [],
-      sections:new Set(),
-      focusedPage:ref(0)
+      sections: new Set(),
+      focusedPage: ref(0)
     }
   },
-  watch:{
+  watch: {
     pagesFileName: {
       immediate: true,
-      handler(){
+      handler() {
         this.pages = [];
         this.sections = new Set();
         for (let i = 0; i < this.pagesFileName.length; i++) {
-          let section= this.getSectionName(this.pagesFileName[i])
-          let page= this.getPageNumber(this.pagesFileName[i])
+          let section = this.getSectionName(this.pagesFileName[i])
+          let page = this.getPageNumber(this.pagesFileName[i])
           const fileObject = {
             src: this.pagesFileName[i],
             Section: section[1],
@@ -71,20 +77,29 @@ export default defineComponent({
         this.rowClick(e.src);
       }
     },
-    amountOfPagesInSection(pages,section){
+    scrollToFocusedRow() {
+      const tableElement = this.$refs.table.$el;
+      const focusedRow = tableElement.querySelector('.focusedPageRow');
+      focusedRow.scrollIntoView();
+    },
+
+    amountOfPagesInSection(pages, section) {
       return this.pages.filter((p) => p.Section === section).length;
     },
-    getSectionName(filename){
+
+    getSectionName(filename) {
       let regex = /.*(section(\d{2})).*/g;
       let result = regex.exec(filename);
       // console.log(result)
-      return [result[1],Number(result[2])];
+      return [result[1], Number(result[2])];
     },
-    getPageNumber(filename){
+
+    getPageNumber(filename) {
       let regex = /.*(page(\d{3})).*/g;
       let result = regex.exec(filename);
-      return [result[1],Number(result[2])];
+      return [result[1], Number(result[2])];
     },
+
     sortBySectionAndPage(arr) {
       for (let i = 0; i < arr.length; i++) {
         for (let j = 0; j < arr.length - i - 1; j++) {
@@ -96,6 +111,13 @@ export default defineComponent({
         }
       }
       return arr;
+    },
+
+    highlightPage(sectionNumber, pageNumber) {
+      this.focusedPage = this.pages.findIndex(page => (page.Page === pageNumber && page.Section === sectionNumber));
+      this.$nextTick(() => {
+        this.scrollToFocusedRow();
+      });
     },
   }
 })

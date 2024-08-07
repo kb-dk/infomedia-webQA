@@ -87,7 +87,6 @@ export default defineComponent({
 
         },
         calendarDayClicked(calendarData, event) {
-
           if (calendarData.attributes.length > 0) {
             if (this.isYear) {
               this.$router.push({
@@ -177,8 +176,6 @@ export default defineComponent({
             this.errorMessage = "Unable to load batches";
           }
         }
-
-
       }
     }
 )
