@@ -6,7 +6,7 @@
         <b-button class="batch-button  previous" @click="previousBatch()">Prev</b-button>
       </b-col>
       <b-col sm="10">
-        <div class="notes-container" @mouseenter="showNotes = true" name="expandNotes">
+        <div class="notes-container" ref="notesContainer" @mouseover="showNotes = true" name="expandNotes">
           Display Notes
           <b-row v-if="showNotes">
             <b-col>
@@ -32,7 +32,7 @@
         <b-button class="batch-button next" @click="nextBatch">Next</b-button>
       </b-col>
     </b-row>
-    <b-row @mouseenter="showNotes = false">
+    <b-row >
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
                      :additionalCarouselVal="pagesNames"
@@ -128,7 +128,19 @@ export default defineComponent({
   created() {
     this.fetchNewspaper();
   },
+  mounted() {
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  beforeUnmount() {
+    document.removeEventListener("click", this.handleClickOutside);
+  },
   methods: {
+    handleClickOutside(event) {
+      const notesContainer = this.$refs.notesContainer;
+      if (!notesContainer.contains(event.target)) {
+        this.showNotes = false;
+      }
+    },
     async fetchCarouselData() {
       try {
         const apiClient = axios.create({
