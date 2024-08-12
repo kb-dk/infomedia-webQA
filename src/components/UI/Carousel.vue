@@ -77,7 +77,7 @@ export default defineComponent({
     async loadImages() {
       try {
         const apiClient = axios.create({
-          baseURL: '/api',
+          baseURL: '/kuana-ndb-api',
         })
         for (const item of this.carouselValHandled) {
           if (!this.imageUrls.has(item)) {

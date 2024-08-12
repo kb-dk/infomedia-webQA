@@ -144,7 +144,7 @@ export default defineComponent({
     async fetchCarouselData() {
       try {
         const apiClient = axios.create({
-          baseURL: "/api",
+          baseURL: "/kuana-ndb-api",
         });
         const {batchid, newspaperid} = this.$route.params;
 
@@ -171,7 +171,7 @@ export default defineComponent({
     async fetchNewspaper() {
       try {
         const {batchid, newspaperid} = this.$route.params;
-        const {data} = await axios.get(`/api/batches/${batchid}/newspapers/${newspaperid}`);
+        const {data} = await axios.get(`/kuana-ndb-api/batches/${batchid}/newspapers/${newspaperid}`);
         this.newspaperData = data;
       } catch (error) {
         console.error(error);
@@ -214,7 +214,7 @@ export default defineComponent({
         this.newspaper.checked = true;
         try {
           const {id} = this.newspaper;
-          await axios.put(`/api/batches/${this.batch.id}/newspapers/${id}`);
+          await axios.put(`/kuana-ndb-api/batches/${this.batch.id}/newspapers/${id}`);
         } catch (error) {
           this.errorMessage = "Error approving the newspaper";
           console.log(this.errorMessage + ": " + error);
@@ -259,25 +259,25 @@ export default defineComponent({
 
     async getOtherBatch(newDate) {
       try {
-        const newBatch = await axios.get(`/api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
-        const batchData = newBatch.data;
-        if (batchData.length > 0) {
-          const newNewspaper = await axios.get(`/api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
-          const newspaperData = newNewspaper.data;
-          if (newspaperData.length > 0) {
-            this.$router.push({
-              name: "newspaper-view",
-              replace: true,
-              params: {
-                batchid: batchData[0].id,
-                newspaperid: newspaperData[0].id,
-                year: newDate.getFullYear(),
-                month: newDate.getMonth() + 1,
-                day: newDate.getDate()
-              }
-            });
-          }
+      const newBatch = await axios.get(`/kuana-ndb-api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
+      const batchData = newBatch.data;
+      if (batchData.length > 0) {
+        const newNewspaper = await axios.get(`/kuana-ndb-api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
+        const newspaperData = newNewspaper.data;
+        if (newspaperData.length > 0) {
+          this.$router.push({
+            name: "newspaper-view",
+            replace: true,
+            params: {
+              batchid: batchData[0].id,
+              newspaperid: newspaperData[0].id,
+              year: newDate.getFullYear(),
+              month: newDate.getMonth() + 1,
+              day: newDate.getDate()
+            }
+          });
         }
+      }
       } catch (error) {
         this.errorMessage = "An error occurred while fetching data. Please try again later.";
         console.log(this.errorMessage + ": " + error);

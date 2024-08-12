@@ -101,11 +101,11 @@ export default defineComponent({
         const { calendarRef } = this.$refs;
         const currentDate = (calendarRef as typeof Calendar).date;
 
-        const { data } = await axios.get(`/api/batches?month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}&state=BatchInspected`);
+        const { data } = await axios.get(`/kuana-ndb-api/batches?month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}&state=BatchInspected`);
 
         for (const batch of data) {
           batch.state = stateParam;
-          await axios.put(`/api/batches/`, batch, { headers: { 'Content-Type': 'application/json' } });
+          await axios.put(`/kuana-ndb-api/batches/`, batch, { headers: { 'Content-Type': 'application/json' } });
         }
 
         this.reloadCalendar();
