@@ -383,7 +383,6 @@ export default defineComponent({
   color: white;
   font-weight: bold;
   text-shadow: 1px 1px 3px black;
-  display: inline-block;
   padding-top: 10px;
 }
 

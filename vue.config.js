@@ -1,4 +1,5 @@
 const { defineConfig } = require('@vue/cli-service')
+const path = require('path');
 module.exports = defineConfig({
   transpileDependencies: true,
   devServer:{
@@ -11,5 +12,12 @@ module.exports = defineConfig({
       }
     }
   },
-  publicPath:"/kuana-ndb-wui/webQA/"
+  publicPath:"/kuana-ndb-wui/webQA/",
+  configureWebpack: {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      },
+    },
+  },
 })

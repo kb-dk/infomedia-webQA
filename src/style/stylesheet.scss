@@ -88,6 +88,8 @@
   max-height: 40em;
   overflow: scroll;
   overflow-scrolling: auto;
+  scrollbar-width:thin;
+  //::-webkit-scrollbar-button:blank;
 }
 .newspaper-table-container{
   margin-bottom: 5px;
