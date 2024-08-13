@@ -383,11 +383,11 @@ export default defineComponent({
   color: white;
   font-weight: bold;
   text-shadow: 1px 1px 3px black;
+  display: inline-block;
   padding-top: 10px;
 }
 
 .notes-container > * {
-  display: inline-block;
   position: relative; /* or absolute */
   z-index: 1000;
   flex-grow: 1;
