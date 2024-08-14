@@ -5,7 +5,7 @@
       <div class="header">
         <h6>{{ postsTitel }}</h6>
       </div>
-      <post-form @create="createPost">
+      <post-form @create="createPost" :disabled="createPostDisable()">
       </post-form>
       <post-list :posts="posts" @remove="removePost"></post-list>
     </div>
@@ -37,6 +37,7 @@ export default defineComponent({
   },
   mounted() {
     if (this.batch && this.batch.id !== undefined) {
+      console.log(this.batch)
       this.getPosts()
           .then((res) => {
             this.posts = res;
@@ -191,6 +192,14 @@ export default defineComponent({
         this.errorMessage = "Unable to get notes";
         console.log("Unable to get notes:" + error);
       }
+    },
+    createPostDisable(){
+      if(this.batch){
+        return this.batch.state !== 'QAChecked' && this.batch.state !== 'BatchInspected' && this.batch.state !== 'TechnicalInspectionComplete'
+      }else{
+        return true;
+      }
+
     }
   }
 })

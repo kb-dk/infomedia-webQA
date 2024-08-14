@@ -1,5 +1,5 @@
 <template>
-  <button class="im-button" :disabled="disabled">
+  <button class="im-button" :class="disabled?'disabled':''" :disabled="disabled">
     <slot></slot>
   </button>
 </template>
@@ -21,5 +21,9 @@ export default defineComponent({
   background: none;
   color: teal;
   border: 1px solid teal;
+}
+.disabled{
+  color:#6c6b6b;
+  border: 1px solid #6c6b6b;
 }
 </style>

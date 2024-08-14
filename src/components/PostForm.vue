@@ -18,6 +18,7 @@
         <im-button
             style="align-self: flex-end; margin-top: 3px"
             @click="createOnePost"
+            :disabled="disabled"
         >
           Gem
         </im-button>
@@ -30,6 +31,9 @@
 import {defineComponent} from 'vue'
 
 export default defineComponent({
+  props:{
+    disabled: Boolean
+  },
   data() {
     return {
       post: {
