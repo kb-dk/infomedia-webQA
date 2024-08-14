@@ -4,15 +4,6 @@
 
     <template v-else>
       <div v-for="(item, index) in pdfVal" :key="index">
-
-<!--      <span v-if="showAllPages"> {{ pageCount }} page(s) </span>
-
-      <span v-else>
-        <im-button :disabled="page <= 1" @click="removeOnePage" style="padding: 0px 6px">❮</im-button>
-          {{ page }} / {{ pageCount }}
-        <im-button :disabled="page >= pageCount" @click="addOnePage" style="padding: 0px 6px">❯</im-button>
-      </span>
-      <im-checkbox :text="checkboxText" v-model="showAllPages" style="float: right"/>-->
     <div class="vue-pdf-embed">
       <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef" :page="page"></vue-pdf-embed>
     </div>

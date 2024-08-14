@@ -19,7 +19,7 @@ export default defineComponent({
 .im-button {
   padding: 2px 3px;
   background: none;
-  color: teal;
-  border: 1px solid teal;
+  color: black;
+  border: 1px solid #6c757d;
 }
 </style>

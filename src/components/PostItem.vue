@@ -36,7 +36,7 @@ export default defineComponent({
 
 .output {
   width: 100%;
-  border: 1px solid teal;
+  border: 1px solid #6c757d;
   padding: 2px 3px;
   margin-right: 3px;
   text-align: left;
