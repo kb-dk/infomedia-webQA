@@ -80,7 +80,7 @@ export default defineComponent({
         return;
       }
       try {
-        let url = `/api/batches/${this.batch.id}`;
+        let url = `/kuana-ndb-api/batches/${this.batch.id}`;
         switch (this.notesType) {
           case NotesType.BATCHNOTE:
             url += "/notes-to-batch?username=gui";
@@ -122,7 +122,7 @@ export default defineComponent({
         return;
       }
       try {
-        let url = `/api/batches/${this.batch.id}`;
+        let url = `/kuana-ndb-api/batches/${this.batch.id}`;
         switch (this.notesType) {
           case NotesType.BATCHNOTE:
             url += `/notes-to-batch/${post.id}`;
@@ -161,24 +161,24 @@ export default defineComponent({
         let result;
         switch (this.notesType) {
           case NotesType.BATCHNOTE:
-            result = await axios.get(`/api/batches/${this.batch?.id}/notes-to-batch`);
+            result = await axios.get(`/kuana-ndb-api/batches/${this.batch?.id}/notes-to-batch`);
             // console.log("BATCHNOTE: " + result?.data)
             break;
           case NotesType.EDITIONNOTE:
             if (this.newspaper) {
-              result = await axios.get(`/api/batches/${this.batch?.id}/newspapers/${this.newspaper.id}/notes-to-edition`);
+              result = await axios.get(`/kuana-ndb-api/batches/${this.batch?.id}/newspapers/${this.newspaper.id}/notes-to-edition`);
               // console.log("EDITIONNOTE: " + result?.data)
             }
             break;
           case NotesType.SECTIONNOTE:
             if (this.newspaper && this.sectiontitle) {
-              result = await axios.get(`/api/batches/${this.batch?.id}/newspapers/${this.newspaper.id}/notes-to-section?section_title=${this.sectiontitle}`);
+              result = await axios.get(`/kuana-ndb-api/batches/${this.batch?.id}/newspapers/${this.newspaper.id}/notes-to-section?section_title=${this.sectiontitle}`);
               // console.log("SECTIONNOTE: " + result?.data)
             }
             break;
           case NotesType.PAGENOTE:
             if (this.newspaper && this.sectiontitle && this.pagenumber) {
-              result = await axios.get(`/api/batches/${this.batch?.id}/newspapers/${this.newspaper.id}/notes-to-pages?section_title=${this.sectiontitle}&page_number=${this.pagenumber}`);
+              result = await axios.get(`/kuana-ndb-api/batches/${this.batch?.id}/newspapers/${this.newspaper.id}/notes-to-pages?section_title=${this.sectiontitle}&page_number=${this.pagenumber}`);
               // console.log("PAGENOTE: " + result?.data)
             }
             break;

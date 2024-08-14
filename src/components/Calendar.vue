@@ -109,7 +109,7 @@ export default defineComponent({
           let res = [];
           try {
             const apiClient = axios.create({
-              baseURL: '/api',
+              baseURL: '/kuana-ndb-api',
             })
             const {data} = await apiClient.get(`/batches?month=${this.date.getMonth() + 1}&year=${this.date.getFullYear()}&batch_type=${this.batchType}&get_latest=true`)
             res = data
@@ -151,12 +151,12 @@ export default defineComponent({
         async batchesForYear() {
           let res = [];
           try {
-            const {data} = await axios.get(`/api/batches?state=TechnicalInspectionComplete&year=${this.date.getFullYear()}&newspaper_name=${this.newspaperName}&get_latest=true`);
+            const {data} = await axios.get(`/kuana-ndb-api/batches?state=TechnicalInspectionComplete&year=${this.date.getFullYear()}&newspaper_name=${this.newspaperName}&get_latest=true`);
             res = data;
             for (let i = 0; i < res.length; i++) {
-              const newspapers = (await axios.get(`/api/batches/${res[i].id}/newspapers?newspaper_name=${this.newspaperName}`)).data
+              const newspapers = (await axios.get(`/kuana-ndb-api/batches/${res[i].id}/newspapers?newspaper_name=${this.newspaperName}`)).data
               for (let j = 0; j < newspapers.length; j++) {
-                let hasPage = (await axios.get(`/api/batches/${res[i].id}/newspapers/${newspapers[j].id}/has-page`)).data
+                let hasPage = (await axios.get(`/kuana-ndb-api/batches/${res[i].id}/newspapers/${newspapers[j].id}/has-page`)).data
                 res[i] = {
                   highlight: {
                     color: hasPage?'teal':'orange',
