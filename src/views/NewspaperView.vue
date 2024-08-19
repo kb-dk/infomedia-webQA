@@ -10,9 +10,6 @@
           Display Notes
           <b-row v-if="showNotes">
             <b-col>
-              <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
-            </b-col>
-            <b-col>
               <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
                           :newspaper="newspaper"></notes-form>
             </b-col>

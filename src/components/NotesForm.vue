@@ -7,7 +7,7 @@
       </div>
       <post-form @create="createPost" :disabled="createPostDisable()">
       </post-form>
-      <post-list :posts="posts" @remove="removePost"></post-list>
+      <post-list :disabled="createPostDisable()" :posts="posts" @remove="removePost"></post-list>
     </div>
   </form>
 </template>
