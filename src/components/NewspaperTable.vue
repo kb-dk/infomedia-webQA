@@ -1,57 +1,67 @@
 <template>
   <div class="newspaper-table-container">
     <div v-if="show">
-    <b-form-input v-model="filter" type="search" placeholder="Search"></b-form-input>
-    <b-table v-model:sort-by="sortBy"
-             v-model:sort-desc="sortDesc"
-             :filterable="true"
-             :responsive = "true"
-             striped hover
-             :items="handledNewspapers"
-             :fields="fields"
-             @row-clicked="rowClicked($event)"
-             :filter="filter"
-             class="newspaperTable"
-             :busy="isBusy"
-             :sticky-header="true"
-             >
-      <template #cell(newspaper_name)="row">
-        <div :class="{ 'selected-newspaper': row.item.newspaper_name === selectedNewspaper }">
-          {{ row.value }}
-        </div>
-      </template>
-    </b-table>
+      <b-form-input v-model="filter" type="search" placeholder="Search"></b-form-input>
+      <b-table v-model:sort-by="sortBy"
+               v-model:sort-desc="sortDesc"
+               :filterable="true"
+               :responsive="true"
+               striped hover
+               :items="filteredNewspapers"
+               :fields="fields"
+               @row-clicked="rowClicked($event)"
+               :filter="filter"
+               class="newspaperTable"
+               :busy="isBusy"
+               :sticky-header="true"
+      >
+        <template #cell(newspaper_name)="row">
+          <div :class="{ 'selected-newspaper': row.item.newspaper_name === selectedNewspaper }">
+            {{ row.value }}
+          </div>
+        </template>
+      </b-table>
     </div>
   </div>
 </template>
 
 <script>
-import {defineComponent, ref} from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "NewspaperTable",
   props: {
-    newspapers: [Promise],
-    headerName:[String],
-    show:[Boolean]
+    newspapers: {
+      type: Promise,
+      required: true,
+    },
+    headerName: {
+      type: String,
+      required: true,
+    },
+    show: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
       filter: null,
-      sortBy: 'newspaper_name',
+      sortBy: "newspaper_name",
       sortDesc: false,
       isBusy: true,
       handledNewspapers: [],
+      filteredNewspapers: [],
       fields: [
         {
           key: "newspaper_name",
-          sortable: false,
+          sortable: true,
           label: "Newspaper",
           filterable: true,
-        }
+        },
       ],
       selectedNewspaper: null,
-    }
+    };
   },
   created() {
     this.handleNewspapers();
@@ -65,7 +75,7 @@ export default defineComponent({
   watch: {
     filter(newValue) {
       this.filterNewspapers(newValue);
-     },
+    },
   },
   methods: {
     clearSelectedNewspaper() {
@@ -77,26 +87,25 @@ export default defineComponent({
       try {
         const response = await this.newspapers;
         this.handledNewspapers = response;
+        this.filteredNewspapers = response;
       } catch (error) {
         console.error(error);
       } finally {
         this.isBusy = false;
         this.fields[0].label = this.headerName;
-        this.fields[0].sortable = true;
       }
     },
 
     rowClicked(event) {
-      // console.log(event)
       this.selectedNewspaper = event.newspaper_name;
       localStorage.setItem("selectedNewspaper", event.newspaper_name);
       this.$router.push({
         name: "newspaper-calendar",
         params: {
           newspaperName: event.newspaper_name,
-          newspaperid: event.id
-        }
-      })
+          newspaperid: event.id,
+        },
+      });
     },
 
     filterF(row, filter) {
@@ -113,7 +122,7 @@ export default defineComponent({
       }
     },
   },
-})
+});
 </script>
 
 <style lang="scss" scoped>

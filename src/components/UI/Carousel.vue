@@ -10,8 +10,8 @@
             <b-row>
               <b-col>
                 <div class="pdf-container">
-                <vue-pdf-embed :source="getImage(item)" @rendered="handleDocumentRender" :page="page"
-                               width="550"></vue-pdf-embed>
+                <vue-pdf-embed :source="item ? getImage(item) : null"  @rendered="handleDocumentRender" :page="page"
+                               ></vue-pdf-embed>
                 </div>
               </b-col>
             </b-row>
@@ -21,7 +21,7 @@
                      @click="openPdfModal(item)">
                   <span class="icon" @click="openPdfModal(item)">
                     <!-- Brug et ikon fra Font Awesome -->
-                    <i class="fas fa-file-pdf"></i>
+                    <i class="fa-solid fa-magnifying-glass"></i>
                   </span>
                 </div>
               </b-col>
@@ -43,7 +43,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <vue-pdf-embed :source=getImage(selectedPdf)></vue-pdf-embed>
+          <vue-pdf-embed :source="selectedPdf ? getImage(selectedPdf) : ''"></vue-pdf-embed>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
@@ -51,7 +51,6 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -92,7 +91,7 @@ export default defineComponent({
       imageUrls: new Map(), // Object to store image URLs
       carouselValHandled: ref([]),
       sectionPages: ref([]),
-      selectedPdf: null,
+      selectedPdf: '',
     }
   },
   watch: {
@@ -184,6 +183,7 @@ export default defineComponent({
 .vue-pdf-embed canvas {
   height: calc(100% - 20px) !important; /* adjust the 20px value to match the carousel's padding or margin */
   flex: 1;
+  width: 28em;
 }
 
 .modal-content {

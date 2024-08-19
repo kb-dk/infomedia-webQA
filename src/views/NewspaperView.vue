@@ -32,7 +32,7 @@
         <b-button class="batch-button next" @click="nextBatch">Next</b-button>
       </b-col>
     </b-row>
-    <b-row >
+    <b-row>
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
                      :additionalCarouselVal="pagesNames"
@@ -48,7 +48,8 @@
       </b-button>
       <b-button v-if="!frontPageView && !(randomPagesView && !oneRandomPageView)" class="changeCarouselView"
                 :variant="isRandomPageButtonClicked ? 'success' : 'secondary'"
-                @click="changeToRandomSectionPageView()">Show Random Page From Section {{ parseInt(currentSectionNumber).toString() }}
+                @click="changeToRandomSectionPageView()">Show Random Page From Section
+        {{ parseInt(currentSectionNumber).toString() }}
       </b-button>
       <b-button v-if="!frontPageView || !randomPagesView" class="changeCarouselView"
                 @click="changeToFrontPageView()">Show Front Pages
@@ -156,9 +157,15 @@ export default defineComponent({
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
-        this.frontPagesNames = frontPagePaths.map((d) => {
+        const unsortedPagesNames = frontPagePaths.map((d) => {
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
+        });
+        this.frontPagesNames  = unsortedPagesNames.sort((a, b) => {
+          const sectionNumberA = this.getSectionNumber(a);
+          const sectionNumberB = this.getSectionNumber(b);
+
+          return sectionNumberA - sectionNumberB;
         });
         this.currentPagesNames = this.frontPagesNames;
       } catch (error) {
@@ -183,7 +190,8 @@ export default defineComponent({
       this.currentFileName = filename;
       this.initCurrentSectionTitle();
       this.initCurrentPageNumber();
-    },
+    }
+    ,
 
     initCurrentSectionTitle() {
       const regex = /section(\d+)/;
@@ -285,7 +293,7 @@ export default defineComponent({
     },
 
     changeToRandomSectionPagesView() {
-      const randomPagesNames = this.sectionPages.map(({ sectionNumber, pageCount }) => {
+      const randomPagesNames = this.sectionPages.map(({sectionNumber, pageCount}) => {
         const randomPageNumber = this.generateRandomPageNumber(pageCount);
         return this.findFileName(sectionNumber, randomPageNumber);
       });
@@ -311,7 +319,11 @@ export default defineComponent({
     },
 
     getSectionNumber(currentFileName) {
-      return currentFileName.match(/section(\d+)/)[1];
+      const sectionMatch = currentFileName.match(/section(\d+)/)[1];
+      if (sectionMatch) {
+        return parseInt(sectionMatch[1]);
+      }
+      return 0;
     },
 
     getPageNumber(currentFileName) {
@@ -319,7 +331,7 @@ export default defineComponent({
     },
 
     generateRandomPageNumber(pageCount) {
-     return Math.floor(Math.random() * (pageCount - 2 + 1)) + 2;
+      return Math.floor(Math.random() * (pageCount - 2 + 1)) + 2;
     },
 
     findFileName(sectionName, randomPageNumber) {
@@ -388,7 +400,6 @@ export default defineComponent({
 }
 
 .notes-container > * {
-  display: inline-block;
   position: relative; /* or absolute */
   z-index: 1000;
   flex-grow: 1;
@@ -406,8 +417,9 @@ export default defineComponent({
   padding-bottom: 20px;
   padding-top: 5px;
   justify-content: center;
-  position:fixed;
+  position: fixed;
 }
+
 .button-container .btn {
   margin-right: 10px; /* Add margin to the right */
   margin-left: 10px;
