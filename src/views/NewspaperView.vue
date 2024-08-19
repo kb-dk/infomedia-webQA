@@ -104,7 +104,6 @@ export default defineComponent({
       frontPagesNames: [],
       currentPagesNames: [],
       newspaperData: {},
-      // frontPageView: this.toWrapAround(),
       itemToShow: 2,
       showNotes: false
     }
@@ -199,12 +198,10 @@ export default defineComponent({
       this.$refs.carousel.switchPage(fileName);
       this.handleCurrentFilename(fileName);
       this.currentPagesNames = [fileName];
-      // this.frontPageView = false;
       this.itemToShow = 1;
     },
     changeToFrontPageView() {
       this.currentPagesNames = this.frontPagesNames
-      // this.frontPageView = true
       this.itemToShow = 2;
     },
     async previousBatch() {
