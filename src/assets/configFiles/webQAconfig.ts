@@ -24,5 +24,5 @@ export default {
             "Beskæring"
         ]
     },
-    "linkToUserGuide": ""
+    "linkToUserGuide": "https://google.com"
 };
