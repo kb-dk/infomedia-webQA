@@ -5,7 +5,7 @@
       <div class="header">
         <h6>{{ postsTitel }}</h6>
       </div>
-      <post-form @create="createPost">
+      <post-form @create="createPost" :notesType="notesType">
       </post-form>
       <post-list :posts="posts" @remove="removePost"></post-list>
     </div>

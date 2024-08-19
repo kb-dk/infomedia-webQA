@@ -32,12 +32,12 @@
         <b-button class="batch-button next" @click="nextBatch">Next</b-button>
       </b-col>
     </b-row>
-    <b-row >
+    <b-row>
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
                      :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename">
         </im-carousel>
-<!--        :additionalCarouselVal="pagesNames"-->
+        <!--        :additionalCarouselVal="pagesNames"-->
       </b-col>
       <b-col sm="2">
         <PageTable ref="pagetable" :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
@@ -49,7 +49,8 @@
       </b-button>
       <b-button v-if="!frontPageView && !(randomPagesView && !oneRandomPageView)" class="changeCarouselView"
                 :variant="isRandomPageButtonClicked ? 'success' : 'secondary'"
-                @click="changeToRandomSectionPageView()">Show Random Page From Section {{ parseInt(currentSectionNumber).toString() }}
+                @click="changeToRandomSectionPageView()">Show Random Page From Section
+        {{ parseInt(currentSectionNumber).toString() }}
       </b-button>
       <b-button v-if="!frontPageView || !randomPagesView" class="changeCarouselView"
                 @click="changeToFrontPageView()">Show Front Pages
@@ -159,40 +160,20 @@ export default defineComponent({
         for (let i = 0; i < frontPagePaths.length; i++) {
           const filePathParts = frontPagePaths[i].filepath.split("/");
           this.frontPagesNames[i] = {
-            "name":filePathParts[filePathParts.length - 1],
-            "section":frontPagePaths[i].section_title,
-            "pageNumber":frontPagePaths[i].page_number
+            "name": filePathParts[filePathParts.length - 1],
+            "section": frontPagePaths[i].section_title,
+            "pageNumber": frontPagePaths[i].page_number
           };
-          // this.frontPagesNames[i].name = filePathParts[filePathParts.length - 1];
-          // this.frontPagesNames[i].section = frontPagePaths[i].section_title;
-          // this.frontPagesNames[i].pageNumber = frontPagePaths[i].page_number;
         }
         for (let i = 0; i < response.data.length; i++) {
           const filePathParts = response.data[i].filepath.split("/");
-          this.pagesNames[i]={
-            "name":filePathParts[filePathParts.length - 1],
-            "section":response.data[i].section_title,
-            "pageNumber":response.data[i].page_number
+          this.pagesNames[i] = {
+            "name": filePathParts[filePathParts.length - 1],
+            "section": response.data[i].section_title,
+            "pageNumber": response.data[i].page_number
           }
-          // this.pagesNames[i].name = filePathParts[filePathParts.length - 1];
-          // this.pagesNames[i].section = response.data[i].section_title;
-          // this.pagesNames[i].pageNumber = response.data[i].page_number;
-
         }
 
-        console.log("frontPagesNames")
-        console.log(this.frontPagesNames)
-        console.log("pagesNames")
-        console.log(this.pagesNames)
-        // this.pagesNames = response.data.map((d) => {
-        //
-        //   const filePathParts = d.filepath.split("/");
-        //   return {'pageNumber':d.page_number,'section':d.section_title,'name':filePathParts[filePathParts.length - 1]};
-        // });
-        // this.frontPagesNames = frontPagePaths.map((d) => {
-        //   const filePathParts = d.filepath.split("/");
-        //   return {'pageNumber':d.page_number,'section':d.section_title,'name':filePathParts[filePathParts.length - 1]};
-        // });
         this.currentPagesNames = this.frontPagesNames;
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";
@@ -295,25 +276,25 @@ export default defineComponent({
 
     async getOtherBatch(newDate) {
       try {
-      const newBatch = await axios.get(`/kuana-ndb-api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
-      const batchData = newBatch.data;
-      if (batchData.length > 0) {
-        const newNewspaper = await axios.get(`/kuana-ndb-api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
-        const newspaperData = newNewspaper.data;
-        if (newspaperData.length > 0) {
-          this.$router.push({
-            name: "newspaper-view",
-            replace: true,
-            params: {
-              batchid: batchData[0].id,
-              newspaperid: newspaperData[0].id,
-              year: newDate.getFullYear(),
-              month: newDate.getMonth() + 1,
-              day: newDate.getDate()
-            }
-          });
+        const newBatch = await axios.get(`/kuana-ndb-api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
+        const batchData = newBatch.data;
+        if (batchData.length > 0) {
+          const newNewspaper = await axios.get(`/kuana-ndb-api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
+          const newspaperData = newNewspaper.data;
+          if (newspaperData.length > 0) {
+            this.$router.push({
+              name: "newspaper-view",
+              replace: true,
+              params: {
+                batchid: batchData[0].id,
+                newspaperid: newspaperData[0].id,
+                year: newDate.getFullYear(),
+                month: newDate.getMonth() + 1,
+                day: newDate.getDate()
+              }
+            });
+          }
         }
-      }
       } catch (error) {
         this.errorMessage = "An error occurred while fetching data. Please try again later.";
         console.log(this.errorMessage + ": " + error);
@@ -321,7 +302,7 @@ export default defineComponent({
     },
 
     changeToRandomSectionPagesView() {
-      const randomPagesNames = this.sectionPages.map(({ sectionNumber, pageCount }) => {
+      const randomPagesNames = this.sectionPages.map(({sectionNumber, pageCount}) => {
         const randomPageNumber = this.generateRandomPageNumber(pageCount);
         return this.findFileName(sectionNumber, randomPageNumber);
       });
@@ -355,7 +336,7 @@ export default defineComponent({
     },
 
     generateRandomPageNumber(pageCount) {
-     return Math.floor(Math.random() * (pageCount - 2 + 1)) + 2;
+      return Math.floor(Math.random() * (pageCount - 2 + 1)) + 2;
     },
 
     findFileName(sectionName, randomPageNumber) {
@@ -442,8 +423,9 @@ export default defineComponent({
   padding-bottom: 20px;
   padding-top: 5px;
   justify-content: center;
-  position:fixed;
+  position: fixed;
 }
+
 .button-container .btn {
   margin-right: 10px; /* Add margin to the right */
   margin-left: 10px;
