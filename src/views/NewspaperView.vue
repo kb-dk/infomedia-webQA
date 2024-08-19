@@ -35,7 +35,7 @@
     <b-row @mouseenter="showNotes = false">
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
-                     :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
+                     :front-page-view="toWrapAround()" @current-filename-event="handleCurrentFilename"></im-carousel>
       </b-col>
       <b-col sm="2">
         <br>
@@ -104,7 +104,7 @@ export default defineComponent({
       frontPagesNames: [],
       currentPagesNames: [],
       newspaperData: {},
-      frontPageView: true,
+      // frontPageView: this.toWrapAround(),
       itemToShow: 2,
       showNotes: false
     }
@@ -199,12 +199,12 @@ export default defineComponent({
       this.$refs.carousel.switchPage(fileName);
       this.handleCurrentFilename(fileName);
       this.currentPagesNames = [fileName];
-      this.frontPageView = false;
+      // this.frontPageView = false;
       this.itemToShow = 1;
     },
     changeToFrontPageView() {
       this.currentPagesNames = this.frontPagesNames
-      this.frontPageView = true
+      // this.frontPageView = true
       this.itemToShow = 2;
     },
     async previousBatch() {
@@ -244,6 +244,9 @@ export default defineComponent({
         this.errorMessage = "An error occurred while fetching data. Please try again later.";
         console.log(this.errorMessage + ": " + error);
       }
+    },
+    toWrapAround(){
+      return this.currentPagesNames.length > 1
     }
   }
 })
