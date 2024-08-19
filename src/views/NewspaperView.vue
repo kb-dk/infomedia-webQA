@@ -35,8 +35,9 @@
     <b-row >
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
-                     :additionalCarouselVal="pagesNames"
-                     :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
+                     :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename">
+        </im-carousel>
+<!--        :additionalCarouselVal="pagesNames"-->
       </b-col>
       <b-col sm="2">
         <PageTable ref="pagetable" :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
@@ -108,9 +109,9 @@ export default defineComponent({
       currentSectionTitle: "",
       currentSectionNumber: 0,
       errorMessage: "",
-      pagesNames: [],
-      frontPagesNames: [],
-      currentPagesNames: [],
+      pagesNames: [{}],
+      frontPagesNames: [{}],
+      currentPagesNames: [{}],
       sectionPages: [],
       newspaperData: {},
       frontPageView: true,
@@ -151,15 +152,31 @@ export default defineComponent({
         const response = await apiClient.get(
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         );
+        console.log(response.data)
         const frontPagePaths = response.data.filter((d) => d.page_number === 1);
-        this.pagesNames = response.data.map((d) => {
-          const filePathParts = d.filepath.split("/");
-          return filePathParts[filePathParts.length - 1];
-        });
-        this.frontPagesNames = frontPagePaths.map((d) => {
-          const filePathParts = d.filepath.split("/");
-          return filePathParts[filePathParts.length - 1];
-        });
+        console.log(frontPagePaths);
+        for (let i = 0; i < frontPagePaths.length; i++) {
+          const filePathParts = frontPagePaths[i].filepath.split("/");
+          this.frontPagesNames.name = filePathParts[filePathParts.length - 1];
+          this.frontPagesNames.section = frontPagePaths[i].section_title;
+          this.frontPagesNames.pageNumber = frontPagePaths[i].page_number;
+        }
+        for (let i = 0; i < response.data.length; i++) {
+          const filePathParts = response.data[i].filepath.split("/");
+          this.pagesNames.name = filePathParts[filePathParts.length - 1];
+          this.pagesNames.section = response.data[i].section_title;
+          this.pagesNames.pageNumber = response.data[i].page_number;
+
+        }
+        // this.pagesNames = response.data.map((d) => {
+        //
+        //   const filePathParts = d.filepath.split("/");
+        //   return {'pageNumber':d.page_number,'section':d.section_title,'name':filePathParts[filePathParts.length - 1]};
+        // });
+        // this.frontPagesNames = frontPagePaths.map((d) => {
+        //   const filePathParts = d.filepath.split("/");
+        //   return {'pageNumber':d.page_number,'section':d.section_title,'name':filePathParts[filePathParts.length - 1]};
+        // });
         this.currentPagesNames = this.frontPagesNames;
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";

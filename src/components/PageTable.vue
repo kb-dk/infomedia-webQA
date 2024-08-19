@@ -51,11 +51,12 @@ export default defineComponent({
       handler() {
         this.pages = [];
         this.sections = new Set();
+        // console.log(this.pagesFileName)
         for (let i = 0; i < this.pagesFileName.length; i++) {
-          let section = this.getSectionName(this.pagesFileName[i])
-          let page = this.getPageNumber(this.pagesFileName[i])
+          let section = this.getSectionName(this.pagesFileName[i].name)
+          let page = this.getPageNumber(this.pagesFileName[i].name)
           const fileObject = {
-            src: this.pagesFileName[i],
+            src: this.pagesFileName[i].name,
             Section: section[1],
             Page: page[1],
             sectionName: section[0],

@@ -5,6 +5,7 @@
         <div>
           <template v-if="isLoading"> Loading...</template>
           <template v-else>
+            test
             <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef"
                            :page="page" width="600"></vue-pdf-embed>
           </template>
@@ -38,7 +39,7 @@ export default defineComponent({
   props: {
     carouselVal: {
       type: Array,
-      default: () => [],
+      default: () => [{}],
     },
     frontPageView: Boolean,
     itemsToShow: Number,
@@ -57,9 +58,10 @@ export default defineComponent({
     carouselVal: {
       immediate: true,
       handler() {
+        console.log(this.carouselVal)
         if (this.carouselValHandled !== this.carouselValue && this.carouselVal.length > 0) {
           this.carouselValHandled = this.carouselVal;
-          console.log("carousel value: " + this.carouselValHandled.value);
+          // console.log("carousel value: " + this.carouselValHandled.value);
           this.loadImages().then(() => {
             this.isLoading = false;
           }).catch((error) => {
@@ -80,8 +82,8 @@ export default defineComponent({
           baseURL: '/kuana-ndb-api',
         })
         for (const item of this.carouselValHandled) {
-          if (!this.imageUrls.has(item)) {
-            const encoded_item = encodeURIComponent(item);
+          if (!this.imageUrls.has(item.name)) {
+            const encoded_item = encodeURIComponent(item.name);
             try {
               const response = await apiClient.get(`/file/${encoded_item}`, {
                 responseType: 'blob'
@@ -123,7 +125,7 @@ export default defineComponent({
 .carousel__item {
   height: 83vh;
   width: 100%;
-  background-color: #42b983;
+  background-color: #474747;
   color: var(--vc-clr-white);
   font-size: 20px;
   border-radius: 8px;
