@@ -4,6 +4,7 @@
     <b-form-input v-model="filter" type="search" placeholder="Search"></b-form-input>
     <b-table v-model:sort-by="sortBy"
              v-model:sort-desc="sortDesc"
+             :sort-compare="sortCompare"
              :filterable="true"
              :responsive = "true"
              striped hover
@@ -14,6 +15,7 @@
              class="newspaperTable"
              :busy="isBusy"
              :sticky-header="true"
+
              >
       <template #cell(newspaper_name)="row">
         <div :class="{ 'selected-newspaper': row.item.newspaper_name === selectedNewspaper }">
@@ -110,6 +112,11 @@ export default defineComponent({
         this.filteredNewspapers = this.handledNewspapers;
       }
     },
+    sortCompare:function(aRow,bRow,key){
+      const a = aRow[key].toLowerCase();
+      const b = bRow[key].toLowerCase();
+      return a<b?-1:a>b?1:0
+    }
   },
 })
 </script>
