@@ -109,9 +109,9 @@ export default defineComponent({
       currentSectionTitle: "",
       currentSectionNumber: 0,
       errorMessage: "",
-      pagesNames: [{}],
-      frontPagesNames: [{}],
-      currentPagesNames: [{}],
+      pagesNames: [],
+      frontPagesNames: [],
+      currentPagesNames: [],
       sectionPages: [],
       newspaperData: {},
       frontPageView: true,
@@ -152,22 +152,38 @@ export default defineComponent({
         const response = await apiClient.get(
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         );
+        console.log("responseData")
         console.log(response.data)
         const frontPagePaths = response.data.filter((d) => d.page_number === 1);
         console.log(frontPagePaths);
         for (let i = 0; i < frontPagePaths.length; i++) {
           const filePathParts = frontPagePaths[i].filepath.split("/");
-          this.frontPagesNames.name = filePathParts[filePathParts.length - 1];
-          this.frontPagesNames.section = frontPagePaths[i].section_title;
-          this.frontPagesNames.pageNumber = frontPagePaths[i].page_number;
+          this.frontPagesNames[i] = {
+            "name":filePathParts[filePathParts.length - 1],
+            "section":frontPagePaths[i].section_title,
+            "pageNumber":frontPagePaths[i].page_number
+          };
+          // this.frontPagesNames[i].name = filePathParts[filePathParts.length - 1];
+          // this.frontPagesNames[i].section = frontPagePaths[i].section_title;
+          // this.frontPagesNames[i].pageNumber = frontPagePaths[i].page_number;
         }
         for (let i = 0; i < response.data.length; i++) {
           const filePathParts = response.data[i].filepath.split("/");
-          this.pagesNames.name = filePathParts[filePathParts.length - 1];
-          this.pagesNames.section = response.data[i].section_title;
-          this.pagesNames.pageNumber = response.data[i].page_number;
+          this.pagesNames[i]={
+            "name":filePathParts[filePathParts.length - 1],
+            "section":response.data[i].section_title,
+            "pageNumber":response.data[i].page_number
+          }
+          // this.pagesNames[i].name = filePathParts[filePathParts.length - 1];
+          // this.pagesNames[i].section = response.data[i].section_title;
+          // this.pagesNames[i].pageNumber = response.data[i].page_number;
 
         }
+
+        console.log("frontPagesNames")
+        console.log(this.frontPagesNames)
+        console.log("pagesNames")
+        console.log(this.pagesNames)
         // this.pagesNames = response.data.map((d) => {
         //
         //   const filePathParts = d.filepath.split("/");
@@ -197,6 +213,8 @@ export default defineComponent({
     },
 
     handleCurrentFilename(filename) {
+      console.log("handleCurrentFilename")
+      console.log(filename)
       this.currentFileName = filename;
       this.initCurrentSectionTitle();
       this.initCurrentPageNumber();
@@ -204,7 +222,8 @@ export default defineComponent({
 
     initCurrentSectionTitle() {
       const regex = /section(\d+)/;
-      const match = this.currentFileName && this.currentFileName.match(regex);
+
+      const match = this.currentFileName.name && this.currentFileName.name.match(regex);
       if (match) {
         this.currentSectionTitle = match[0];
       }
@@ -213,7 +232,7 @@ export default defineComponent({
 
     initCurrentPageNumber() {
       const regex = /page(\d+)/;
-      const match = this.currentFileName && this.currentFileName.match(regex);
+      const match = this.currentFileName.name && this.currentFileName.name.match(regex);
       if (match) {
         this.currentPageNumber = parseInt(match[1], 10);
       }
@@ -222,7 +241,7 @@ export default defineComponent({
 
     initCurrentFrontPage() {
       if (this.frontPagesNames.length > 0) {
-        this.handleCurrentFilename(this.frontPagesNames[0])
+        this.handleCurrentFilename(this.frontPagesNames[0].name)
       }
     },
 
@@ -241,13 +260,13 @@ export default defineComponent({
 
     switchPage(fileName) {
       this.$refs.carousel.switchPage(fileName);
-      this.handleCurrentFilename(fileName);
+      this.handleCurrentFilename(fileName.name);
       this.currentPagesNames = [fileName];
       this.frontPageView = false;
       this.randomPagesView = false;
       this.oneRandomPageView = true;
       this.itemToShow = 1;
-      this.currentSectionNumber = this.getSectionNumber(fileName);
+      this.currentSectionNumber = this.getSectionNumber(fileName.name);
       this.isRandomPageButtonClicked = false;
     },
 
@@ -353,9 +372,10 @@ export default defineComponent({
     },
     async fetchSectionPages() {
       for (let i = 0; i < this.pagesNames.length; i++) {
-        let pageName = this.pagesNames[i];
+        let pageName = this.pagesNames[i].name;
         //Extract the section number using a regular expression
-        let sectionNumber = this.getSectionNumber(pageName);
+        // let sectionNumber = this.getSectionNumber(pageName);
+        let sectionNumber = this.pagesNames[i].section;
 
         // Check if the section number already exists in the sectionPages array
         let sectionIndex = this.sectionPages.findIndex((section) => section.sectionNumber === sectionNumber);

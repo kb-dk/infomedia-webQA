@@ -5,7 +5,7 @@
         <div>
           <template v-if="isLoading"> Loading...</template>
           <template v-else>
-            test
+            Page {{item.pageNumber}} {{item.section}}
             <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef"
                            :page="page" width="600"></vue-pdf-embed>
           </template>
@@ -58,8 +58,9 @@ export default defineComponent({
     carouselVal: {
       immediate: true,
       handler() {
+        console.log("carouselVal")
         console.log(this.carouselVal)
-        if (this.carouselValHandled !== this.carouselValue && this.carouselVal.length > 0) {
+        if (this.carouselValHandled !== this.carouselVal && this.carouselVal.length > 0) {
           this.carouselValHandled = this.carouselVal;
           // console.log("carousel value: " + this.carouselValHandled.value);
           this.loadImages().then(() => {
