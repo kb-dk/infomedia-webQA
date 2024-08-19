@@ -59,6 +59,12 @@
   overflow: scroll;
   max-height: 100%;
 }
+.errorTypeList::-webkit-scrollbar{
+  width:5px;
+}
+.errorTypeList::-webkit-scrollbar-thumb{
+  background-color:rgba(108, 107, 107, 0.57);
+}
 .focusedPageRow>*{
   background-color: rgba(176, 175, 160,0.2);
 }
@@ -71,6 +77,12 @@
   //overflow-scrolling: auto;
   overflow: scroll;
   overflow-scrolling: auto;
+}
+#errorListDiv::-webkit-scrollbar{
+  width:5px;
+}
+#errorListDiv::-webkit-scrollbar-thumb{
+  background-color: rgba(108, 107, 107, 0.57);
 }
 #roundtripDropdown{
   width: 100%;
@@ -93,11 +105,24 @@
   margin-bottom: 5px;
   margin-top: 15px;
 }
+.newspaperTable::-webkit-scrollbar-thumb{
+  background-color:rgba(108, 107, 107, 0.57)
+}
+.newspaperTable::-webkit-scrollbar{
+  width:5px;
+  height:30px
+}
 .pageTable{
   //display: inline;
   max-height: 35em;
   overflow:scroll;
   overflow-scrolling: auto;
+}
+.pageTable::-webkit-scrollbar{
+  width:5px;
+}
+.pageTable::-webkit-scrollbar-thumb{
+  background-color: rgba(108, 107, 107, 0.57);
 }
 .selected-newspaper {
   font-weight: bold;
