@@ -65,11 +65,11 @@ export default defineComponent({
   },
   created() {
     this.handleNewspapers();
-    this.selectedNewspaper = localStorage.getItem("selectedNewspaper") ?? this.selectedNewspaper;
+    this.selectedNewspaper = sessionStorage.getItem("selectedNewspaper") ?? this.selectedNewspaper;
   },
 
   mounted() {
-    this.selectedNewspaper = localStorage.getItem("selectedNewspaper") ?? this.selectedNewspaper;
+    this.selectedNewspaper = sessionStorage.getItem("selectedNewspaper") ?? this.selectedNewspaper;
   },
 
   watch: {
@@ -80,7 +80,7 @@ export default defineComponent({
   methods: {
     clearSelectedNewspaper() {
       this.selectedNewspaper = null;
-      localStorage.removeItem("selectedNewspaper");
+      sessionStorage.removeItem("selectedNewspaper");
     },
 
     async handleNewspapers() {
@@ -98,7 +98,7 @@ export default defineComponent({
 
     rowClicked(event) {
       this.selectedNewspaper = event.newspaper_name;
-      localStorage.setItem("selectedNewspaper", event.newspaper_name);
+      sessionStorage.setItem("selectedNewspaper", event.newspaper_name);
       this.$router.push({
         name: "newspaper-calendar",
         params: {

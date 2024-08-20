@@ -53,11 +53,11 @@ export default defineComponent({
         }
       },
       created() {
-        this.selectedYear = localStorage.getItem("selectedYear") ?? this.selectedYear;
+        this.selectedYear = sessionStorage.getItem("selectedYear") ?? this.selectedYear;
       },
 
       mounted() {
-        this.selectedYear = localStorage.getItem("selectedYear") ?? this.selectedYear;
+        this.selectedYear = sessionStorage.getItem("selectedYear") ?? this.selectedYear;
         this.date = new Date(this.selectedYear, 0, 1);
         this.$nextTick(() => {
           this.$refs.yearPicker.updateModel(this.date);
@@ -80,12 +80,9 @@ export default defineComponent({
           this.$refs.yearPicker.updateModel(createdDate)
           this.$refs.yearCalendar.focusDate(createdDate)
           this.selectedYear = this.date.getFullYear();
-          localStorage.setItem("selectedYear", this.date.getFullYear()); // Store selectedYear in local storage
+          sessionStorage.setItem("selectedYear", this.date.getFullYear()); // Store selectedYear in local storage
         },
-        updateYearPickerInput() {
-          // Opdater yearPickerInput-komponenten ved at tvinge en opdatering
-          this.$forceUpdate();
-        },
+
         next(event) {
           this.loading = true
           if (this.isYear) {
@@ -97,7 +94,6 @@ export default defineComponent({
             this.$forceUpdate();
             this.batchesForMonth()
           }
-
         },
         calendarDayClicked(calendarData, event) {
           if (calendarData.attributes.length > 0) {
@@ -185,7 +181,7 @@ export default defineComponent({
             }
             this.calendarAttr = res;
             this.selectedYear = this.date.getFullYear(); // Update selectedYear
-            localStorage.setItem("selectedYear", this.selectedYear); // Store selectedYear in local storage
+            sessionStorage.setItem("selectedYear", this.selectedYear); // Store selectedYear in local storage
           } catch (error) {
             console.log(error);
             this.errorMessage = "Unable to load batches";
