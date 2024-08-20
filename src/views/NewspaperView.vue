@@ -159,7 +159,7 @@ export default defineComponent({
           const filePathParts = d.filepath.split("/");
           return filePathParts[filePathParts.length - 1];
         });
-        this.frontPagesNames  = unsortedPagesNames.sort((a, b) => {
+        this.frontPagesNames = unsortedPagesNames.sort((a, b) => {
           const sectionNumberA = this.getSectionNumber(a);
           const sectionNumberB = this.getSectionNumber(b);
 
@@ -183,12 +183,12 @@ export default defineComponent({
         this.errorMessage = "Unable to load newspaper data";
       }
     },
-    async fetchBatchData(){
-      try{
+    async fetchBatchData() {
+      try {
         const {batchid} = this.$route.params;
         const {data} = await axios.get(`/kuana-ndb-api/batches/${batchid}`);
         this.batch = data;
-      }catch (error){
+      } catch (error) {
         console.error(error);
         this.errorMessage = "Unable to load batch data"
       }
@@ -197,8 +197,7 @@ export default defineComponent({
       this.currentFileName = filename;
       this.initCurrentSectionTitle();
       this.initCurrentPageNumber();
-    }
-    ,
+    },
 
     initCurrentSectionTitle() {
       const regex = /section(\d+)/;
@@ -298,10 +297,9 @@ export default defineComponent({
         console.log(this.errorMessage + ": " + error);
       }
     },
-    toWrapAround(){
+
+    toWrapAround() {
       return this.currentPagesNames.length > 1
-    }
-  }
     },
 
     changeToRandomSectionPagesView() {
@@ -358,6 +356,7 @@ export default defineComponent({
       }
       return fileName;
     },
+
     async fetchSectionPages() {
       for (let i = 0; i < this.pagesNames.length; i++) {
         let pageName = this.pagesNames[i];
@@ -378,8 +377,8 @@ export default defineComponent({
           });
         }
       }
-    },
-  },
+    }
+  }
 })
 </script>
 
