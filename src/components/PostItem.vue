@@ -5,7 +5,7 @@
       </div>
 
     <div>
-      <im-button @click="$emit('remove', post)">
+      <im-button :disabled="disabled" @click="$emit('remove', post)" :class="disabled?'disabled':''">
         Slet
       </im-button>
     </div>
@@ -21,7 +21,8 @@ export default defineComponent({
     post: {
       type: Object,
       required: true,
-    }
+    },
+    disabled: Boolean
   }
 })
 </script>
@@ -40,5 +41,9 @@ export default defineComponent({
   padding: 2px 3px;
   margin-right: 3px;
   text-align: left;
+}
+.disabled{
+  color:#6c6b6b;
+  border: 1px solid #6c6b6b;
 }
 </style>

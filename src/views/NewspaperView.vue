@@ -10,17 +10,14 @@
           Display Notes
           <b-row v-if="showNotes">
             <b-col>
-              <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
-            </b-col>
-            <b-col>
               <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
                           :newspaper="newspaper"></notes-form>
             </b-col>
-            <b-col>
+            <b-col v-if="currentPagesNames.length > 0">
               <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
                           :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
             </b-col>
-            <b-col>
+            <b-col v-if="currentPagesNames.length > 0">
               <notes-form :postsTitel="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
                           :newspaper="newspaper" :sectiontitle="currentSectionTitle"
                           :pagenumber="currentPageNumber"></notes-form>
@@ -36,7 +33,7 @@
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
                      :additionalCarouselVal="pagesNames"
-                     :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename"></im-carousel>
+                     :front-page-view="toWrapAround()" @current-filename-event="handleCurrentFilename"></im-carousel>
       </b-col>
       <b-col sm="2">
         <PageTable ref="pagetable" :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
@@ -128,6 +125,7 @@ export default defineComponent({
   },
   created() {
     this.fetchNewspaper();
+    this.fetchBatchData();
   },
   mounted() {
     document.addEventListener("click", this.handleClickOutside);
@@ -185,7 +183,16 @@ export default defineComponent({
         this.errorMessage = "Unable to load newspaper data";
       }
     },
-
+    async fetchBatchData(){
+      try{
+        const {batchid} = this.$route.params;
+        const {data} = await axios.get(`/kuana-ndb-api/batches/${batchid}`);
+        this.batch = data;
+      }catch (error){
+        console.error(error);
+        this.errorMessage = "Unable to load batch data"
+      }
+    },
     handleCurrentFilename(filename) {
       this.currentFileName = filename;
       this.initCurrentSectionTitle();
@@ -290,6 +297,11 @@ export default defineComponent({
         this.errorMessage = "An error occurred while fetching data. Please try again later.";
         console.log(this.errorMessage + ": " + error);
       }
+    },
+    toWrapAround(){
+      return this.currentPagesNames.length > 1
+    }
+  }
     },
 
     changeToRandomSectionPagesView() {

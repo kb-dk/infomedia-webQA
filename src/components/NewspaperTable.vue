@@ -121,6 +121,11 @@ export default defineComponent({
         this.filteredNewspapers = this.handledNewspapers;
       }
     },
+    sortCompare:function(aRow,bRow,key){
+      const a = aRow[key].toLowerCase();
+      const b = bRow[key].toLowerCase();
+      return a<b?-1:a>b?1:0
+    }
   },
 });
 </script>

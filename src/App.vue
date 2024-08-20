@@ -84,4 +84,10 @@ nav {
   overflow-scrolling: auto;
 
 }
+.newspaperTables::-webkit-scrollbar{
+  width:5px
+}
+.newspaperTables::-webkit-scrollbar-thumb{
+  background-color:rgba(108, 107, 107, 0.57)
+}
 </style>
