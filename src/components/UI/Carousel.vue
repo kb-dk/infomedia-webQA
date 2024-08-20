@@ -11,7 +11,7 @@
               <b-col>
                 <div class="pdf-container">
                 <vue-pdf-embed :source="item ? getImage(item) : null"  @rendered="handleDocumentRender" :page="page"
-                               ></vue-pdf-embed>
+                               width="550" ></vue-pdf-embed>
                 </div>
               </b-col>
             </b-row>
@@ -166,7 +166,7 @@ export default defineComponent({
 }
 
 .carousel__item {
-  height: 83vh;
+  height: 85vh;
   width: 100%;
   background-color: #6c757d;
   color: var(--vc-clr-white);

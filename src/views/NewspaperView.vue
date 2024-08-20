@@ -299,7 +299,14 @@ export default defineComponent({
     },
 
     toWrapAround() {
-      return this.currentPagesNames.length > 1
+      if (this.currentPagesNames.length > 1)
+      {
+        this.itemToShow = 2;
+        return true;
+      }   else {
+        this.itemToShow = 1;
+        return false
+      }
     },
 
     changeToRandomSectionPagesView() {
