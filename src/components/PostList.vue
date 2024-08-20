@@ -1,7 +1,7 @@
 <template>
   <div v-if="posts.length > 0">
     <div></div>
-    <post-item v-for="(post,index) in posts" :key="post" :post="post.note" @remove="$emit('remove', post,index)">
+    <post-item :disabled="disabled" v-for="(post,index) in posts" :key="post" :post="post.note" @remove="$emit('remove', post,index)">
     </post-item>
   </div>
 </template>
@@ -19,7 +19,8 @@ export default defineComponent({
     posts: {
       type: Array,
       required: true
-    }
+    },
+    disabled:Boolean
   },
   emits: ['remove'],
 })

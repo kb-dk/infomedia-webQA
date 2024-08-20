@@ -10,17 +10,14 @@
           Display Notes
           <b-row v-if="showNotes">
             <b-col>
-              <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
-            </b-col>
-            <b-col>
               <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
                           :newspaper="newspaper"></notes-form>
             </b-col>
-            <b-col>
+            <b-col v-if="currentPagesNames.length > 0">
               <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
                           :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
             </b-col>
-            <b-col>
+            <b-col v-if="currentPagesNames.length > 0">
               <notes-form :postsTitel="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
                           :newspaper="newspaper" :sectiontitle="currentSectionTitle"
                           :pagenumber="currentPageNumber"></notes-form>
@@ -32,7 +29,7 @@
         <b-button class="batch-button next" @click="nextBatch">Next</b-button>
       </b-col>
     </b-row>
-    <b-row @mouseenter="showNotes = false">
+    <b-row @mouseenter="showNotes = true">
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
                      :front-page-view="toWrapAround()" @current-filename-event="handleCurrentFilename"></im-carousel>
@@ -114,6 +111,7 @@ export default defineComponent({
   },
   created() {
     this.fetchNewspaper();
+    this.fetchBatchData();
   },
   methods: {
     async fetchCarouselData() {
@@ -153,7 +151,16 @@ export default defineComponent({
         this.errorMessage = "Unable to load newspaper data";
       }
     },
-
+    async fetchBatchData(){
+      try{
+        const {batchid} = this.$route.params;
+        const {data} = await axios.get(`/kuana-ndb-api/batches/${batchid}`);
+        this.batch = data;
+      }catch (error){
+        console.error(error);
+        this.errorMessage = "Unable to load batch data"
+      }
+    },
     handleCurrentFilename(filename) {
       this.currentFileName = filename;
       this.initCurrentSectionTitle();
