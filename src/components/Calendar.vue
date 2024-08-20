@@ -1,12 +1,12 @@
 <template>
   <div class="calendar">
-    <p v-if="errorMessage.length > 0" style="color:red">{{errorMessage}}</p>
+    <p v-if="errorMessage.length > 0" style="color:red">{{ errorMessage }}</p>
     <YearPicker v-if="isYear" :inputStyle="yearPickerInputStyle" ref="yearPicker" inputId="yearPickerInput"
                 @date-select="yearSelect" id v-model="date" view="year" dateFormat="yy" class="yearPicker">
     </YearPicker>
     <!--  <DatePicker :masks="format"/>-->
     <Calendar locale="da"
-              :initialPage="{day: isYear ? 1: date.getDay(),month: isYear ? 1 : date.getMonth()+1,year:date.getFullYear()}"
+              :initialPage="{day: isYear ? 1: date.getDay(),month: isYear ? 1 : date.getMonth()+1,year:selectedYear}"
               :masks="monthMask" :rows="rows" ref="yearCalendar" class="yearCalendar"
               :columns="columns" :attributes="calendarAttr" :first-day-of-week="2" :nav-visibility="monthNav"
               expanded
@@ -45,12 +45,23 @@ export default defineComponent({
       },
       data() {
         return {
-          currentYear: 2023,
           date: ref(new Date()),
+          selectedYear: ref(new Date().getFullYear()), // Step 1: Add selectedYear property
           yearPickerInputStyle: {'text-align': 'center', 'font-size': 'larger', 'font-weight': 'bold'},
           calendarAttr: ref([{}]),
           errorMessage: ref("")
         }
+      },
+      created() {
+        this.selectedYear = localStorage.getItem("selectedYear") ?? this.selectedYear;
+      },
+
+      mounted() {
+        this.selectedYear = localStorage.getItem("selectedYear") ?? this.selectedYear;
+        this.date = new Date(this.selectedYear, 0, 1);
+        this.$nextTick(() => {
+          this.$refs.yearPicker.updateModel(this.date);
+        });
       },
       watch: {
         batchType(newVal) {
@@ -68,13 +79,15 @@ export default defineComponent({
           let createdDate = this.date;
           this.$refs.yearPicker.updateModel(createdDate)
           this.$refs.yearCalendar.focusDate(createdDate)
-
+          this.selectedYear = this.date.getFullYear();
+          localStorage.setItem("selectedYear", this.date.getFullYear()); // Store selectedYear in local storage
+        },
+        updateYearPickerInput() {
+          // Opdater yearPickerInput-komponenten ved at tvinge en opdatering
+          this.$forceUpdate();
         },
         next(event) {
           this.loading = true
-
-          // this.date.setMonth(event[0].month - 1);
-          // this.date.setYear(event[0].year)
           if (this.isYear) {
             this.date = new Date(event[0].year, 0, 1);
             this.$refs.yearPicker.updateModel(this.date);
@@ -159,7 +172,7 @@ export default defineComponent({
                 let hasPage = (await axios.get(`/kuana-ndb-api/batches/${res[i].id}/newspapers/${newspapers[j].id}/has-page`)).data
                 res[i] = {
                   highlight: {
-                    color: hasPage?'teal':'orange',
+                    color: hasPage ? 'teal' : 'orange',
                     fillMode: newspapers[j].checked ? 'light' : 'solid'
                   },
                   dates: new Date(res[i].date),
@@ -171,6 +184,8 @@ export default defineComponent({
               }
             }
             this.calendarAttr = res;
+            this.selectedYear = this.date.getFullYear(); // Update selectedYear
+            localStorage.setItem("selectedYear", this.selectedYear); // Store selectedYear in local storage
           } catch (error) {
             console.log(error);
             this.errorMessage = "Unable to load batches";
