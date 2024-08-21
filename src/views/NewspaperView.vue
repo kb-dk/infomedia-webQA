@@ -197,6 +197,7 @@ export default defineComponent({
       }
     },
     handleCurrentFilename(filename) {
+      console.log(filename)
       this.currentFileName = filename;
       this.initCurrentSectionTitle();
       this.initCurrentPageNumber();
@@ -204,8 +205,8 @@ export default defineComponent({
 
     initCurrentSectionTitle() {
       const regex = /section(\d+)/;
-
-      const match = this.currentFileName.name && this.currentFileName.name.match(regex);
+      console.log(this.currentFileName.match(regex))
+      const match = this.currentFileName && this.currentFileName.match(regex);
       if (match) {
         this.currentSectionTitle = match[0];
       }
@@ -214,7 +215,7 @@ export default defineComponent({
 
     initCurrentPageNumber() {
       const regex = /page(\d+)/;
-      const match = this.currentFileName.name && this.currentFileName.name.match(regex);
+      const match = this.currentFileName && this.currentFileName.match(regex);
       if (match) {
         this.currentPageNumber = parseInt(match[1], 10);
       }
