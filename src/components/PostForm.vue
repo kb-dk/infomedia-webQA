@@ -3,7 +3,6 @@
     <div class="post__select">
       <im-select v-model:model-value="selectedPost"
                  :options="postOptions">
-
       </im-select>
     </div>
     <div class="post__input">
@@ -46,9 +45,7 @@ export default defineComponent({
     }
   },
   mounted() {
-    {
       this.loadPostOptions();
-    }
   },
 
   emits: ['create'],
@@ -75,7 +72,7 @@ export default defineComponent({
   watch: {
     selectedPost(newValue) {
       this.post.id = Date.now();
-      this.post.note = newValue
+      this.post.note = newValue;
     }
   },
 })

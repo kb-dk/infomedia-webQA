@@ -114,7 +114,7 @@
 }
 .pageTable{
   //display: inline;
-  max-height: 35em;
+  max-height: 75vh;
   overflow:scroll;
   overflow-scrolling: auto;
 }
@@ -137,18 +137,6 @@
   align-items: center;
   justify-content: center;
   padding:30px;
-}
-.button-container {
-  bottom: 0;
-  width: 80%;
-  display: flex;
-  padding-bottom: 10px;
-  justify-content: center;
-  position:fixed;
-}
-.button-container .btn {
-  margin-right: 20px; /* Add margin to the right */
-  margin-left: 20px;
 }
 .bold-label {
   font-weight: bold;

@@ -208,12 +208,11 @@ export default defineComponent({
 <style scoped>
 .form {
   padding: 10px;
-  border: 2px solid teal;
+  border: 2px solid #6c757d;
   margin-top: 2px;
   border-radius: 10px;
   background-color: white;
 }
-
 .header {
   text-align: left;
   padding: 5px;
