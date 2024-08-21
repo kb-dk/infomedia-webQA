@@ -10,17 +10,14 @@
           Display Notes
           <b-row v-if="showNotes">
             <b-col>
-              <notes-form :postsTitel="dayNotes" :batch="batch" :notes-type="NotesType.BATCHNOTE"></notes-form>
-            </b-col>
-            <b-col>
               <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
                           :newspaper="newspaper"></notes-form>
             </b-col>
-            <b-col>
+            <b-col v-if="currentPagesNames.length > 0">
               <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
                           :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
             </b-col>
-            <b-col>
+            <b-col v-if="currentPagesNames.length > 0">
               <notes-form :postsTitel="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
                           :newspaper="newspaper" :sectiontitle="currentSectionTitle"
                           :pagenumber="currentPageNumber"></notes-form>
@@ -32,12 +29,12 @@
         <b-button class="batch-button next" @click="nextBatch">Next</b-button>
       </b-col>
     </b-row>
-    <b-row >
+    <b-row>
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
-                     :front-page-view="frontPageView" @current-filename-event="handleCurrentFilename">
+                     :additionalCarouselVal="pagesNames"
+                     :front-page-view="toWrapAround()" @current-filename-event="handleCurrentFilename">
         </im-carousel>
-<!--        :additionalCarouselVal="pagesNames"-->
       </b-col>
       <b-col sm="2">
         <PageTable ref="pagetable" :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
@@ -49,7 +46,8 @@
       </b-button>
       <b-button v-if="!frontPageView && !(randomPagesView && !oneRandomPageView)" class="changeCarouselView"
                 :variant="isRandomPageButtonClicked ? 'success' : 'secondary'"
-                @click="changeToRandomSectionPageView()">Show Random Page From Section {{ parseInt(currentSectionNumber).toString() }}
+                @click="changeToRandomSectionPageView()">Show Random Page From Section
+        {{ parseInt(currentSectionNumber).toString() }}
       </b-button>
       <b-button v-if="!frontPageView || !randomPagesView" class="changeCarouselView"
                 @click="changeToFrontPageView()">Show Front Pages
@@ -128,6 +126,7 @@ export default defineComponent({
   },
   created() {
     this.fetchNewspaper();
+    this.fetchBatchData();
   },
   mounted() {
     document.addEventListener("click", this.handleClickOutside);
@@ -152,10 +151,7 @@ export default defineComponent({
         const response = await apiClient.get(
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         );
-        console.log("responseData")
-        console.log(response.data)
         const frontPagePaths = response.data.filter((d) => d.page_number === 1);
-        console.log(frontPagePaths);
         for (let i = 0; i < frontPagePaths.length; i++) {
           const filePathParts = frontPagePaths[i].filepath.split("/");
           this.frontPagesNames[i] = {
@@ -163,9 +159,6 @@ export default defineComponent({
             "section":frontPagePaths[i].section_title,
             "pageNumber":frontPagePaths[i].page_number
           };
-          // this.frontPagesNames[i].name = filePathParts[filePathParts.length - 1];
-          // this.frontPagesNames[i].section = frontPagePaths[i].section_title;
-          // this.frontPagesNames[i].pageNumber = frontPagePaths[i].page_number;
         }
         for (let i = 0; i < response.data.length; i++) {
           const filePathParts = response.data[i].filepath.split("/");
@@ -174,25 +167,7 @@ export default defineComponent({
             "section":response.data[i].section_title,
             "pageNumber":response.data[i].page_number
           }
-          // this.pagesNames[i].name = filePathParts[filePathParts.length - 1];
-          // this.pagesNames[i].section = response.data[i].section_title;
-          // this.pagesNames[i].pageNumber = response.data[i].page_number;
-
         }
-
-        console.log("frontPagesNames")
-        console.log(this.frontPagesNames)
-        console.log("pagesNames")
-        console.log(this.pagesNames)
-        // this.pagesNames = response.data.map((d) => {
-        //
-        //   const filePathParts = d.filepath.split("/");
-        //   return {'pageNumber':d.page_number,'section':d.section_title,'name':filePathParts[filePathParts.length - 1]};
-        // });
-        // this.frontPagesNames = frontPagePaths.map((d) => {
-        //   const filePathParts = d.filepath.split("/");
-        //   return {'pageNumber':d.page_number,'section':d.section_title,'name':filePathParts[filePathParts.length - 1]};
-        // });
         this.currentPagesNames = this.frontPagesNames;
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";
@@ -211,10 +186,17 @@ export default defineComponent({
         this.errorMessage = "Unable to load newspaper data";
       }
     },
-
+    async fetchBatchData() {
+      try {
+        const {batchid} = this.$route.params;
+        const {data} = await axios.get(`/kuana-ndb-api/batches/${batchid}`);
+        this.batch = data;
+      } catch (error) {
+        console.error(error);
+        this.errorMessage = "Unable to load batch data"
+      }
+    },
     handleCurrentFilename(filename) {
-      console.log("handleCurrentFilename")
-      console.log(filename)
       this.currentFileName = filename;
       this.initCurrentSectionTitle();
       this.initCurrentPageNumber();
@@ -320,8 +302,19 @@ export default defineComponent({
       }
     },
 
+    toWrapAround() {
+      if (this.currentPagesNames.length > 1)
+      {
+        this.itemToShow = 2;
+        return true;
+      }   else {
+        this.itemToShow = 1;
+        return false
+      }
+    },
+
     changeToRandomSectionPagesView() {
-      const randomPagesNames = this.sectionPages.map(({ sectionNumber, pageCount }) => {
+      const randomPagesNames = this.sectionPages.map(({sectionNumber, pageCount}) => {
         const randomPageNumber = this.generateRandomPageNumber(pageCount);
         return this.findFileName(sectionNumber, randomPageNumber);
       });
@@ -347,7 +340,11 @@ export default defineComponent({
     },
 
     getSectionNumber(currentFileName) {
-      return currentFileName.match(/section(\d+)/)[1];
+      const sectionMatch = currentFileName.match(/section(\d+)/)[1];
+      if (sectionMatch) {
+        return parseInt(sectionMatch[1]);
+      }
+      return 0;
     },
 
     getPageNumber(currentFileName) {
@@ -355,7 +352,7 @@ export default defineComponent({
     },
 
     generateRandomPageNumber(pageCount) {
-     return Math.floor(Math.random() * (pageCount - 2 + 1)) + 2;
+      return Math.floor(Math.random() * (pageCount - 2 + 1)) + 2;
     },
 
     findFileName(sectionName, randomPageNumber) {
@@ -370,6 +367,7 @@ export default defineComponent({
       }
       return fileName;
     },
+
     async fetchSectionPages() {
       for (let i = 0; i < this.pagesNames.length; i++) {
         let pageName = this.pagesNames[i].name;
@@ -391,8 +389,8 @@ export default defineComponent({
           });
         }
       }
-    },
-  },
+    }
+  }
 })
 </script>
 
@@ -442,8 +440,9 @@ export default defineComponent({
   padding-bottom: 20px;
   padding-top: 5px;
   justify-content: center;
-  position:fixed;
+  position: fixed;
 }
+
 .button-container .btn {
   margin-right: 10px; /* Add margin to the right */
   margin-left: 10px;

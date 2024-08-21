@@ -26,7 +26,7 @@ export default defineComponent({
 
 <style scoped>
 .checkBox {
-  border: 1px solid teal;
+  border: 1px solid #6c757d;
 }
 
 </style>

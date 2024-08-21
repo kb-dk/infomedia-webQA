@@ -17,6 +17,7 @@
         <im-button
             style="align-self: flex-end; margin-top: 3px"
             @click="createOnePost"
+            :disabled="disabled"
         >
           Gem
         </im-button>
@@ -29,6 +30,9 @@
 import {defineComponent} from 'vue'
 import webConfig from '@/assets/configFiles/webQAconfig';
 export default defineComponent({
+  props:{
+    disabled: Boolean
+  },
   data() {
     return {
       post: {
