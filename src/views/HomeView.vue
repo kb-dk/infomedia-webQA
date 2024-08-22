@@ -16,8 +16,4 @@ export default defineComponent({
 
 });
 
-
-
-// const attributes = ref(result)
-// import "src/style/stylesheet.scss";
 </script>
