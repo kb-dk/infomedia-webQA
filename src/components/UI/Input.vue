@@ -21,7 +21,7 @@ export default defineComponent({
 <style scoped>
 .input {
   width: 100%;
-  border: 1px solid teal;
+  border: 1px solid #6c757d;
   padding: 2px 3px;
   margin-top: 3px;
 }

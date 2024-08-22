@@ -17,6 +17,7 @@
         <im-button
             style="align-self: flex-end; margin-top: 3px"
             @click="createOnePost"
+            :disabled="disabled"
         >
           Gem
         </im-button>
@@ -33,6 +34,7 @@ import {NotesType} from "@/enums/NotesType";
 export default defineComponent({
   props:{
     notesType: Number as PropType<NotesType>,
+    disabled: Boolean
   },
   data() {
     return {

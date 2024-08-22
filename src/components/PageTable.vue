@@ -35,7 +35,8 @@ export default defineComponent({
   name: "PageTable",
   props: {
     rowClick: Function,
-    pagesFileName: Array
+    pagesFileName: Array,
+    currentPage: Object
   },
   data() {
     return {
@@ -73,20 +74,38 @@ export default defineComponent({
         }
 
       }
+    },
+    currentPage: {
+      // deep: true,
+      handler(newPage) {
+        if (newPage) {
+          for (let i = 0; i < this.pages.length;i++){
+            if(this.pages[i].src === newPage.name){
+              this.focusedPage = i;
+              this.scrollToFocusedRow();
+              break;
+            }
+          }
+          console.log(this.focusedPage)
+
+        }
+      }
     }
+
   },
   methods: {
     rowClicked(e) {
-      const clickedIndex = this.pages.findIndex(page => page.src === e.src);
-      if (clickedIndex !== -1) {
-        this.focusedPage = clickedIndex;
-        this.rowClick({"name": e.src, "section": e.sectionName, "pageNumber": e.Page});
-      }
+      this.rowClick({"name": e.src, "section": e.sectionName, "pageNumber": e.Page});
     },
     scrollToFocusedRow() {
-      const tableElement = this.$refs.table.$el;
-      const focusedRow = tableElement.querySelector('.focusedPageRow');
-      focusedRow.scrollIntoView();
+      // const tableElement = this.$refs.table.$el;
+
+      // console.log(focusedRow)
+      setTimeout(()=>{
+        const focusedRow = document.querySelector('.focusedPageRow');
+        focusedRow.scrollIntoView({behavior:'smooth'})
+      },50)
+      // focusedRow.scrollIntoView();
     },
 
     amountOfPagesInSection(pages, section) {
@@ -119,12 +138,12 @@ export default defineComponent({
       return arr;
     },
 
-    highlightPage(sectionNumber, pageNumber) {
-      this.focusedPage = this.pages.findIndex(page => (page.Page === pageNumber && page.Section === sectionNumber));
-      this.$nextTick(() => {
-        this.scrollToFocusedRow();
-      });
-    },
+    // highlightPage(sectionNumber, pageNumber) {
+    //   this.focusedPage = this.pages.findIndex(page => (page.Page === pageNumber && page.Section === sectionNumber));
+    //   this.$nextTick(() => {
+    //     this.scrollToFocusedRow();
+    //   });
+    // },
   }
 })
 </script>
