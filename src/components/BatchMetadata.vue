@@ -17,11 +17,10 @@
 </template>
 
 <script>
-import {defineComponent, ref,defineExpose, onMounted,onBeforeUnmount} from "vue";
+import {defineComponent, ref, onMounted,onBeforeUnmount} from "vue";
 import ApproveButton from "@/components/ApproveButton";
 import ErrorList from "@/components/ErrorList"
 import NotesForm from "@/components/NotesForm";
-import axios from "axios";
 import {NotesType} from "@/enums/NotesType"
 import RoundtripDropdown from "@/components/RoundtripDropdown";
 

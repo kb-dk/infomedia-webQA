@@ -379,7 +379,7 @@ export default defineComponent({
 
     async fetchSectionPages() {
       for (let i = 0; i < this.pagesNames.length; i++) {
-        let pageName = this.pagesNames[i].name;
+        // let pageName = this.pagesNames[i].name;
         //Extract the section number using a regular expression
         // let sectionNumber = this.getSectionNumber(pageName);
         let sectionNumber = this.pagesNames[i].section;

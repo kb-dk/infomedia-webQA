@@ -64,11 +64,11 @@ export default defineComponent({
 
   },
   watch: {
-    batchType(newVal) {
+    batchType() {
       this.calendarAttr = [{}]
       this.batchesForMonth();
     },
-    newspaperName(newVal) {
+    newspaperName() {
       this.calendarAttr[{}];
       this.batchesForYear();
     },

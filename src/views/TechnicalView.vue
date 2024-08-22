@@ -55,7 +55,7 @@ import axios from "axios";
 export default defineComponent({
   name: 'CalendarView',
   watch: {
-    '$route'(to, from) {
+    '$route'(to) {
       this.newspaper = to.params.newspaperid;
     }
   },

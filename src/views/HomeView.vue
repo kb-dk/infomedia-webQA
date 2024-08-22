@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent,ref } from 'vue';
+import { defineComponent } from 'vue';
 import webQAconfig from "@/assets/configFiles/webQAconfig";
 export default defineComponent({
   name: 'HomeView',

@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import {defineComponent, ref, watch} from "vue";
+import {defineComponent, ref} from "vue";
 import axios from "axios";
 
 export default defineComponent({
@@ -73,7 +73,7 @@ export default defineComponent({
     errors: [Promise],
     problemsLoading: [Boolean],
   },
-  setup(props) {
+  setup() {
     return {
       currentIndex: ref(-1),
       asyncErrors: ref({}),
@@ -94,7 +94,7 @@ export default defineComponent({
 
   },
   watch: {
-    batch(newVal) {
+    batch() {
       this.getNewspapers().then((res) => {
         this.asyncErrors = res;
         this.loading = false;

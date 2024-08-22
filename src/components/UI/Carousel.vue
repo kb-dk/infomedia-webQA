@@ -114,7 +114,7 @@ export default defineComponent({
     },
   },
   methods: {
-    handleDocumentRender(args) {
+    handleDocumentRender() {
       this.isLoading = false;
     },
     async loadImages() {
