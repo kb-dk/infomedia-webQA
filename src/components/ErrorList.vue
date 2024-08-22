@@ -44,6 +44,7 @@
             <b-list-group-item class="errorMessageList">
               <b-list-group v-for="problem in e.newspaperProblems" :key="problem">
                 <b-list-group-item @click="goToNewspaper(e)">
+                  {{console.log(problem.problem)}}
                   {{ problem.problem }}
                 </b-list-group-item>
               </b-list-group>
@@ -175,7 +176,7 @@ export default defineComponent({
             let category = newspaperProblems[j].category
             errorMap.newspaperProblems = {"newspaperProblemCategory": {}};
             errorMap.newspaperProblems["newspaperProblemCategory"][category] = {id:newspapers[j].id,newspaperProblems: []};
-            errorMap.newspaperProblems["newspaperProblemCategory"][category]["newspaperProblems"].push({"problem": `${newspaperProblems[j].problem} for ${newspapers[j].newspaper_name}`});
+            errorMap.newspaperProblems["newspaperProblemCategory"][category]["newspaperProblems"].push({"problem": `${newspaperProblems[j].problem}`});
           }
 
 

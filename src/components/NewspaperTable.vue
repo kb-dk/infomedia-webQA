@@ -14,6 +14,7 @@
                class="newspaperTable"
                :busy="isBusy"
                :sticky-header="true"
+               :sort-compare="sortCompare"
       >
         <template #cell(newspaper_name)="row">
           <div :class="{ 'selected-newspaper': row.item.newspaper_name === selectedNewspaper }">
