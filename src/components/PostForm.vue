@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-
+import webConfig from '@/assets/configFiles/webQAconfig';
 export default defineComponent({
   props:{
     disabled: Boolean
@@ -41,7 +41,7 @@ export default defineComponent({
         batch_id: '',
       },
       selectedPost: '',
-      postOptions: []
+      postOptions: [{}]
     }
   },
   mounted() {
@@ -52,9 +52,7 @@ export default defineComponent({
   methods: {
     async loadPostOptions() {
       try {
-        const response = await fetch('/webQAconfig.json');
-        const data = await response.json();
-        this.postOptions = data.postOptions;
+        this.postOptions = webConfig.postOptions;
       } catch (error) {
         console.error('Failed to load postOptions:', error);
       }

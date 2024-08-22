@@ -2,7 +2,7 @@
   <div class="calendar">
     <p v-if="errorMessage.length > 0" style="color:red">{{ errorMessage }}</p>
     <YearPicker v-if="isYear" :inputStyle="yearPickerInputStyle" ref="yearPicker" inputId="yearPickerInput"
-                @date-select="yearSelect" id v-model="date" view="year" dateFormat="yy" class="yearPicker">
+                @date-select="yearSelect" v-model="date" view="year" dateFormat="yy" class="yearPicker">
     </YearPicker>
     <Calendar locale="da"
               :initialPage="{day: isYear ? 1: date.getDay(),month: isYear ? 1 : date.getMonth()+1,year:selectedYear}"
@@ -56,9 +56,12 @@ export default defineComponent({
   mounted() {
     this.selectedYear = sessionStorage.getItem("selectedYear") ?? this.selectedYear;
     this.date = new Date(this.selectedYear, 0, 1);
-    this.$nextTick(() => {
-      this.$refs.yearPicker.updateModel(this.date);
-    });
+    if(this.isYear){
+      this.$nextTick(() => {
+        this.$refs.yearPicker.updateModel(this.date);
+      });
+    }
+
   },
   watch: {
     batchType(newVal) {
@@ -68,7 +71,7 @@ export default defineComponent({
     newspaperName(newVal) {
       this.calendarAttr[{}];
       this.batchesForYear();
-    }
+    },
   },
 
   methods: {

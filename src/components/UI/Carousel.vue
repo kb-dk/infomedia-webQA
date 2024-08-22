@@ -1,12 +1,15 @@
 <template>
   <Carousel v-model="currentSlide" :items-to-show="itemsToShow" :wrap-around="frontPageView" class="custom__carousel">
+
     <Slide v-for="(item, index) in carouselValHandled" :key="index" class="carousel__slide" ref="slide">
+
       <div class="carousel__item">
 
           <template v-if="isLoading">
             <div class="pdf-container">Loading...</div>
           </template>
           <template v-else>
+            Page {{item.pageNumber}} {{item.section}}
             <b-row>
               <b-col>
                 <div class="pdf-container">
@@ -27,7 +30,7 @@
               </b-col>
             </b-row>
           </template>
-      </div>
+        </div>
     </Slide>
 
     <template #addons>
@@ -78,7 +81,7 @@ export default defineComponent({
   props: {
     carouselVal: {
       type: Array,
-      default: () => [],
+      default: () => [{}],
     },
     frontPageView: Boolean,
     itemsToShow: Number,
@@ -98,9 +101,8 @@ export default defineComponent({
     carouselVal: {
       immediate: true,
       handler() {
-        if (this.carouselValHandled !== this.carouselValue && this.carouselVal.length > 0) {
+        if (this.carouselValHandled !== this.carouselVal && this.carouselVal.length > 0) {
           this.carouselValHandled = this.carouselVal;
-          console.log("carousel value: " + this.carouselValHandled.value);
           this.loadImages().then(() => {
             this.isLoading = false;
           }).catch((error) => {
@@ -121,8 +123,8 @@ export default defineComponent({
           baseURL: '/kuana-ndb-api',
         })
         for (const item of this.carouselValHandled) {
-          if (!this.imageUrls.has(item)) {
-            const encoded_item = encodeURIComponent(item);
+          if (!this.imageUrls.has(item.name)) {
+            const encoded_item = encodeURIComponent(item.name);
             try {
               const response = await apiClient.get(`/file/${encoded_item}`, {
                 responseType: 'blob'
@@ -151,9 +153,13 @@ export default defineComponent({
     },
   },
   mounted() {
+    console.log("first?")
+    console.log(this)
     defineEmits(this, ['currentFilenameEvent']);
   },
   updated() {
+    console.log("second?")
+    console.log(this.carouselVal)
     const currentFilename = this.carouselVal[this.currentSlide];
     this.$emit('currentFilenameEvent', currentFilename);
   }

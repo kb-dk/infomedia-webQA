@@ -133,7 +133,7 @@ export default defineComponent({
     },
     async fetchBatch(currentDate: Date) {
       try {
-        const response = await axios.get(`/api/batches?month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}&batch_type=dagsaviser&get_latest=false`);
+        const response = await axios.get(`/kuana-ndb-api/batches?month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}&batch_type=dagsaviser&get_latest=false`);
         return response.data;
       } catch (error) {
         console.error(error);
@@ -146,7 +146,7 @@ export default defineComponent({
       const notes = [];
 
       for (const batchInfo of batchInfos) {
-        const response = await axios.get(`/api/batches/${batchInfo.id}/all-notes-to-batch`);
+        const response = await axios.get(`/kuana-ndb-api/batches/${batchInfo.id}/all-notes-to-batch`);
         const noteArray = response.data;
 
         if (noteArray.length != 0) {
@@ -154,7 +154,7 @@ export default defineComponent({
             note.batchName = batchInfo.batch_name;
 
             if (note.newspaper_id) {
-              const newspaperResponse = await axios.get(`/api/batches/${batchInfo.id}/newspapers/${note.newspaper_id}`);
+              const newspaperResponse = await axios.get(`/kuana-ndb-api/batches/${batchInfo.id}/newspapers/${note.newspaper_id}`);
               note.newspaperName = newspaperResponse.data.newspaper_name;
             }else {
               note.newspaperName = null;
