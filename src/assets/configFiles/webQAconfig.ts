@@ -1,7 +1,28 @@
 export default {
-  "postOptions": [
-    {"name": "Test note 1"},
-    {"name": "Test note 2"},
-    {"name": "Test note 3"}
-  ]
+    "postOptions": {
+        "dayNotes": [
+            "Checksumfejl",
+            "Ufuldstændig aflevering",
+            "Ugyldig fil"
+        ],
+        "editionNotes": [
+            "Ikke udkommet pga. Strejke",
+            "Ikke udkommet pga. Helligdag",
+            "Kun udkommet digitalt",
+            "Flere udgaver"],
+        "sectionNotes": [
+            "Manglende sektion",
+            "Manglende tillæg",
+            "Blandede sektioner",
+            "Hører til anden avis",
+            "Forkert sidetal el. rækkefølge"
+        ],
+        "pageNotes": [
+            "Mangler tekst",
+            "Mangler billeder",
+            "Utydelig",
+            "Beskæring"
+        ]
+    },
+    "linkToUserGuide": "https://google.com"
 };

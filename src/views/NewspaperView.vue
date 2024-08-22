@@ -155,19 +155,20 @@ export default defineComponent({
         for (let i = 0; i < frontPagePaths.length; i++) {
           const filePathParts = frontPagePaths[i].filepath.split("/");
           this.frontPagesNames[i] = {
-            "name":filePathParts[filePathParts.length - 1],
-            "section":frontPagePaths[i].section_title,
-            "pageNumber":frontPagePaths[i].page_number
+            "name": filePathParts[filePathParts.length - 1],
+            "section": frontPagePaths[i].section_title,
+            "pageNumber": frontPagePaths[i].page_number
           };
         }
         for (let i = 0; i < response.data.length; i++) {
           const filePathParts = response.data[i].filepath.split("/");
-          this.pagesNames[i]={
-            "name":filePathParts[filePathParts.length - 1],
-            "section":response.data[i].section_title,
-            "pageNumber":response.data[i].page_number
+          this.pagesNames[i] = {
+            "name": filePathParts[filePathParts.length - 1],
+            "section": response.data[i].section_title,
+            "pageNumber": response.data[i].page_number
           }
         }
+
         this.currentPagesNames = this.frontPagesNames;
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";
@@ -199,7 +200,6 @@ export default defineComponent({
     handleCurrentFilename(filename) {
       if(filename){
         this.currentFileName = filename;
-        // this.initCurrentSectionTitle();
         this.currentSectionTitle = filename.section
         this.initCurrentPageNumber();
       }
@@ -247,8 +247,6 @@ export default defineComponent({
     },
 
     switchPage(fileName) {
-      console.log("filename")
-      console.log(fileName)
       this.$refs.carousel.switchPage(fileName);
       this.handleCurrentFilename(fileName.name);
       this.currentPagesNames = [fileName];
@@ -285,25 +283,25 @@ export default defineComponent({
 
     async getOtherBatch(newDate) {
       try {
-      const newBatch = await axios.get(`/kuana-ndb-api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
-      const batchData = newBatch.data;
-      if (batchData.length > 0) {
-        const newNewspaper = await axios.get(`/kuana-ndb-api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
-        const newspaperData = newNewspaper.data;
-        if (newspaperData.length > 0) {
-          this.$router.push({
-            name: "newspaper-view",
-            replace: true,
-            params: {
-              batchid: batchData[0].id,
-              newspaperid: newspaperData[0].id,
-              year: newDate.getFullYear(),
-              month: newDate.getMonth() + 1,
-              day: newDate.getDate()
-            }
-          });
+        const newBatch = await axios.get(`/kuana-ndb-api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
+        const batchData = newBatch.data;
+        if (batchData.length > 0) {
+          const newNewspaper = await axios.get(`/kuana-ndb-api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
+          const newspaperData = newNewspaper.data;
+          if (newspaperData.length > 0) {
+            this.$router.push({
+              name: "newspaper-view",
+              replace: true,
+              params: {
+                batchid: batchData[0].id,
+                newspaperid: newspaperData[0].id,
+                year: newDate.getFullYear(),
+                month: newDate.getMonth() + 1,
+                day: newDate.getDate()
+              }
+            });
+          }
         }
-      }
       } catch (error) {
         this.errorMessage = "An error occurred while fetching data. Please try again later.";
         console.log(this.errorMessage + ": " + error);

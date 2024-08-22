@@ -5,7 +5,7 @@
       <div class="header">
         <h6>{{ postsTitel }}</h6>
       </div>
-      <post-form @create="createPost" :disabled="createPostDisable()">
+      <post-form @create="createPost" :notesType="notesType" :disabled="createPostDisable()">
       </post-form>
       <post-list :disabled="createPostDisable()" :posts="posts" @remove="removePost"></post-list>
     </div>
@@ -37,7 +37,6 @@ export default defineComponent({
   },
   mounted() {
     if (this.batch && this.batch.id !== undefined) {
-      console.log(this.batch)
       this.getPosts()
           .then((res) => {
             this.posts = res;
@@ -213,6 +212,7 @@ export default defineComponent({
   border-radius: 10px;
   background-color: white;
 }
+
 .header {
   text-align: left;
   padding: 5px;
