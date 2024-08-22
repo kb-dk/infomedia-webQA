@@ -6,7 +6,7 @@
         <b-button class="batch-button  previous" @click="previousBatch()">Prev</b-button>
       </b-col>
       <b-col sm="10">
-        <div class="notes-container" ref="notesContainer" @mouseover="showNotes = true" name="expandNotes">
+        <div class="notes-container" ref="notesContainer" @mousedown="showNotes = true" name="expandNotes">
           Display Notes
           <b-row v-if="showNotes">
             <b-col>

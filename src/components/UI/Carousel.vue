@@ -11,7 +11,7 @@
               <b-col>
                 <div class="pdf-container">
                 <vue-pdf-embed :source="item ? getImage(item) : null"  @rendered="handleDocumentRender" :page="page"
-                               width="550" ></vue-pdf-embed>
+                               width="550"></vue-pdf-embed>
                 </div>
               </b-col>
             </b-row>
@@ -206,6 +206,10 @@ export default defineComponent({
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.pdf-container .vue-pdf-embed canvas[style*="height"]:not([style*="height: 730px"]) {
+  height: 750px !important;
 }
 
 .icon {
