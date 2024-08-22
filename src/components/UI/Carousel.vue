@@ -1,6 +1,8 @@
 <template>
   <Carousel v-model="currentSlide" :items-to-show="itemsToShow" :wrap-around="frontPageView" class="custom__carousel">
+
     <Slide v-for="(item, index) in carouselValHandled" :key="index" class="carousel__slide" ref="slide">
+
       <div class="carousel__item">
 
           <template v-if="isLoading">
@@ -8,8 +10,6 @@
           </template>
           <template v-else>
             Page {{item.pageNumber}} {{item.section}}
-            <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef"
-                           :page="page" width="600"></vue-pdf-embed>
             <b-row>
               <b-col>
                 <div class="pdf-container">
@@ -153,9 +153,13 @@ export default defineComponent({
     },
   },
   mounted() {
+    console.log("first?")
+    console.log(this)
     defineEmits(this, ['currentFilenameEvent']);
   },
   updated() {
+    console.log("second?")
+    console.log(this.carouselVal)
     const currentFilename = this.carouselVal[this.currentSlide];
     this.$emit('currentFilenameEvent', currentFilename);
   }

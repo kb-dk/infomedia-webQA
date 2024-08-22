@@ -37,7 +37,7 @@
         </im-carousel>
       </b-col>
       <b-col sm="2">
-        <PageTable ref="pagetable" :pagesFileName="pagesNames" :rowClick="switchPage"></PageTable>
+        <PageTable ref="pagetable" :pagesFileName="pagesNames" :rowClick="switchPage" :currentPage="currentFileName"></PageTable>
       </b-col>
     </b-row>
     <div class="button-container">
@@ -46,8 +46,8 @@
       </b-button>
       <b-button v-if="!frontPageView && !(randomPagesView && !oneRandomPageView)" class="changeCarouselView"
                 :variant="isRandomPageButtonClicked ? 'success' : 'secondary'"
-                @click="changeToRandomSectionPageView()">Show Random Page From Section
-        {{ parseInt(currentSectionNumber).toString() }}
+                @click="changeToRandomSectionPageView()">
+        Show Random Page From {{currentSectionTitle}}
       </b-button>
       <b-button v-if="!frontPageView || !randomPagesView" class="changeCarouselView"
                 @click="changeToFrontPageView()">Show Front Pages
@@ -197,34 +197,39 @@ export default defineComponent({
       }
     },
     handleCurrentFilename(filename) {
-      console.log(filename)
-      this.currentFileName = filename;
-      this.initCurrentSectionTitle();
-      this.initCurrentPageNumber();
+      if(filename){
+        this.currentFileName = filename;
+        // this.initCurrentSectionTitle();
+        this.currentSectionTitle = filename.section
+        this.initCurrentPageNumber();
+      }
+
     },
 
     initCurrentSectionTitle() {
-      const regex = /section(\d+)/;
-      console.log(this.currentFileName.match(regex))
-      const match = this.currentFileName && this.currentFileName.match(regex);
-      if (match) {
-        this.currentSectionTitle = match[0];
+      if(this.currentFileName instanceof String){
+        const regex = /section(\d+)/;
+        console.log(this.currentFileName.match(regex))
+        const match = this.currentFileName && this.currentFileName.match(regex);
+        if (match) {
+          this.currentSectionTitle = match[0];
+        }
       }
-      // console.log("current section title: " + this.currentSectionTitle)
     },
 
     initCurrentPageNumber() {
-      const regex = /page(\d+)/;
-      const match = this.currentFileName && this.currentFileName.match(regex);
-      if (match) {
-        this.currentPageNumber = parseInt(match[1], 10);
+      if(this.currentFileName instanceof String){
+        const regex = /page(\d+)/;
+        const match = this.currentFileName && this.currentFileName.match(regex);
+        if (match) {
+          this.currentPageNumber = parseInt(match[1], 10);
+        }
       }
-      // console.log("current page number: " + this.currentPageNumber)
     },
 
     initCurrentFrontPage() {
       if (this.frontPagesNames.length > 0) {
-        this.handleCurrentFilename(this.frontPagesNames[0].name)
+        this.handleCurrentFilename(this.frontPagesNames[0])
       }
     },
 
@@ -242,6 +247,8 @@ export default defineComponent({
     },
 
     switchPage(fileName) {
+      console.log("filename")
+      console.log(fileName)
       this.$refs.carousel.switchPage(fileName);
       this.handleCurrentFilename(fileName.name);
       this.currentPagesNames = [fileName];
@@ -249,7 +256,7 @@ export default defineComponent({
       this.randomPagesView = false;
       this.oneRandomPageView = true;
       this.itemToShow = 1;
-      this.currentSectionNumber = this.getSectionNumber(fileName.name);
+      this.currentSectionTitle = fileName.section_title;
       this.isRandomPageButtonClicked = false;
     },
 
@@ -326,30 +333,33 @@ export default defineComponent({
     },
 
     changeToRandomSectionPageView() {
-      let sectionNumber = this.getSectionNumber(this.currentFileName);
+      let sectionNumber = this.currentSectionTitle;
       let sectionIndex = this.sectionPages.findIndex(page => page.sectionNumber === sectionNumber);
-
       if (sectionIndex !== -1) {
         let pageCount = this.sectionPages[sectionIndex].pageCount;
         let randomPageNumber = this.generateRandomPageNumber(pageCount);
         let randomPageName = this.findFileName(sectionNumber, randomPageNumber);
         this.isRandomPageButtonClicked = true;
-        this.$refs.pagetable.highlightPage(parseInt(sectionNumber), parseInt(randomPageNumber));
-
         this.currentPagesNames = [randomPageName];
       }
     },
 
     getSectionNumber(currentFileName) {
-      const sectionMatch = currentFileName.match(/section(\d+)/)[1];
-      if (sectionMatch) {
-        return parseInt(sectionMatch[1]);
+      if(currentFileName){
+        const sectionMatch = currentFileName.match(/section(\d+)/)[1];
+        if (sectionMatch) {
+          return parseInt(sectionMatch[1]);
+        }
       }
+
       return 0;
     },
 
     getPageNumber(currentFileName) {
-      return currentFileName.match(/page(\d+)/)[1];
+      if(currentFileName){
+        return currentFileName.match(/page(\d+)/)[1];
+      }
+     return 0;
     },
 
     generateRandomPageNumber(pageCount) {
@@ -359,8 +369,8 @@ export default defineComponent({
     findFileName(sectionName, randomPageNumber) {
       let fileName = null;
       for (let i = 0; i < this.pagesNames.length; i++) {
-        let sectionNumber = this.getSectionNumber(this.pagesNames[i]);
-        let pageNumber = this.getPageNumber(this.pagesNames[i]);
+        let sectionNumber = this.pagesNames[i].section;
+        let pageNumber = this.getPageNumber(this.pagesNames[i].name);
         if (sectionNumber === sectionName && pageNumber === String(randomPageNumber).padStart(3, '0')) {
           fileName = this.pagesNames[i];
           break;
