@@ -27,10 +27,13 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import {defineComponent, PropType} from 'vue'
+import webConfig from '@/assets/configFiles/webQAconfig';
+import {NotesType} from "@/enums/NotesType";
 
 export default defineComponent({
   props:{
+    notesType: Number as PropType<NotesType>,
     disabled: Boolean
   },
   data() {
@@ -41,7 +44,7 @@ export default defineComponent({
         batch_id: '',
       },
       selectedPost: '',
-      postOptions: []
+      postOptions: [{}]
     }
   },
   mounted() {
@@ -52,9 +55,21 @@ export default defineComponent({
   methods: {
     async loadPostOptions() {
       try {
-        const response = await fetch('/webQAconfig.json');
-        const data = await response.json();
-        this.postOptions = data.postOptions;
+        switch (this.notesType){
+          case NotesType.BATCHNOTE:
+            this.postOptions = webConfig.postOptions.dayNotes;
+            break;
+          case NotesType.EDITIONNOTE:
+            this.postOptions = webConfig.postOptions.editionNotes;
+            break;
+          case NotesType.SECTIONNOTE:
+            this.postOptions = webConfig.postOptions.sectionNotes;
+            break;
+          case NotesType.PAGENOTE:
+            this.postOptions = webConfig.postOptions.pageNotes;
+            break;
+        }
+
       } catch (error) {
         console.error('Failed to load postOptions:', error);
       }

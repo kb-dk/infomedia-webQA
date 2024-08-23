@@ -14,6 +14,7 @@
                class="newspaperTable block-text"
                :busy="isBusy"
                :sticky-header="true"
+               :sort-compare="sortCompare"
       >
         <template #cell(newspaper_name)="row">
           <div :class="{ 'selected-newspaper': row.item.newspaper_name === selectedNewspaper }">
@@ -26,7 +27,7 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "NewspaperTable",

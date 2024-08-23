@@ -35,7 +35,8 @@ export default defineComponent({
   name: "PageTable",
   props: {
     rowClick: Function,
-    pagesFileName: Array
+    pagesFileName: Array,
+    currentPage: Object
   },
   data() {
     return {
@@ -47,40 +48,64 @@ export default defineComponent({
   },
   watch: {
     pagesFileName: {
-      immediate: true,
-      handler() {
+      deep: true,
+      handler(handledPagesFileNames) {
         this.pages = [];
         this.sections = new Set();
-        for (let i = 0; i < this.pagesFileName.length; i++) {
-          let section = this.getSectionName(this.pagesFileName[i])
-          let page = this.getPageNumber(this.pagesFileName[i])
-          const fileObject = {
-            src: this.pagesFileName[i],
-            Section: section[1],
-            Page: page[1],
-            sectionName: section[0],
-            pageName: page[0],
-            index: i,
-          };
-          this.pages.push(fileObject);
-          this.sections.add(section[1]);
+        if (handledPagesFileNames) {
+          for (let i = 0; i < handledPagesFileNames.length; i++) {
+            let section = this.getSectionName(handledPagesFileNames[i].name)
+            let page = this.getPageNumber(handledPagesFileNames[i].name)
+            // let section = this.pagesFileName[i].section
+            // let page = this.pagesFileName[i].pageNumber
+            const fileObject = {
+              src: handledPagesFileNames[i].name,
+              Section: section[1],
+              Page: page[1],
+              sectionName: section[0],
+              pageName: page[0],
+              index: i,
+            };
+            this.pages.push(fileObject);
+            this.sections.add(section[1]);
+          }
+          this.pages = this.sortBySectionAndPage(this.pages);
+
         }
-        this.pages = this.sortBySectionAndPage(this.pages);
+
+      }
+    },
+    currentPage: {
+      // deep: true,
+      handler(newPage) {
+        if (newPage) {
+          for (let i = 0; i < this.pages.length;i++){
+            if(this.pages[i].src === newPage.name){
+              this.focusedPage = i;
+              this.scrollToFocusedRow();
+              break;
+            }
+          }
+          console.log(this.focusedPage)
+
+        }
       }
     }
+
   },
   methods: {
     rowClicked(e) {
-      const clickedIndex = this.pages.findIndex(page => page.src === e.src);
-      if (clickedIndex !== -1) {
-        this.focusedPage = clickedIndex;
-        this.rowClick(e.src);
-      }
+      this.rowClick({"name": e.src, "section": e.sectionName, "pageNumber": e.Page});
     },
     scrollToFocusedRow() {
-      const tableElement = this.$refs.table.$el;
-      const focusedRow = tableElement.querySelector('.focusedPageRow');
-      focusedRow.scrollIntoView();
+      // const tableElement = this.$refs.table.$el;
+
+      // console.log(focusedRow)
+      setTimeout(()=>{
+        const focusedRow = document.querySelector('.focusedPageRow');
+        focusedRow.scrollIntoView({behavior:'smooth'})
+      },50)
+      // focusedRow.scrollIntoView();
     },
 
     amountOfPagesInSection(pages, section) {
@@ -113,12 +138,12 @@ export default defineComponent({
       return arr;
     },
 
-    highlightPage(sectionNumber, pageNumber) {
-      this.focusedPage = this.pages.findIndex(page => (page.Page === pageNumber && page.Section === sectionNumber));
-      this.$nextTick(() => {
-        this.scrollToFocusedRow();
-      });
-    },
+    // highlightPage(sectionNumber, pageNumber) {
+    //   this.focusedPage = this.pages.findIndex(page => (page.Page === pageNumber && page.Section === sectionNumber));
+    //   this.$nextTick(() => {
+    //     this.scrollToFocusedRow();
+    //   });
+    // },
   }
 })
 </script>
