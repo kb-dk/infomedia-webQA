@@ -11,7 +11,7 @@
               <b-col>
                 <div class="pdf-container">
                 <vue-pdf-embed :source="item ? getImage(item) : null"  @rendered="handleDocumentRender" :page="page"
-                               width="550"></vue-pdf-embed>
+                               width="530"></vue-pdf-embed>
                 </div>
               </b-col>
             </b-row>
@@ -166,7 +166,7 @@ export default defineComponent({
 }
 
 .carousel__item {
-  height: 85vh;
+  height: 79vh;
   width: 100%;
   background-color: #6c757d;
   color: var(--vc-clr-white);
@@ -208,8 +208,9 @@ export default defineComponent({
   transform: translate(-50%, -50%);
 }
 
-.pdf-container .vue-pdf-embed canvas[style*="height"]:not([style*="height: 730px"]) {
-  height: 750px !important;
+.pdf-container .vue-pdf-embed canvas[style*="height"]:not([style*="height: 700px"]) {
+  height: 700px !important;
+  width: 440px !important;
 }
 
 .icon {

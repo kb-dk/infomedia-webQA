@@ -1,6 +1,11 @@
 <template>
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
+    <b-row style="height: 30px;">
+      <b-col sm="12">
+        <im-output :postsTitle="title" class="block-text"/>
+      </b-col>
+    </b-row>
     <b-row style="height: 50px;">
       <b-col sm="1">
         <b-button class="batch-button  previous" @click="previousBatch()">Prev</b-button>
@@ -65,6 +70,7 @@ import NotesForm from "@/components/NotesForm.vue";
 import PageTable from "@/components/PageTable";
 import axios from "axios";
 import {NotesType} from "@/enums/NotesType";
+import ImOutput from "@/components/UI/Output.vue";
 
 export default defineComponent({
   name: "NewspaperView",
@@ -72,6 +78,19 @@ export default defineComponent({
     NotesType() {
       return NotesType
     },
+    title() {
+      let day = this.newspaper.day.toString();
+      if (day.length < 2) {
+        day = '0' + day;
+      }
+
+      let month = this.newspaper.month.toString();
+      if (month.length < 2) {
+        month = '0' + month;
+      }
+
+      return `${this.newspaperData.newspaper_name}, ${day}.${month}.${this.newspaper.year}`;
+    }
   },
   setup() {
     const instance = getCurrentInstance();
@@ -99,7 +118,10 @@ export default defineComponent({
       },
       newspaper: {
         id: this.$route.params.newspaperid,
-        value: ''
+        value: '',
+        year: this.$route.params.year,
+        month: this.$route.params.month,
+        day: this.$route.params.day
       },
       currentFileName: "",
       currentPageNumber: 0,
@@ -120,6 +142,7 @@ export default defineComponent({
     }
   },
   components: {
+    ImOutput,
     NotesForm,
     PageTable
   },
@@ -441,6 +464,11 @@ export default defineComponent({
 .button-container .btn {
   margin-right: 10px; /* Add margin to the right */
   margin-left: 10px;
+}
+
+.block-text {
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 </style>

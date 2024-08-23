@@ -1,6 +1,6 @@
 <template>
   <div>
-    <output :value="postsTitel" class="output"></output>
+    <output :value="postsTitle" class="output"></output>
   </div>
 </template>
 
@@ -10,7 +10,7 @@ import {defineComponent} from 'vue'
 export default defineComponent({
   name: 'im-output',
   props: {
-    postsTitel: [String, Number]
+    postsTitle: [String, Number]
   }
 })
 </script>
