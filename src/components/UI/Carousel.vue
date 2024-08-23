@@ -9,7 +9,6 @@
             <div class="pdf-container">Loading...</div>
           </template>
           <template v-else>
-            Page {{item.pageNumber}} {{item.section}}
             <b-row>
               <b-col>
                 <div class="pdf-container">
