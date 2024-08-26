@@ -8,8 +8,6 @@
           <router-link to="/technical">Technical QA</router-link>
         </nav>
         <div class="newspaperTables">
-
-
           <p v-if="errorMessage.length > 0" style="color: red">{{ errorMessage }}</p>
           <NewspaperTable :newspapers="getNewspaperNames('dagsaviser')" headerName="Newspapers" :show="true"/>
           <br/>
@@ -21,7 +19,6 @@
         </div>
       </b-col>
       <b-col sm="10">
-
         <router-view :key="$route.fullPath"/>
       </b-col>
     </b-row>

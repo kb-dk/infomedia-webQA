@@ -3,7 +3,7 @@
   <form @submit.prevent>
     <div class="form">
       <div class="header">
-        <h6>{{ postsTitel }}</h6>
+        <h6>{{ postsTitle }}</h6>
       </div>
       <post-form @create="createPost" :notesType="notesType" :disabled="createPostDisable()">
       </post-form>
@@ -23,7 +23,7 @@ export default defineComponent({
   name: "NotesForm",
   props: {
     batch: Object,
-    postsTitel: [String, Number],
+    postsTitle: [String, Number],
     notesType: Number as PropType<NotesType>,
     newspaper: Object,
     sectiontitle: String,
