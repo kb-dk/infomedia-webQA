@@ -169,29 +169,34 @@ export default defineComponent({
         const apiClient = axios.create({
           baseURL: "/kuana-ndb-api",
         });
-        const {batchid, newspaperid} = this.$route.params;
+        const { batchid, newspaperid } = this.$route.params;
 
         const response = await apiClient.get(
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         );
-        const frontPagePaths = response.data.filter((d) => d.page_number === 1).sort((a,b)=> {
-         if(a.section_title < b.section_title){
-           return -1;
-         }if(a.section_title > b.section_title){
-           return 1;
+        const frontPagePaths = response.data.filter((d) => d.page_number === 1);
+
+        // Sort front pages by section title
+        frontPagePaths.sort((a, b) => {
+          const sectionA = a.section_title.toLowerCase();
+          const sectionB = b.section_title.toLowerCase();
+          if (sectionA < sectionB) {
+            return -1;
           }
-         return 0;
+          if (sectionA > sectionB) {
+            return 1;
+          }
+          return 0;
         });
+
         for (let i = 0; i < frontPagePaths.length; i++) {
           const filePathParts = frontPagePaths[i].filepath.split("/");
           this.frontPagesNames[i] = {
-            "name": filePathParts[filePathParts.length - 1],
-            "section": frontPagePaths[i].section_title,
-            "pageNumber": frontPagePaths[i].page_number
+            name: filePathParts[filePathParts.length - 1],
+            section: frontPagePaths[i].section_title,
+            pageNumber: frontPagePaths[i].page_number,
           };
         }
-        console.log("frontPagePaths")
-        console.log(frontPagePaths)
         for (let i = 0; i < response.data.length; i++) {
           const filePathParts = response.data[i].filepath.split("/");
           this.pagesNames[i] = {
