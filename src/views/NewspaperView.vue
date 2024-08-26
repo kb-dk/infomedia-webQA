@@ -174,7 +174,14 @@ export default defineComponent({
         const response = await apiClient.get(
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         );
-        const frontPagePaths = response.data.filter((d) => d.page_number === 1);
+        const frontPagePaths = response.data.filter((d) => d.page_number === 1).sort((a,b)=> {
+         if(a.section_title < b.section_title){
+           return -1;
+         }if(a.section_title > b.section_title){
+           return 1;
+          }
+         return 0;
+        });
         for (let i = 0; i < frontPagePaths.length; i++) {
           const filePathParts = frontPagePaths[i].filepath.split("/");
           this.frontPagesNames[i] = {
@@ -183,6 +190,8 @@ export default defineComponent({
             "pageNumber": frontPagePaths[i].page_number
           };
         }
+        console.log("frontPagePaths")
+        console.log(frontPagePaths)
         for (let i = 0; i < response.data.length; i++) {
           const filePathParts = response.data[i].filepath.split("/");
           this.pagesNames[i] = {
