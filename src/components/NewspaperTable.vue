@@ -11,7 +11,7 @@
                :fields="fields"
                @row-clicked="rowClicked($event)"
                :filter="filter"
-               class="newspaperTable"
+               class="newspaperTable block-text"
                :busy="isBusy"
                :sticky-header="true"
                :sort-compare="sortCompare"
@@ -136,5 +136,10 @@ export default defineComponent({
 .selected-newspaper {
   font-weight: bold;
   color: blue;
+}
+.block-text {
+  text-transform: uppercase;
+  font-size: small;
+  font-weight:normal;
 }
 </style>

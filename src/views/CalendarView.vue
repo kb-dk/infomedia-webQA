@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1 v-text="newspaper"></h1>
+    <h1 v-text="newspaper" class="block-text"></h1>
     <Calendar :isYear="true" :rows="3" :columns="4" :monthNav="null" :monthMask="{title:'MMMM'}" :newspaperName="newspaper" :expanded="false">
     </Calendar>
 
@@ -33,5 +33,9 @@ export default defineComponent({
 <style>
 .home {
   align-items: center;
+}
+.block-text {
+  text-transform: uppercase;
+  font-weight: bold;
 }
 </style>

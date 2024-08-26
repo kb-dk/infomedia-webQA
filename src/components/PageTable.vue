@@ -56,8 +56,6 @@ export default defineComponent({
           for (let i = 0; i < handledPagesFileNames.length; i++) {
             let section = this.getSectionName(handledPagesFileNames[i].name)
             let page = this.getPageNumber(handledPagesFileNames[i].name)
-            // let section = this.pagesFileName[i].section
-            // let page = this.pagesFileName[i].pageNumber
             const fileObject = {
               src: handledPagesFileNames[i].name,
               Section: section[1],
@@ -87,11 +85,9 @@ export default defineComponent({
             }
           }
           console.log(this.focusedPage)
-
         }
       }
     }
-
   },
   methods: {
     rowClicked(e) {
