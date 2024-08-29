@@ -224,4 +224,13 @@ export default defineComponent({
   font-size: 20px;
   color: #fff;
 }
+.modal-body{
+  padding:0 !important;
+}
+.modal-header{
+  border-bottom: 1px solid black !important;
+}
+.modal-footer{
+  border-top: 1px solid black !important;
+}
 </style>

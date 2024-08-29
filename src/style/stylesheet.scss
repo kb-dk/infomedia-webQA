@@ -66,7 +66,8 @@
   background-color:rgba(108, 107, 107, 0.57);
 }
 .focusedPageRow>*{
-  background-color: rgba(176, 175, 160,0.2);
+  background-color: rgba(0, 0, 184, 0.43);
+  font-weight:bold;
 }
 .focusedPageRow{
   box-shadow: 0px 1px 3px #6c6b6b;
@@ -106,6 +107,7 @@
 .newspaper-table-container{
   margin-bottom: 5px;
   margin-top: 15px;
+  text-align: left;
 }
 .newspaperTable::-webkit-scrollbar-thumb{
   background-color:rgba(108, 107, 107, 0.57)
