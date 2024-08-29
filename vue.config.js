@@ -12,7 +12,7 @@ module.exports = defineConfig({
       }
     }
   },
-  publicPath:"/kuana-ndb-wui/webQA/",
+  publicPath:"/newspaper-qa/",
   configureWebpack: {
     resolve: {
       alias: {
