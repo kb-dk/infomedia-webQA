@@ -276,6 +276,7 @@ export default defineComponent({
         try {
           const {id} = this.newspaper;
           await axios.put(`/kuana-ndb-api/batches/${this.batch.id}/newspapers/${id}`);
+          this.nextBatch();
         } catch (error) {
           this.errorMessage = "Error approving the newspaper";
           console.log(this.errorMessage + ": " + error);
