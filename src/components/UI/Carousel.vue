@@ -9,15 +9,14 @@
             <div class="pdf-container">Loading...</div>
           </template>
           <template v-else>
-            <b-row>
+            <b-row >
               <b-col>
                 <div class="pdf-container">
-                <vue-pdf-embed :source="item ? getImage(item) : null"  @rendered="handleDocumentRender" :page="page"
-                               width="530"></vue-pdf-embed>
+                <vue-pdf-embed :source="item ? getImage(item) : null"  @rendered="handleDocumentRender" :page="page"></vue-pdf-embed>
                 </div>
               </b-col>
             </b-row>
-            <b-row>
+            <b-row class="zoomImage">
               <b-col>
                 <div data-bs-toggle="modal" data-bs-target="#pdfModal"
                      @click="openPdfModal(item)">
@@ -184,38 +183,16 @@ export default defineComponent({
 .carousel__slide {
   padding: 5px;
 }
-
-.vue-pdf-embed canvas {
-  height: calc(100% - 20px) !important; /* adjust the 20px value to match the carousel's padding or margin */
-  flex: 1;
-  width: 28em;
-}
-
 .modal-content {
   height: 80%;
   width: 80%;
 }
 
-.pdf-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-top: 20px; /* Adjust the value as needed */
-}
-
-.pdf-container vue-pdf-embed {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.pdf-container .vue-pdf-embed canvas[style*="height"]:not([style*="height: 700px"]) {
-  height: 700px !important;
-  width: 440px !important;
+.vue-pdf-embed__page canvas{
+  width:95% !important;
+  height:95% !important;
+  margin:auto;
+  padding:0;
 }
 
 .icon {

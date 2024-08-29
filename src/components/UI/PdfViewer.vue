@@ -5,7 +5,7 @@
     <template v-else>
       <div v-for="(item, index) in pdfVal" :key="index">
     <div class="vue-pdf-embed">
-      <vue-pdf-embed :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef" :page="page"></vue-pdf-embed>
+      <vue-pdf-embed class="pdfEmbed" :source=getImage(item) @rendered="handleDocumentRender" ref="pdfRef" :page="page"></vue-pdf-embed>
     </div>
     </div>
     </template>
@@ -109,6 +109,10 @@ export default defineComponent({
 
 .vue-pdf-embed {
   padding: 24px 16px;
+}
+.pdfEmbed{
+  height:100%;
+  width:100%;
 }
 
 </style>
