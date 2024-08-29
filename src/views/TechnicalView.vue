@@ -88,7 +88,6 @@ export default defineComponent({
     },
     reloadBatch(batchName: string, newState: string) {
       this.$forceUpdate();
-      console.log("reload");
       (this.$refs.calendarRef as typeof Calendar).updateBatchState(batchName, newState);
     },
     reloadCalendar() {

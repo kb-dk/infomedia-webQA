@@ -109,7 +109,7 @@ export default defineComponent({
             }
           })
         } else {
-          event.stopPropagation()
+          event.stopPropagation();
           this.$parent.showBatchInfo(calendarData)
         }
       }
