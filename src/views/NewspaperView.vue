@@ -15,15 +15,15 @@
           Display Notes
           <b-row v-if="showNotes">
             <b-col>
-              <notes-form :postsTitel="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
+              <notes-form :postsTitle="editionNotes" :batch="batch" :notes-type="NotesType.EDITIONNOTE"
                           :newspaper="newspaper"></notes-form>
             </b-col>
             <b-col v-if="currentPagesNames.length > 0">
-              <notes-form :postsTitel="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
+              <notes-form :postsTitle="sectionNotes" :batch="batch" :notes-type="NotesType.SECTIONNOTE"
                           :newspaper="newspaper" :sectiontitle="currentSectionTitle"></notes-form>
             </b-col>
             <b-col v-if="currentPagesNames.length > 0">
-              <notes-form :postsTitel="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
+              <notes-form :postsTitle="pageNotes" :batch="batch" :notes-type="NotesType.PAGENOTE"
                           :newspaper="newspaper" :sectiontitle="currentSectionTitle"
                           :pagenumber="currentPageNumber"></notes-form>
             </b-col>
