@@ -115,15 +115,14 @@ export default defineComponent({
 
     },
     goToNewspaper(newspaper) {
-      // console.log(newspaper)
       this.$router.push({
         name: "newspaper-view",
         params: {
           batchid: this.batch.id,
           newspaperid: newspaper.id,
           year: this.date.getFullYear(),
-          month: this.date.getMonth(),
-          day: this.date.getDay()
+          month: this.date.getMonth()+1,
+          day: this.date.getDate()
         }
       })
     },
