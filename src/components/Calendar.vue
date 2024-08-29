@@ -56,7 +56,7 @@ export default defineComponent({
   mounted() {
     this.selectedYear = sessionStorage.getItem("selectedYear") ?? this.selectedYear;
     this.date = new Date(this.selectedYear, 0, 1);
-    if(this.isYear){
+    if (this.isYear) {
       this.$nextTick(() => {
         this.$refs.yearPicker.updateModel(this.date);
       });
@@ -96,7 +96,7 @@ export default defineComponent({
       }
     },
     calendarDayClicked(calendarData, event) {
-      if (calendarData.attributes.length > 0) {
+      if (calendarData.attributes.length > 0 && calendarData.attributes[0].batch.state === 'TechnicalInspectionComplete') {
         if (this.isYear) {
           this.$router.push({
             name: "newspaper-view",
@@ -152,14 +152,18 @@ export default defineComponent({
     },
     async batchesForYear() {
       try {
-        const {data} = await axios.get(`/kuana-ndb-api/batches?state=TechnicalInspectionComplete&year=${this.date.getFullYear()}&newspaper_name=${this.newspaperName}&get_latest=true`);
-        let res = await Promise.all(data.map(async (batch) => {
+        const {data} = (await axios.get(`/kuana-ndb-api/batches?year=${this.date.getFullYear()}&newspaper_name=${this.newspaperName}&get_latest=true`));
+        // data = data.filter(batch =>{batch.state === 'TechnicalInspectionComplete' || batch.state === 'AllDone' || batch.state === 'ProcessingToOpex' || batch.state === 'ReadyToBeProcessed'})
+        const filteredData = data.filter(batch => {
+          return batch.state === 'TechnicalInspectionComplete' || batch.state === 'AllDone' || batch.state === 'ProcessingToOpex' || batch.state === 'ReadyToBeProcessed'
+        })
+        let res = await Promise.all(filteredData.map(async (batch) => {
           const newspapers = (await axios.get(`/kuana-ndb-api/batches/${batch.id}/newspapers?newspaper_name=${this.newspaperName}`)).data;
           let newspaperBatches = await Promise.all(newspapers.map(async (newspaper) => {
             let hasPage = (await axios.get(`/kuana-ndb-api/batches/${batch.id}/newspapers/${newspaper.id}/has-page`)).data;
             return {
               highlight: {
-                color: hasPage ? 'teal' : 'orange',
+                color: batch.state !== 'TechnicalInspectionComplete' ? 'gray': hasPage ? 'teal' : 'orange',
                 fillMode: newspaper.checked ? 'light' : 'solid'
               },
               dates: new Date(batch.date),
