@@ -156,7 +156,6 @@ export default defineComponent({
       return state === 'QAChecked' ? 'solid' : state === 'BatchInspected' ? 'light' : 'outline'
     },
     async batchesForYear() {
-      console.log(this.selectedYear)
       try {
         const {data} = (await axios.get(`/kuana-ndb-api/batches?year=${this.date.getFullYear()}&newspaper_name=${this.newspaperName}&get_latest=true`));
         // data = data.filter(batch =>{batch.state === 'TechnicalInspectionComplete' || batch.state === 'AllDone' || batch.state === 'ProcessingToOpex' || batch.state === 'ReadyToBeProcessed'})
