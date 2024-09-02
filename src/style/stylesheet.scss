@@ -116,6 +116,10 @@
   width:5px;
   height:30px
 }
+:deep(.newspaperTableHeader){
+  font-size:15px;
+  padding-left:5px;
+}
 .pageTable{
   //display: inline;
   max-height: 70vh;

@@ -15,6 +15,7 @@
                :busy="isBusy"
                :sticky-header="true"
                :sort-compare="sortCompare"
+               thead-class="newspaperTableHeader"
       >
         <template #cell(newspaper_name)="row">
           <div :class="{ 'selected-newspaper': row.item.newspaper_name === selectedNewspaper }">
@@ -58,6 +59,7 @@ export default defineComponent({
           key: "newspaper_name",
           sortable: true,
           label: "Newspaper",
+          thClass: "newspaperTableHeader",
           filterable: true,
         },
       ],
@@ -142,4 +144,5 @@ export default defineComponent({
   font-size: small;
   font-weight:normal;
 }
+
 </style>
