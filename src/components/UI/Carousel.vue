@@ -20,8 +20,9 @@
             <b-row>
               <b-col>
                 <div data-bs-toggle="modal" data-bs-target="#pdfModal"
+                     ref="zoomButton"
                      @click="openPdfModal(item)">
-                  <span class="icon" @click="openPdfModal(item)">
+                  <span class="icon">
                     <!-- Brug et ikon fra Font Awesome -->
                     <i class="fa-solid fa-magnifying-glass"></i>
                   </span>
@@ -37,7 +38,7 @@
     </template>
   </Carousel>
   <!-- Modal -->
-  <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+  <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true" ref="pdfModal">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
@@ -64,9 +65,11 @@ import 'vue3-carousel/dist/carousel.css'
 //importing bootstrap 5
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
+import {Modal} from 'bootstrap'
 // Importer Font Awesome
 import '@fortawesome/fontawesome-free/css/all.css';
 import axios from "axios";
+import BootstrapVue3 from "bootstrap-vue-3";
 
 export default defineComponent({
   name: 'im-carousel',
@@ -150,15 +153,22 @@ export default defineComponent({
     openPdfModal(fileName) {
       this.selectedPdf = fileName;
     },
+    handleKeyPress(event){
+      if(event.altKey && event.ctrlKey && event.key === "f"){
+        const modal = new Modal(this.$refs.pdfModal)
+        modal.show();
+        this.openPdfModal(this.carouselValHandled[this.currentSlide])
+      }
+    },
   },
   mounted() {
-    console.log("first?")
-    console.log(this)
     defineEmits(this, ['currentFilenameEvent']);
+    document.addEventListener("keyup",this.handleKeyPress)
+  },
+  unmounted() {
+    document.removeEventListener("keyup",this.handleKeyPress)
   },
   updated() {
-    console.log("second?")
-    console.log(this.carouselVal)
     const currentFilename = this.carouselVal[this.currentSlide];
     this.$emit('currentFilenameEvent', currentFilename);
   }
