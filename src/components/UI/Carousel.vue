@@ -6,7 +6,7 @@
       <div class="carousel__item">
 
           <template v-if="isLoading">
-            <div class="pdf-container">Loading...</div>
+            <div class="pdf-container" id="loadingDiv">Loading...</div>
           </template>
           <template v-else>
             <b-row >
@@ -179,7 +179,11 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 }
-
+#loadingDiv{
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
 .carousel__slide {
   padding: 5px;
 }
@@ -190,7 +194,7 @@ export default defineComponent({
 
 .vue-pdf-embed__page canvas{
   width:95% !important;
-  height:95% !important;
+  height:74vh !important;
   margin:auto;
   padding:0;
 }
