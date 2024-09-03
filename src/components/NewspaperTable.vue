@@ -141,7 +141,7 @@ export default defineComponent({
 }
 .block-text {
   text-transform: uppercase;
-  font-size: small;
+  font-size: 12px;
   font-weight:normal;
 }
 
