@@ -44,6 +44,7 @@ export default defineComponent({
     return {
       date: ref(new Date()),
       selectedYear: ref(new Date().getFullYear()), // Step 1: Add selectedYear property
+      selectedMonth: ref(new Date().getMonth()),
       yearPickerInputStyle: {'text-align': 'center', 'font-size': 'larger', 'font-weight': 'bold'},
       calendarAttr: ref([{}]),
       errorMessage: ref("")
@@ -51,11 +52,11 @@ export default defineComponent({
   },
   created() {
     this.selectedYear = sessionStorage.getItem("selectedYear") ?? this.selectedYear;
+    this.selectedMonth = sessionStorage.getItem("selectedMonth") ?? this.selectedMonth;
+    this.date = new Date(this.selectedYear, this.selectedMonth, 1);
   },
 
   mounted() {
-    this.selectedYear = sessionStorage.getItem("selectedYear") ?? this.selectedYear;
-    this.date = new Date(this.selectedYear, 0, 1);
     if (this.isYear) {
       this.$nextTick(() => {
         this.$refs.yearPicker.updateModel(this.date);
@@ -93,6 +94,10 @@ export default defineComponent({
         this.date = new Date(event[0].year, event[0].month - 1, 1)
         this.$forceUpdate();
         this.batchesForMonth()
+        this.selectedMonth = this.date.getMonth();
+        this.selectedYear = this.date.getFullYear();
+        sessionStorage.setItem("selectedMonth",this.date.getMonth());
+        sessionStorage.setItem("selectedYear",this.date.getFullYear());
       }
     },
     calendarDayClicked(calendarData, event) {
