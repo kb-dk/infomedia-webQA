@@ -1,4 +1,5 @@
-<template>
+<template >
+  <input type="hidden" @keyup.enter.prevent="console.log('enter')" @keyup.alt.enter.prevent.exact="approveNewspaper()"/>
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
     <b-row style="height: 30px;">
@@ -69,7 +70,7 @@
 import {defineComponent, getCurrentInstance, onMounted} from "vue";
 import NotesForm from "@/components/NotesForm.vue";
 import PageTable from "@/components/PageTable";
-import axios from "axios";
+import axios, {options} from "axios";
 import {NotesType} from "@/enums/NotesType";
 import ImOutput from "@/components/UI/Output.vue";
 
@@ -95,7 +96,6 @@ export default defineComponent({
   },
   setup() {
     const instance = getCurrentInstance();
-
     onMounted(async function () {
       try {
         await instance.proxy.fetchCarouselData();
@@ -153,9 +153,11 @@ export default defineComponent({
   },
   mounted() {
     document.addEventListener("click", this.handleClickOutside);
+    document.addEventListener('keyup',this.handleKeyPress);
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
+    document.removeEventListener('keyup',this.handleKeyPress);
   },
   methods: {
     handleClickOutside(event) {
@@ -242,17 +244,17 @@ export default defineComponent({
       }
 
     },
-
-    initCurrentSectionTitle() {
-      if(this.currentFileName instanceof String){
-        const regex = /section(\d+)/;
-        console.log(this.currentFileName.match(regex))
-        const match = this.currentFileName && this.currentFileName.match(regex);
-        if (match) {
-          this.currentSectionTitle = match[0];
-        }
-      }
-    },
+    //
+    // initCurrentSectionTitle() {
+    //   if(this.currentFileName instanceof String){
+    //     const regex = /section(\d+)/;
+    //     console.log(this.currentFileName.match(regex))
+    //     const match = this.currentFileName && this.currentFileName.match(regex);
+    //     if (match) {
+    //       this.currentSectionTitle = match[0];
+    //     }
+    //   }
+    // },
 
     initCurrentPageNumber() {
       if(this.currentFileName instanceof String){
@@ -380,16 +382,16 @@ export default defineComponent({
       }
     },
 
-    getSectionNumber(currentFileName) {
-      if(currentFileName){
-        const sectionMatch = currentFileName.match(/section(\d+)/)[1];
-        if (sectionMatch) {
-          return parseInt(sectionMatch[1]);
-        }
-      }
-
-      return 0;
-    },
+    // getSectionNumber(currentFileName) {
+    //   if(currentFileName){
+    //     const sectionMatch = currentFileName.match(/section(\d+)/)[1];
+    //     if (sectionMatch) {
+    //       return parseInt(sectionMatch[1]);
+    //     }
+    //   }
+    //
+    //   return 0;
+    // },
 
     getPageNumber(currentFileName) {
       if(currentFileName){
@@ -436,6 +438,29 @@ export default defineComponent({
           });
         }
       }
+    },
+    handleKeyPress(event){
+      if(event.ctrlKey){
+        switch (event.key){
+          case "Enter":
+            this.approveNewspaper();
+            break;
+          case "ArrowLeft":
+            this.previousBatch();
+            break;
+          case "ArrowRight":
+            this.nextBatch();
+            break;
+        }
+        if(event.altKey){
+          switch (event.key){
+            case "n":
+              this.showNotes = !this.showNotes;
+              break;
+          }
+        }
+      }
+      // console.log(event.preventDefault());
     }
   }
 })
