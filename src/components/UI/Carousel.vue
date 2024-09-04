@@ -11,7 +11,7 @@
           <template v-else>
             <b-row >
               <b-col>
-                <div class="pdf-container">
+                <div :class="['pdf-container', {'pdf-container--single': itemsToShow === 1, 'pdf-container--double': itemsToShow === 2}]">
                 <vue-pdf-embed :source="item ? getImage(item) : null"  @rendered="handleDocumentRender" :page="page"></vue-pdf-embed>
                 </div>
               </b-col>
@@ -202,11 +202,18 @@ export default defineComponent({
   width: 80%;
 }
 
-.vue-pdf-embed__page canvas{
-  width:95% !important;
-  height:74vh !important;
+.pdf-container .vue-pdf-embed__page canvas {
+  height:70vh !important;
   margin:auto;
   padding:0;
+}
+
+.pdf-container--single .vue-pdf-embed__page canvas{
+  width:55% !important;
+}
+
+.pdf-container--double .vue-pdf-embed__page canvas{
+  width:95% !important;
 }
 
 .icon {
