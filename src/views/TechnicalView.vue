@@ -70,7 +70,7 @@ export default defineComponent({
       newspaper: this.$route.params.newspaperid,
       batchType: ref("dagsaviser"),
       radioBtnOptions: [
-        {text: 'Dagsaviser', value: 'dagsaviser'},
+        {text: 'Dagblade', value: 'dagsaviser'},
         {text: 'Ugeaviser', value: 'ugeaviser'},
         {text: 'Magasiner', value: 'magasiner'}
       ]
@@ -84,6 +84,7 @@ export default defineComponent({
   methods: {
     showBatchInfo(event: any) {
       // this.batchMetadata.active.value = true;
+      console.log("hello");
       (this.$refs.batchMetadataRef as typeof BatchMetadata).showBatchData(event);
     },
     reloadBatch(batchName: string, newState: string) {

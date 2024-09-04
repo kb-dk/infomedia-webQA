@@ -101,18 +101,21 @@ export default defineComponent({
       }
     },
     calendarDayClicked(calendarData, event) {
-      if (calendarData.attributes.length > 0 && calendarData.attributes[0].batch.state === 'TechnicalInspectionComplete') {
-        if (this.isYear) {
-          this.$router.push({
-            name: "newspaper-view",
-            params: {
-              batchid: calendarData.attributes[0].batch.id,
-              newspaperid: calendarData.attributes[0].newspaper.id,
-              year: calendarData.year,
-              month: calendarData.month,
-              day: calendarData.day
-            }
-          })
+      if (calendarData.attributes.length > 0) {
+        console.log("hello2")
+        if (this.isYear ) {
+          if(calendarData.attributes[0].batch.state === 'TechnicalInspectionComplete'){
+            this.$router.push({
+              name: "newspaper-view",
+              params: {
+                batchid: calendarData.attributes[0].batch.id,
+                newspaperid: calendarData.attributes[0].newspaper.id,
+                year: calendarData.year,
+                month: calendarData.month,
+                day: calendarData.day
+              }
+            })
+          }
         } else {
           event.stopPropagation();
           this.$parent.showBatchInfo(calendarData)
