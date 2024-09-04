@@ -209,7 +209,7 @@ export default defineComponent({
 }
 
 .pdf-container--single .vue-pdf-embed__page canvas{
-  width:55% !important;
+  width:45% !important;
 }
 
 .pdf-container--double .vue-pdf-embed__page canvas{
