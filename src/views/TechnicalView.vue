@@ -28,15 +28,14 @@
           stateDest="TechnicalInspectionComplete"
           @click="sendApprovedBatches('TechnicalInspectionComplete')"
           btn-text="Send approved batches"
-          title="Change batch status from Batch Inspected to Technical Inspection Complete"
+          title="Change batch status to be ready to be inspected by manual QA"
       ></ApproveButton>
       <ApproveButton
           stateSource="BatchInspected"
           stateDest="ReadyToBeProcessed"
           @click="sendApprovedBatches('ReadyToBeProcessed')"
           btn-text="Process approved batches"
-          :disabled="isProcessButtonDisabled"
-          title="Change batch status from Batch Inspected to Ready To Be Processed"
+          title="Change batch status to be ready to be processed for preservation"
       ></ApproveButton>
       <b-button class="changeCarouselView"
                 @click="exportNotes">Export Notes
@@ -76,15 +75,9 @@ export default defineComponent({
       ]
     }
   },
-  computed: {
-    isProcessButtonDisabled(): boolean {
-      return unref(this.batchType) === 'dagsaviser';
-    }
-  },
   methods: {
     showBatchInfo(event: any) {
       // this.batchMetadata.active.value = true;
-      console.log("hello");
       (this.$refs.batchMetadataRef as typeof BatchMetadata).showBatchData(event);
     },
     reloadBatch(batchName: string, newState: string) {

@@ -102,7 +102,6 @@ export default defineComponent({
     },
     calendarDayClicked(calendarData, event) {
       if (calendarData.attributes.length > 0) {
-        console.log("hello2")
         if (this.isYear ) {
           if(calendarData.attributes[0].batch.state === 'TechnicalInspectionComplete'){
             this.$router.push({
