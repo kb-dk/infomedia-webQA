@@ -202,11 +202,12 @@ export default defineComponent({
   width: 80%;
 }
 
-.vue-pdf-embed__page canvas{
-  width:95% !important;
+.pdf-container .vue-pdf-embed__page canvas{
+  max-width:65vh !important;
   height:74vh !important;
   margin:auto;
-  padding:0;
+  padding-top:5px;
+  object-fit:contain;
 }
 
 .icon {
