@@ -38,7 +38,7 @@
     <b-row>
       <b-col sm="10">
         <im-carousel ref="carousel" :carouselVal="currentPagesNames" :items-to-show="itemToShow"
-                     :additionalCarouselVal="pagesNames"
+                     :additionalCarouselVal="pagesNames" :nextDay="getNextDay()"
                      :front-page-view="toWrapAround()" @current-filename-event="handleCurrentFilename">
         </im-carousel>
       </b-col>
@@ -244,17 +244,6 @@ export default defineComponent({
       }
 
     },
-    //
-    // initCurrentSectionTitle() {
-    //   if(this.currentFileName instanceof String){
-    //     const regex = /section(\d+)/;
-    //     console.log(this.currentFileName.match(regex))
-    //     const match = this.currentFileName && this.currentFileName.match(regex);
-    //     if (match) {
-    //       this.currentSectionTitle = match[0];
-    //     }
-    //   }
-    // },
 
     initCurrentPageNumber() {
       if(this.currentFileName instanceof String){
@@ -313,12 +302,14 @@ export default defineComponent({
       currentDay.setDate(currentDay.getDate() - 1);
       await this.getOtherBatch(currentDay);
     },
-
-    async nextBatch() {
+    getNextDay(){
       const {year, month, day} = this.$route.params;
       let currentDay = new Date(`${year}/${month}/${day}`);
       currentDay.setDate(currentDay.getDate() + 1);
-      await this.getOtherBatch(currentDay);
+      return currentDay;
+    },
+    async nextBatch() {
+      await this.getOtherBatch(this.getNextDay());
     },
 
     async getOtherBatch(newDate) {
@@ -381,17 +372,6 @@ export default defineComponent({
         this.currentPagesNames = [randomPageName];
       }
     },
-
-    // getSectionNumber(currentFileName) {
-    //   if(currentFileName){
-    //     const sectionMatch = currentFileName.match(/section(\d+)/)[1];
-    //     if (sectionMatch) {
-    //       return parseInt(sectionMatch[1]);
-    //     }
-    //   }
-    //
-    //   return 0;
-    // },
 
     getPageNumber(currentFileName) {
       if(currentFileName){

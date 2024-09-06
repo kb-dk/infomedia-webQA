@@ -174,7 +174,10 @@ export default defineComponent({
                 fillMode: newspaper.checked ? 'light' : 'solid'
               },
               dates: new Date(batch.date),
-              popover: null,
+              popover: {
+                label: this.pickLabel(batch,hasPage,newspaper.checked),
+                visibility: 'hover'
+              },
               datePicker: null,
               batch,
               newspaper
@@ -189,6 +192,24 @@ export default defineComponent({
         console.log(error);
         this.errorMessage = "Unable to load batches";
       }
+    },
+    pickLabel(batch,hasPage=false,checked=false) {
+      let result = "";
+      if(batch.state !== "TechnicalInspectionComplete"){
+        result  = "Has been sent to preservation";
+        return result
+      }
+      if(checked){
+        result += "Has been approved. ";
+      }
+      if(hasPage){
+        result += "Contains pages"
+      }else{
+        result += "No pages in batch"
+      }
+
+      return result;
+
     }
   },
 })

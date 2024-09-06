@@ -1,11 +1,11 @@
 <template>
-  <Carousel v-model="currentSlide" :items-to-show="itemsToShow" :wrap-around="frontPageView" class="custom__carousel">
+  <Carousel v-model="currentSlide" :items-to-show="1" :wrap-around="false" class="custom__carousel">
 
     <Slide v-for="(item, index) in carouselValHandled" :key="index" class="carousel__slide" ref="slide">
 
       <div class="carousel__item">
 
-          <template v-if="isLoading">
+          <template v-if="item.loading">
             <div class="pdf-container" id="loadingDiv">Loading...</div>
           </template>
           <template v-else>
@@ -86,6 +86,7 @@ export default defineComponent({
     },
     frontPageView: Boolean,
     itemsToShow: Number,
+    nextDay: Object,
   },
   data() {
     return {
@@ -102,14 +103,13 @@ export default defineComponent({
     carouselVal: {
       immediate: true,
       handler() {
+
         if (this.carouselValHandled !== this.carouselVal && this.carouselVal.length > 0) {
-          this.carouselValHandled = this.carouselVal;
-          this.loadImages().then(() => {
-            this.isLoading = false;
-          }).catch((error) => {
-            console.error(error);
-            this.isLoading = false;
-          });
+          for (let i = 0; i < this.carouselVal.length; i++) {
+            this.carouselValHandled[i] = this.carouselVal[i]
+            this.carouselValHandled[i].loading = true;
+          }
+          this.loadImages()
         }
       }
     },
@@ -127,12 +127,17 @@ export default defineComponent({
           if (!this.imageUrls.has(item.name)) {
             const encoded_item = encodeURIComponent(item.name);
             try {
-              const response = await apiClient.get(`/file/${encoded_item}`, {
+              await apiClient.get(`/file/${encoded_item}`, {
                 responseType: 'blob'
-              });
-              const blob = new Blob([response.data], {type: 'application/pdf'});
-              const url = URL.createObjectURL(blob);
-              this.imageUrls.set(item, url); // Use spread operator and index signature
+              }).then((response)=>{
+                item.loading= false;
+                const blob = new Blob([response.data], {type: 'application/pdf'});
+                const url = URL.createObjectURL(blob);
+                this.imageUrls.set(item, url);
+              }).catch((error) => {
+                  console.error(error);
+                  item.loading = false;
+                });
             } catch (error) {
               console.error(error); // Log any errors that occur during the API request
             }
