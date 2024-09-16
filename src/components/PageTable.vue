@@ -84,7 +84,6 @@ export default defineComponent({
               break;
             }
           }
-          console.log(this.focusedPage)
         }
       }
     }

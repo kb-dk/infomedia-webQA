@@ -12,6 +12,9 @@ export default defineComponent({
     return{
       linkToUserGuide: webQAconfig.linkToUserGuide
     }
+  },
+  mounted() {
+    sessionStorage.setItem("usePreloadedNewspaper", "false");
   }
 
 });

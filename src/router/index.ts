@@ -26,6 +26,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/:batchid/:newspaperid/:year/:month/:day',
     name: 'newspaper-view',
     component: NewspaperView,
+
   }
 ]
 

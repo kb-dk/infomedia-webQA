@@ -14,12 +14,14 @@
     "bootstrap-vue": "^2.23.1",
     "bootstrap-vue-3": "^0.5.1",
     "core-js": "^3.8.3",
+    "pinia": "^2.2.2",
     "primevue": "^3.30.0",
     "v-calendar": "^3.0.3",
     "vue": "^3.2.13",
     "vue-pdf-embed": "^2.1.0",
     "vue-router": "^4.0.3",
-    "vue3-carousel": "^0.3.3"
+    "vue3-carousel": "^0.3.3",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",

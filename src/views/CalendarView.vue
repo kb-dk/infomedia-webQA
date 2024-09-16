@@ -26,7 +26,10 @@ export default defineComponent({
     }
   },
   methods:{
-  }
+  },
+  mounted(){
+    sessionStorage.setItem("usePreloadedNewspaper", "false");
+  },
 });
 
 </script>

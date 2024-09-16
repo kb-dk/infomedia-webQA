@@ -75,6 +75,9 @@ export default defineComponent({
       ]
     }
   },
+  mounted() {
+    sessionStorage.setItem("usePreloadedNewspaper", "false");
+  },
   methods: {
     showBatchInfo(event: any) {
       // this.batchMetadata.active.value = true;
