@@ -1,5 +1,4 @@
 <template>
-  <input type="hidden" @keyup.enter.prevent="console.log('enter')" @keyup.alt.enter.prevent.exact="approveNewspaper()"/>
   <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   <div class="app">
     <b-row style="height: 30px;">
@@ -39,7 +38,7 @@
       <b-col sm="10">
         <im-carousel ref="carousel"  :items-to-show="itemToShow"
                      :additionalCarouselVal="pagesNames" :nextDay="nextDayFrontPagesNames"
-                     :front-page-view="toWrapAround()" @current-filename-event="handleCurrentFilename"
+                     :front-page-view="toWrapAround()" @current-filename-event="handleCurrentFilename">
         </im-carousel>
       </b-col>
       <b-col sm="2">
@@ -248,8 +247,6 @@ export default defineComponent({
       }
     },
     handleCurrentFilename(filename) {
-      console.log("handleCurrentFilename")
-      console.log(filename)
       if (filename) {
         this.currentFileName = filename;
         this.currentSectionTitle = filename.section
@@ -475,7 +472,6 @@ export default defineComponent({
         }
       }
 
-      // console.log(event.preventDefault());
     },
     async preLoadNextDay() {
       const apiClient = axios.create({

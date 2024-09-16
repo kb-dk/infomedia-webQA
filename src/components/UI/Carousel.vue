@@ -2,8 +2,7 @@
   <Carousel v-model="currentSlide" :items-to-show="1" :wrap-around="false" class="custom__carousel" ref="carousel"
   @keyup.exact.left="currentSlide>0?currentSlide--:currentSlide"
   @keyup.exact.right="currentSlide<carouselValHandled.length-1?currentSlide++:currentSlide"
-  @click="this.$refs.carousel.$el.focus()"
-  indicators>
+  @click="this.$refs.carousel.$el.focus()">
 
     <Slide v-for="(item, index) in carouselValHandled" :key="index" class="carousel__slide" ref="slide">
 
@@ -36,9 +35,11 @@
         </template>
       </div>
     </Slide>
-
+<!--    <Navigation></Navigation>-->
+<!--    <Pagination />-->
     <template #addons>
       <Navigation v-if="frontPageView"/>
+      <Pagination v-if="frontPageView"/>
     </template>
   </Carousel>
   <!-- Modal -->
@@ -63,7 +64,7 @@
 <script>
 import {defineComponent, defineEmits, ref} from 'vue'
 import VuePdfEmbed from 'vue-pdf-embed'
-import {Carousel, Navigation, Slide} from 'vue3-carousel'
+import {Carousel, Navigation, Slide,Pagination} from 'vue3-carousel'
 
 import 'vue3-carousel/dist/carousel.css'
 //importing bootstrap 5
@@ -84,6 +85,7 @@ export default defineComponent({
     Carousel,
     Slide,
     Navigation,
+    Pagination,
     VuePdfEmbed
   },
   props: {
@@ -129,7 +131,6 @@ export default defineComponent({
     'newspaperStore.newspaperPage': {
       handler() {
         if (this.newspaperStore.newspaperPage.length > 0 && this.carouselValHandled !== this.newspaperStore.newspaperPage) {
-          console.log("newspaper Page")
           this.carouselValHandled = this.newspaperStore.getPage();
           this.loadImages(this.carouselValHandled);
         }
@@ -137,10 +138,8 @@ export default defineComponent({
     },
     'newspaperStore.newspaperFrontPages': {
       handler() {
-        console.log(this.newspaperStore.newspaperPages)
         if (this.newspaperStore.newspaperPages.length > 0) {
           const frontPages = this.newspaperStore.getFrontPages();
-          console.log("inside if")
           this.handleLoadingValues(frontPages);
           // this.loadImages(this.carouselValHandled);
         }
@@ -211,25 +210,15 @@ export default defineComponent({
     getImage(item) {
       return this.imageUrls.get(item);
     },
-    // switchPage(fileName) {
-    //   this.carouselValHandled = [fileName];
-    //   this.newspaperStore.setUseCached(false);
-    // },
     openPdfModal(fileName) {
       this.selectedPdf = fileName;
     },
     handleKeyPress(event) {
-      console.log(event)
       if (event.altKey && event.ctrlKey && event.key === "f") {
         const modal = new Modal(this.$refs.pdfModal)
         modal.show();
         this.openPdfModal(this.carouselValHandled[this.currentSlide])
       }
-      // else if (!event.altKey && !event.ctrlKey && event.key === "ArrowRight"){
-      //   this.currentSlide++;
-      // }else if (!event.altKey && !event.ctrlKey && event.key === "ArrowLeft "){
-      //   this.currentSlide--;
-      // }
     },
     async preLoadNextDay() {
       this.newspaperStore.nextDayNewspaperPages = [];
@@ -363,5 +352,24 @@ export default defineComponent({
 
 .modal-footer {
   border-top: 1px solid black !important;
+}
+.custom__carousel:focus{
+  outline: none ;
+}
+.carousel__pagination{
+  position:absolute;
+  top:1%;
+  right: 4%;
+}
+
+.carousel__pagination-button::after{
+  width:2em;
+  height: 0.4em;
+  background-color: rgba(202, 197, 197, 0.78);
+}
+.carousel__pagination-button--active::after{
+  width:2em;
+  height: 0.4em;
+  background-color: rgba(46, 46, 46, 0.92);
 }
 </style>
