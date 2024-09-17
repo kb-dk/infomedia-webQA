@@ -44,7 +44,6 @@
             <b-list-group-item class="errorMessageList">
               <b-list-group v-for="problem in e.newspaperProblems" :key="problem">
                 <b-list-group-item @click="goToNewspaper(e)">
-                  {{console.log(problem.problem)}}
                   {{ problem.problem }}
                 </b-list-group-item>
               </b-list-group>

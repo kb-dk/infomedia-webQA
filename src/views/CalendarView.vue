@@ -7,9 +7,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue';
 import Calendar from '@/components/Calendar.vue'
+import {newspaperPagesStore} from "@/store/newspaperPages";
+
 export default defineComponent({
   name: 'CalendarView',
   watch: {
@@ -22,13 +24,15 @@ export default defineComponent({
   },
     data(){
     return{
-      newspaper: this.$route.params.newspaperName
+      newspaper: this.$route.params.newspaperName,
+      newspaperPagesStore: newspaperPagesStore()
     }
   },
   methods:{
   },
   mounted(){
     sessionStorage.setItem("usePreloadedNewspaper", "false");
+    this.newspaperPagesStore.clearAll();
   },
 });
 

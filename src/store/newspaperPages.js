@@ -39,6 +39,18 @@ export const newspaperPagesStore =  defineStore('newspaperPages',()=>{
     newspaperFrontPages. value = [];
     return newspaperPage.value;
   }
+  function clearAll(){
+    newspaperPages.value = [];
+    newspaperPage.value = [];
+    newspaperFrontPages.value= []
+    randomNewspaperPages.value = []
+    cachedNewspaperPagesBlob.value = new Map;
+    nextDayNewspaperPagesBlob.value = new Map;
+    cachedNewspaperPages.value = [];
+    nextDayNewspaperPages.value = [];
+    useCached.value = false;
+    allLoaded.value = false;
+  }
   return {newspaperPages,
     newspaperPage,
     newspaperFrontPages,
@@ -53,6 +65,7 @@ export const newspaperPagesStore =  defineStore('newspaperPages',()=>{
     getRandomPages,
     getPage,
     addNextDayBlob,
-    allLoaded
+    allLoaded,
+    clearAll
   }
 });

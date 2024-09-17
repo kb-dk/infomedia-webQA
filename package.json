@@ -20,8 +20,7 @@
     "vue": "^3.2.13",
     "vue-pdf-embed": "^2.1.0",
     "vue-router": "^4.0.3",
-    "vue3-carousel": "^0.3.3",
-    "vuex": "^4.1.0"
+    "vue3-carousel": "^0.3.3"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",

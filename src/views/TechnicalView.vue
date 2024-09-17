@@ -50,6 +50,7 @@ import Calendar from '@/components/Calendar.vue'// @ is an alias to /src
 import BatchMetadata from "@/components/BatchMetadata.vue";
 import ApproveButton from "@/components/ApproveButton.vue";
 import axios from "axios";
+import {newspaperPagesStore} from '@/store/newspaperPages';
 
 export default defineComponent({
   name: 'CalendarView',
@@ -72,11 +73,13 @@ export default defineComponent({
         {text: 'Dagblade', value: 'dagsaviser'},
         {text: 'Ugeaviser', value: 'ugeaviser'},
         {text: 'Magasiner', value: 'magasiner'}
-      ]
+      ],
+      newspaperPagesStore: newspaperPagesStore()
     }
   },
   mounted() {
     sessionStorage.setItem("usePreloadedNewspaper", "false");
+    this.newspaperPagesStore.clearAll();
   },
   methods: {
     showBatchInfo(event: any) {
@@ -139,7 +142,7 @@ export default defineComponent({
       return approvedBatches.map(batch => ({ id: batch.id, batch_name: batch.batch_name }));
     },
     async fetchAllNotesForBatches(batchInfos: any[]) {
-      const notes = [];
+      const notes : any = [];
 
       for (const batchInfo of batchInfos) {
         const response = await axios.get(`/kuana-ndb-api/batches/${batchInfo.id}/all-notes-to-batch`);
