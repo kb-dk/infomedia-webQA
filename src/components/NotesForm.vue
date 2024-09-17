@@ -96,12 +96,7 @@ export default defineComponent({
             }
             break;
           case NotesType.PAGENOTE:
-            console.log("PAGENOTE");
-            console.log(this.newspaper);
-            console.log(this.sectiontitle);
-            console.log(this.pagenumber);
             if (this.newspaper && this.sectiontitle && this.pagenumber) {
-              console.log("INSIDE IF")
               url += `/newspapers/${this.newspaper.id}/notes-to-pages?username=gui&section_title=${this.sectiontitle}&page_number=${this.pagenumber}`;
             }
             break;

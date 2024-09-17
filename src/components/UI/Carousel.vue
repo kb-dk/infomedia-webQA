@@ -138,7 +138,7 @@ export default defineComponent({
     },
     'newspaperStore.newspaperFrontPages': {
       handler() {
-        if (this.newspaperStore.newspaperPages.length > 0) {
+        if (this.newspaperStore.newspaperFrontPages.length > 0) {
           const frontPages = this.newspaperStore.getFrontPages();
           this.handleLoadingValues(frontPages);
           // this.loadImages(this.carouselValHandled);
@@ -290,8 +290,6 @@ export default defineComponent({
   },
   updated() {
     const currentFilename = this.carouselValHandled[this.currentSlide];
-    console.log("currentFilename")
-    console.log(currentFilename);
     this.$emit('currentFilenameEvent', currentFilename);
   },
 })

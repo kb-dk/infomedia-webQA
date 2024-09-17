@@ -44,12 +44,6 @@ export default defineComponent({
     showAllPages() {
       this.page = this.showAllPages ? 0 : 1
     },
-    pdfVal: {
-      immediate: true,
-      handler() {
-        this.loadImages();
-      }
-    }
   },
   methods: {
     addOnePage() {
@@ -65,30 +59,6 @@ export default defineComponent({
     },
     updateCheckbox() {
       this.showAllPages = true
-    },
-    async loadImages() {
-      try {
-        const apiClient = axios.create({
-          baseURL: '/kuana-ndb-api',
-        })
-        for (const item of this.pdfVal) {
-          console.log(encodeURIComponent(item as string)); // Log the URL for the API request
-          const encoded_item = encodeURIComponent(item as string);
-          try {
-            const response = await apiClient.get(`/file/${encoded_item}`, {
-              responseType: 'blob'
-            });
-            const blob = new Blob([response.data], {type: 'application/pdf'});
-            const url = URL.createObjectURL(blob);
-            this.imageUrls = { ...this.imageUrls, [item as string]: url }; // Use spread operator and index signature
-          } catch (error) {
-            console.error(error); // Log any errors that occur during the API request
-          }
-        }
-      }catch (error) {
-        console.error(error);
-      }
-      this.isLoading = false
     },
     getImage(item: string) {
       console.log(item);
