@@ -168,7 +168,6 @@ export default defineComponent({
     },
     async loadImages(imageData, preload = false) {
       const imageUrls = new Map();
-      let config = preload ? {responseType: 'blob',fetchOptions:{priority:'high'}}:{responseType: 'blob',fetchOptions:{priority:'low'}}
       try {
 
         for (const item of imageData) {
@@ -178,7 +177,9 @@ export default defineComponent({
               const apiClient = axios.create({
                 baseURL: '/kuana-ndb-api',
               })
-              await apiClient.get(`/file/${encoded_item}`, config).then((response) => {
+              await apiClient.get(`/file/${encoded_item}`, {
+                responseType: 'blob'}
+              ).then((response) => {
 
                 const blob = new Blob([response.data], {type: 'application/pdf'});
                 const url = URL.createObjectURL(blob);
