@@ -97,7 +97,7 @@ export default defineComponent({
             break;
           case NotesType.PAGENOTE:
             if (this.newspaper && this.sectiontitle && this.pagenumber) {
-              url += `/newspapers/${this.newspaper.id}/notes-to-pages?username=gui&section_title=${this.sectiontitle}&page_number=${this.pagenumber}&username=gui`;
+              url += `/newspapers/${this.newspaper.id}/notes-to-pages?username=gui&section_title=${this.sectiontitle}&page_number=${this.pagenumber}`;
             }
             break;
           default:
