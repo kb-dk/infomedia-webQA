@@ -319,7 +319,7 @@ export default defineComponent({
       const newDate = this.getPreviousDay();
       const newData = await this.getOtherBatch(newDate)
       if(newData){
-        this.newspaperPagesStore.setUseCached(false);
+        this.newspaperPagesStore.clearAll();
         this.routeBatch(newData.newspaperData, newData.batchData, newDate, false)
       }
     },
