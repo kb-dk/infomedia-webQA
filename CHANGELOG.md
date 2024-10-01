@@ -9,10 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Something
 
-- [1.0.0] - 2024-10-01
+- [1.0.1] - 2024-10-01
 ### Added
 
 - Initial release of infomedia-webQA
-
-[Unreleased](https://github.com/kb-dk/kuana-external-pid-registration/compare/v1.0.0...HEAD)
-[1.0.0](https://github.com/kb-dk/kuana-external-pid-registration/releases/tag/v1.0.0)
