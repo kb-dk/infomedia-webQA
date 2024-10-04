@@ -67,7 +67,7 @@ export default defineComponent({
   data() {
     return {
       errorMessage: '',
-      newspaper: this.$route.params.newspaperid,
+      newspaper:  (this.$route as any).newspaperid,
       batchType: ref("dagsaviser"),
       radioBtnOptions: [
         {text: 'Dagblade', value: 'dagsaviser'},
