@@ -67,7 +67,7 @@
 
 <script>
 
-import {defineComponent, getCurrentInstance, onMounted} from "vue";
+import {defineComponent, getCurrentInstance, onMounted, ref} from "vue";
 import NotesForm from "@/components/NotesForm.vue";
 import PageTable from "@/components/PageTable";
 import axios, {options} from "axios";
@@ -101,7 +101,7 @@ export default defineComponent({
       try {
         await instance.proxy.fetchCarouselData();
         await instance.proxy.initCurrentFrontPage();
-        await instance.proxy.fetchSectionPages();
+        // await instance.proxy.fetchSectionPages();
         await instance.proxy.preLoadNextDay();
       } catch (error) {
         console.error(error);
@@ -126,9 +126,9 @@ export default defineComponent({
         month: this.$route.params.month,
         day: this.$route.params.day
       },
-      currentFileName: "",
+      currentFileName: {},
       currentPageNumber: 0,
-      currentSectionTitle: "",
+      currentSectionTitle: ref(""),
       currentSectionNumber: 0,
       errorMessage: "",
       pagesNames: [],
@@ -200,6 +200,7 @@ export default defineComponent({
           this.frontPagesNames = frontPagesNames;
           this.currentPagesNames = this.frontPagesNames;
           this.newspaperPagesStore.newspaperPages = this.currentPagesNames;
+          this.fetchSectionPages();
         }).catch((err)=>{
           console.log("failed doing fetch");
           console.log(err)
@@ -258,6 +259,8 @@ export default defineComponent({
     },
     handleCurrentFilename(filename) {
       if (filename) {
+        console.log("handleCurrentFilename")
+        console.log(filename)
         this.currentFileName = filename;
         this.currentSectionTitle = filename.section
         this.currentPageNumber = filename.pageNumber;
@@ -286,6 +289,8 @@ export default defineComponent({
     },
 
     switchPage(fileName) {
+      console.log("switchPage")
+      console.log(fileName)
       // this.$refs.carousel.switchPage(fileName);
       fileName.loading = true;
       this.newspaperPagesStore.newspaperPage = [fileName];
@@ -295,7 +300,7 @@ export default defineComponent({
       this.randomPagesView = false;
       this.oneRandomPageView = true;
       this.itemToShow = 1;
-      this.currentSectionTitle = fileName.section_title;
+      this.currentSectionTitle = fileName.section;
       this.isRandomPageButtonClicked = false;
     },
 
@@ -384,7 +389,8 @@ export default defineComponent({
         const randomPageNumber = this.generateRandomPageNumber(pageCount);
         return this.findFileName(sectionNumber, randomPageNumber);
       });
-
+      console.log("random")
+      console.log(randomPagesNames);
       this.randomPagesView = false;
       this.oneRandomPageView = true;
       this.newspaperPagesStore.randomNewspaperPages = randomPagesNames;
@@ -429,6 +435,8 @@ export default defineComponent({
     },
 
     async fetchSectionPages() {
+      console.log("fetchSectionPages")
+      console.log(this.pagesNames)
       for (let i = 0; i < this.pagesNames.length; i++) {
         // let pageName = this.pagesNames[i].name;
         //Extract the section number using a regular expression
@@ -438,6 +446,7 @@ export default defineComponent({
         // Check if the section number already exists in the sectionPages array
         let sectionIndex = this.sectionPages.findIndex((section) => section.sectionNumber === sectionNumber);
 
+        console.log(sectionIndex)
         if (sectionIndex !== -1) {
           // If the section number exists, increment the page count for that section
           this.sectionPages[sectionIndex].pageCount++;
