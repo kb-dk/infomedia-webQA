@@ -98,7 +98,10 @@ export default defineComponent({
       // console.log(focusedRow)
       setTimeout(()=>{
         const focusedRow = document.querySelector('.focusedPageRow');
-        focusedRow.scrollIntoView({behavior:'smooth'})
+        if(focusedRow){
+          focusedRow.scrollIntoView({behavior:'smooth'})
+        }
+
       },50)
       // focusedRow.scrollIntoView();
     },

@@ -162,6 +162,7 @@ export default defineComponent({
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
     document.removeEventListener('keyup', this.handleKeyPress);
+
   },
   methods: {
     handleClickOutside(event) {
@@ -169,7 +170,9 @@ export default defineComponent({
       if (!notesContainer.contains(event.target)) {
         this.showNotes = false;
       }
+
     },
+
     async fetchCarouselData() {
       try {
         const apiClient = axios.create({
@@ -177,24 +180,31 @@ export default defineComponent({
         });
         const {batchid, newspaperid} = this.$route.params;
 
-        const response = (await apiClient.get(
+        apiClient.get(
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
-        )).data;
-        const frontPagesNames = this.filterFrontPages(response.filter((d) => d.page_number === 1));
-        for (let i = 0; i < response.length; i++) {
-          const filePathParts = response[i].filepath.split("/");
-          this.pagesNames[i] = {
-            "name": filePathParts[filePathParts.length - 1],
-            "section": response[i].section_title,
-            "pageNumber": response[i].page_number,
+        ).then((res)=>{
+          const response = res.data;
+          const frontPagesNames = this.filterFrontPages(response.filter((d) => d.page_number === 1));
+          for (let i = 0; i < response.length; i++) {
+
+            const filePathParts = response[i].filepath.split("/");
+            this.pagesNames[i] = {
+              "name": filePathParts[filePathParts.length - 1],
+              "section": response[i].section_title,
+              "pageNumber": response[i].page_number,
+            }
           }
-        }
-        for (const frontPagesName of frontPagesNames) {
-          frontPagesName.loading = true;
-        }
-        this.frontPagesNames = frontPagesNames;
-        this.currentPagesNames = this.frontPagesNames;
-        this.newspaperPagesStore.newspaperPages = this.currentPagesNames;
+          for (const frontPagesName of frontPagesNames) {
+            frontPagesName.loading = true;
+          }
+          this.frontPagesNames = frontPagesNames;
+          this.currentPagesNames = this.frontPagesNames;
+          this.newspaperPagesStore.newspaperPages = this.currentPagesNames;
+        }).catch((err)=>{
+          console.log("failed doing fetch");
+          console.log(err)
+        });
+
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";
         console.error(this.errorMessage + ": " + error);
@@ -254,16 +264,6 @@ export default defineComponent({
       }
 
     },
-
-    // initCurrentPageNumber() {
-    //   if (this.currentFileName instanceof String) {
-    //     const regex = /page(\d+)/;
-    //     const match = this.currentFileName && this.currentFileName.match(regex);
-    //     if (match) {
-    //       this.currentPageNumber = parseInt(match[1], 10);
-    //     }
-    //   }
-    // },
 
     initCurrentFrontPage() {
       if (this.frontPagesNames.length > 0) {
@@ -479,14 +479,23 @@ export default defineComponent({
       });
       const nextDay = this.getNextDay();
       this.getOtherBatch(nextDay).then(async (newData) => {
-        if (newData) {
-          await apiClient.get(
-              `/batches/${newData.batchData.id}/newspapers/${newData.newspaperData.id}/newspaper-pages`
-          ).then((response) => {
-            const filtered = this.filterFrontPages(response.data.filter((d) => d.page_number === 1));
-            this.nextDayFrontPagesNames = filtered;
-          })
+        if(newData){
+          if (newData.batchData && newData.newspaperData) {
+            await apiClient.get(
+                `/batches/${newData.batchData.id}/newspapers/${newData.newspaperData.id}/newspaper-pages`
+            ).then((response) => {
+              const filtered = this.filterFrontPages(response.data.filter((d) => d.page_number === 1));
+              this.nextDayFrontPagesNames = filtered;
+            }).catch((error)=>{
+              console.log("nextDayFrontPagesNames failed");
+              console.log(error)
+            })
+          }
         }
+
+      }).catch((error)=>{
+        console.log("failed getOtherBatch");
+        console.log(error)
       })
 
 

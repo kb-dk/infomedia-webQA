@@ -108,6 +108,9 @@ export default defineComponent({
       nextDayHandled: ref([]),
       loadedVal: false,
       newspaperStore: newspaperPagesStore(),
+      pdfRequests:Object,
+      pdfRequestsPreloaded:Object,
+      startPreload: false
     }
   },
   watch: {
@@ -117,12 +120,11 @@ export default defineComponent({
         if (!this.loadedVal) {
           if (this.newspaperStore.useCached && this.newspaperStore.allLoaded) {
             this.handleCached();
-            this.loadedVal = true;
             this.newspaperStore.allLoaded = false;
+            this.startPreloadWhenReady();
           } else {
             if (this.newspaperStore.newspaperPages.length > 0) {
               this.handleLoadingValues(this.newspaperStore.newspaperPages);
-              this.loadedVal = true;
             }
           }
         }
@@ -152,13 +154,11 @@ export default defineComponent({
         }
       }
     },
-    nextDay: {
-      handler() {
-        if (this.nextDay.length > 0 && this.loadedVal) {
-          this.nextDayHandled = this.nextDay;
-          this.preLoadNextDay();
+    nextDay:{
+      handler(){
+        if(this.nextDay.length > 0){
+          this.startPreloadWhenReady();
         }
-
       }
     }
   },
@@ -169,7 +169,8 @@ export default defineComponent({
     async loadImages(imageData, preload = false) {
       const imageUrls = new Map();
       try {
-
+        const source = axios.CancelToken.source();
+        this.newspaperStore.pdfRequests = source;
         for (const item of imageData) {
           if (item && !this.imageUrls.has(item.name)) {
             const encoded_item = encodeURIComponent(item.name);
@@ -178,9 +179,10 @@ export default defineComponent({
                 baseURL: '/kuana-ndb-api',
               })
               await apiClient.get(`/file/${encoded_item}`, {
-                responseType: 'blob'}
-              ).then((response) => {
+                responseType: 'blob',
+                cancelToken:source.token},
 
+              ).then((response) => {
                 const blob = new Blob([response.data], {type: 'application/pdf'});
                 const url = URL.createObjectURL(blob);
                 if (preload) {
@@ -190,11 +192,22 @@ export default defineComponent({
                   this.imageUrls.set(item.name, url);
                 }
               }).catch((error) => {
-                console.log(error)
-                item.loading = false;
+                if(!axios.isCancel(error)){
+                  console.log("failed to load")
+                  console.log(imageData)
+                  console.log(error)
+                  item.loading = false;
+                }
+
+              }).finally(()=>{
+                this.startPreload = true;
               });
+
             } catch (error) {
-              console.error(error); // Log any errors that occur during the API request
+              if(!axios.isCancel()){
+                console.error(error); // Log any errors that occur during the API request
+              }
+
             }
 
           } else {
@@ -222,6 +235,7 @@ export default defineComponent({
       }
     },
     async preLoadNextDay() {
+      this.newspaperStore.allLoaded = false;
       this.newspaperStore.nextDayNewspaperPages = [];
       this.newspaperStore.nextDayNewspaperPagesBlob.clear();
       for (let i = 0; i < this.nextDayHandled.length; i++) {
@@ -229,13 +243,17 @@ export default defineComponent({
         this.newspaperStore.nextDayNewspaperPages.push(this.nextDayHandled[i])
       }
       this.loadImages(this.nextDayHandled, true).then((res) => {
-        for (const [key, value] of res) {
-          this.newspaperStore.addNextDayBlob(key, value);
-        }
-      }).finally(() => {
-            this.newspaperStore.allLoaded = true;
+        if(res.size > 0){
+          for (const [key, value] of res) {
+            this.newspaperStore.addNextDayBlob(key, value);
           }
-      )
+          this.newspaperStore.allLoaded = true;
+        }
+
+      }
+      ).catch((err)=>{
+        console.log(err);
+      })
 
     },
     async handleCached() {
@@ -279,19 +297,29 @@ export default defineComponent({
       }
       return frontPagesNames;
     },
+    startPreloadWhenReady(){
+      this.nextDayHandled = this.nextDay;
+      this.preLoadNextDay();
+    },
   },
   mounted() {
+
     defineEmits(this, ['currentFilenameEvent']);
     document.addEventListener("keyup", this.handleKeyPress)
     this.$refs.carousel.$el.focus();
   },
   unmounted() {
+    if(this.newspaperStore.pdfRequests){
+      this.newspaperStore.allLoaded = false;
+      this.newspaperStore.cancelRequests();
+    }
     document.removeEventListener("keyup", this.handleKeyPress)
   },
   updated() {
     const currentFilename = this.carouselValHandled[this.currentSlide];
     this.$emit('currentFilenameEvent', currentFilename);
   },
+
 })
 </script>
 
