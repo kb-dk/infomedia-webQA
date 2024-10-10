@@ -22,8 +22,7 @@
           </b-row>
           <b-row class="zoomImage">
             <b-col>
-              <div data-bs-toggle="modal" data-bs-target="#pdfModal"
-                   ref="zoomButton"
+              <div ref="zoomButton"
                    @click="openPdfModal(item)">
                   <span class="icon">
                     <!-- Brug et ikon fra Font Awesome -->
@@ -43,7 +42,7 @@
     </template>
   </Carousel>
   <!-- Modal -->
-  <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true" ref="pdfModal">
+  <div class="modal" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true" ref="pdfModal">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
@@ -226,10 +225,12 @@ export default defineComponent({
     },
     openPdfModal(fileName) {
       this.selectedPdf = fileName;
+      const modal = Modal.getOrCreateInstance(this.$refs.pdfModal)
+      modal.show();
     },
     handleKeyPress(event) {
       if (event.altKey && event.ctrlKey && event.key === "f") {
-        const modal = new Modal(this.$refs.pdfModal)
+        const modal = Modal.getOrCreateInstance(this.$refs.pdfModal)
         modal.show();
         this.openPdfModal(this.carouselValHandled[this.currentSlide])
       }
@@ -398,5 +399,10 @@ export default defineComponent({
   width:2em;
   height: 0.4em;
   background-color: rgba(46, 46, 46, 0.92);
+}
+@media (prefers-reduced-motion: reduce) {
+  .modal.fade .modal-dialog {
+    transition: none;
+  }
 }
 </style>
