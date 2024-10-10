@@ -76,7 +76,11 @@ export default defineComponent({
     currentPage: {
       // deep: true,
       handler(newPage) {
+        console.log("page Table currentpage newPage")
+        console.log(newPage)
+
         if (newPage) {
+
           for (let i = 0; i < this.pages.length;i++){
             if(this.pages[i].src === newPage.name){
               this.focusedPage = i;

@@ -395,6 +395,7 @@ export default defineComponent({
       this.oneRandomPageView = true;
       this.newspaperPagesStore.randomNewspaperPages = randomPagesNames;
       this.currentPagesNames = randomPagesNames;
+      this.currentFileName = randomPagesNames[0];
     },
 
     changeToRandomSectionPageView() {
@@ -407,6 +408,7 @@ export default defineComponent({
         this.isRandomPageButtonClicked = true;
         this.newspaperPagesStore.randomNewspaperPages = [randomPageName];
         this.currentPagesNames = [randomPageName];
+        this.currentFileName = randomPageName;
       }
     },
 
