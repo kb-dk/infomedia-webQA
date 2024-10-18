@@ -15,7 +15,8 @@ export default {
             "Manglende tillæg",
             "Blandede sektioner",
             "Hører til anden avis",
-            "Forkert sidetal el. rækkefølge"
+            "Forkert sidetal el. rækkefølge",
+            "Mangler side"
         ],
         "pageNotes": [
             "Mangler tekst",
