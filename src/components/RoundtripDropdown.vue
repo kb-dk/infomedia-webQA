@@ -29,7 +29,7 @@ export default defineComponent({
   methods:{
     async getRoundtrips(){
       if(this.date){
-        const {data} = await axios.get(`/kuana-ndb-api/batches?day=${this.date.getDate()}&month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}`);
+        const {data} = await axios.get(`/kuana-ndb-api/v1/batches?day=${this.date.getDate()}&month=${this.date.getMonth()+1}&year=${this.date.getFullYear()}`);
         this.roundtrips = data;
         this.dropdownText = data[0].roundtrip;
         return data;

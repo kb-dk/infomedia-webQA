@@ -28,7 +28,7 @@ export default defineComponent({
           const changedBatch = this.changeBatchState();
           await axios({
             method: "PUT",
-            url: `/kuana-ndb-api/batches/`,
+            url: `/kuana-ndb-api/v1/batches/`,
             data: changedBatch,
             headers: {'Content-Type': 'application/json'}
           });

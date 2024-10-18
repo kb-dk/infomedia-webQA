@@ -42,7 +42,7 @@ import {ref} from "vue";
     methods:{
       async getNewspaperNames(newspaperType){
         try{
-          const {data} = await axios.get(`/kuana-ndb-api/newspapers/${newspaperType}`);
+          const {data} = await axios.get(`/kuana-ndb-api/v1/newspapers/${newspaperType}`);
           return data;
         }catch (error){
           console.log(error);

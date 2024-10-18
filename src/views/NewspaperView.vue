@@ -162,7 +162,6 @@ export default defineComponent({
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
     document.removeEventListener('keyup', this.handleKeyPress);
-
   },
   methods: {
     handleClickOutside(event) {
@@ -170,17 +169,15 @@ export default defineComponent({
       if (!notesContainer.contains(event.target)) {
         this.showNotes = false;
       }
-
     },
-
     async fetchCarouselData() {
       try {
         const apiClient = axios.create({
-          baseURL: "/kuana-ndb-api",
+          baseURL: "/kuana-ndb-api/v1",
         });
         const {batchid, newspaperid} = this.$route.params;
 
-        apiClient.get(
+        const response = (await apiClient.get(
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
         ).then((res)=>{
           const response = res.data;
@@ -204,7 +201,7 @@ export default defineComponent({
         }).catch((err)=>{
           console.log("failed doing fetch");
           console.log(err)
-        });
+        }));
 
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";
@@ -240,7 +237,7 @@ export default defineComponent({
     async fetchNewspaper() {
       try {
         const {batchid, newspaperid} = this.$route.params;
-        const {data} = await axios.get(`/kuana-ndb-api/batches/${batchid}/newspapers/${newspaperid}`);
+        const {data} = await axios.get(`/kuana-ndb-api/v1/batches/${batchid}/newspapers/${newspaperid}`);
         this.newspaperData = data;
       } catch (error) {
         console.error(error);
@@ -250,7 +247,7 @@ export default defineComponent({
     async fetchBatchData() {
       try {
         const {batchid} = this.$route.params;
-        const {data} = await axios.get(`/kuana-ndb-api/batches/${batchid}`);
+        const {data} = await axios.get(`/kuana-ndb-api/v1/batches/${batchid}`);
         this.batch = data;
       } catch (error) {
         console.error(error);
@@ -279,7 +276,7 @@ export default defineComponent({
         this.newspaper.checked = true;
         try {
           const {id} = this.newspaper;
-          await axios.put(`/kuana-ndb-api/batches/${this.batch.id}/newspapers/${id}`);
+          await axios.put(`/kuana-ndb-api/v1/batches/${this.batch.id}/newspapers/${id}`);
           this.nextBatch();
         } catch (error) {
           this.errorMessage = "Error approving the newspaper";
@@ -346,10 +343,10 @@ export default defineComponent({
 
     async getOtherBatch(newDate) {
       try {
-        const newBatch = await axios.get(`/kuana-ndb-api/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
+        const newBatch = await axios.get(`/kuana-ndb-api/v1/batches?year=${newDate.getFullYear()}&month=${newDate.getMonth() + 1}&day=${newDate.getDate()}&latest=true&state=TechnicalInspectionComplete`);
         const batchData = newBatch.data;
         if (batchData.length > 0) {
-          const newNewspaper = await axios.get(`/kuana-ndb-api/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
+          const newNewspaper = await axios.get(`/kuana-ndb-api/v1/batches/${batchData[0].id}/newspapers?newspaper_name=${this.newspaperData.newspaper_name}`);
           const newspaperData = newNewspaper.data;
           return {batchData: batchData[0], newspaperData: newspaperData[0]}
 
@@ -440,9 +437,6 @@ export default defineComponent({
       console.log("fetchSectionPages")
       console.log(this.pagesNames)
       for (let i = 0; i < this.pagesNames.length; i++) {
-        // let pageName = this.pagesNames[i].name;
-        //Extract the section number using a regular expression
-        // let sectionNumber = this.getSectionNumber(pageName);
         let sectionNumber = this.pagesNames[i].section;
 
         // Check if the section number already exists in the sectionPages array
@@ -486,7 +480,7 @@ export default defineComponent({
     },
     async preLoadNextDay() {
       const apiClient = axios.create({
-        baseURL: "/kuana-ndb-api",
+        baseURL: "/kuana-ndb-api/v1",
       });
       const nextDay = this.getNextDay();
       this.getOtherBatch(nextDay).then(async (newData) => {

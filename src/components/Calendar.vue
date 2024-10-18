@@ -124,7 +124,7 @@ export default defineComponent({
     async batchesForMonth() {
       try {
         const apiClient = axios.create({
-          baseURL: '/kuana-ndb-api',
+          baseURL: '/kuana-ndb-api/v1',
         })
         const {data} = await apiClient.get(`/batches?month=${this.date.getMonth() + 1}&year=${this.date.getFullYear()}&batch_type=${this.batchType}&get_latest=true`)
         let res = await Promise.all(data.map(async (batch) => {
@@ -159,15 +159,15 @@ export default defineComponent({
     },
     async batchesForYear() {
       try {
-        const {data} = (await axios.get(`/kuana-ndb-api/batches?year=${this.date.getFullYear()}&newspaper_name=${this.newspaperName}&get_latest=true`));
+        const {data} = (await axios.get(`/kuana-ndb-api/v1/batches?year=${this.date.getFullYear()}&newspaper_name=${this.newspaperName}&get_latest=true`));
         // data = data.filter(batch =>{batch.state === 'TechnicalInspectionComplete' || batch.state === 'AllDone' || batch.state === 'ProcessingToOpex' || batch.state === 'ReadyToBeProcessed'})
         const filteredData = data.filter(batch => {
           return batch.state === 'TechnicalInspectionComplete' || batch.state === 'AllDone' || batch.state === 'ProcessingToOpex' || batch.state === 'ReadyToBeProcessed'
         })
         let res = await Promise.all(filteredData.map(async (batch) => {
-          const newspapers = (await axios.get(`/kuana-ndb-api/batches/${batch.id}/newspapers?newspaper_name=${this.newspaperName}`)).data;
+          const newspapers = (await axios.get(`/kuana-ndb-api/v1/batches/${batch.id}/newspapers?newspaper_name=${this.newspaperName}`)).data;
           let newspaperBatches = await Promise.all(newspapers.map(async (newspaper) => {
-            let hasPage = (await axios.get(`/kuana-ndb-api/batches/${batch.id}/newspapers/${newspaper.id}/has-page`)).data;
+            let hasPage = (await axios.get(`/kuana-ndb-api/v1/batches/${batch.id}/newspapers/${newspaper.id}/has-page`)).data;
             return {
               highlight: {
                 color: batch.state !== 'TechnicalInspectionComplete' ? 'gray': hasPage ? 'teal' : 'orange',
