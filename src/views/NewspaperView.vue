@@ -201,7 +201,7 @@ export default defineComponent({
         }).catch((err)=>{
           console.log("failed doing fetch");
           console.log(err)
-        });
+        }));
 
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";
