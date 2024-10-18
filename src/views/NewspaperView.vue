@@ -67,7 +67,7 @@
 
 <script>
 
-import {defineComponent, getCurrentInstance, onMounted} from "vue";
+import {defineComponent, getCurrentInstance, onMounted, ref} from "vue";
 import NotesForm from "@/components/NotesForm.vue";
 import PageTable from "@/components/PageTable";
 import axios, {options} from "axios";
@@ -101,7 +101,7 @@ export default defineComponent({
       try {
         await instance.proxy.fetchCarouselData();
         await instance.proxy.initCurrentFrontPage();
-        await instance.proxy.fetchSectionPages();
+        // await instance.proxy.fetchSectionPages();
         await instance.proxy.preLoadNextDay();
       } catch (error) {
         console.error(error);
@@ -126,9 +126,9 @@ export default defineComponent({
         month: this.$route.params.month,
         day: this.$route.params.day
       },
-      currentFileName: "",
+      currentFileName: {},
       currentPageNumber: 0,
-      currentSectionTitle: "",
+      currentSectionTitle: ref(""),
       currentSectionNumber: 0,
       errorMessage: "",
       pagesNames: [],
@@ -162,6 +162,7 @@ export default defineComponent({
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
     document.removeEventListener('keyup', this.handleKeyPress);
+
   },
   methods: {
     handleClickOutside(event) {
@@ -169,7 +170,9 @@ export default defineComponent({
       if (!notesContainer.contains(event.target)) {
         this.showNotes = false;
       }
+
     },
+
     async fetchCarouselData() {
       try {
         const apiClient = axios.create({
@@ -177,24 +180,32 @@ export default defineComponent({
         });
         const {batchid, newspaperid} = this.$route.params;
 
-        const response = (await apiClient.get(
+        apiClient.get(
             `/batches/${batchid}/newspapers/${newspaperid}/newspaper-pages`
-        )).data;
-        const frontPagesNames = this.filterFrontPages(response.filter((d) => d.page_number === 1));
-        for (let i = 0; i < response.length; i++) {
-          const filePathParts = response[i].filepath.split("/");
-          this.pagesNames[i] = {
-            "name": filePathParts[filePathParts.length - 1],
-            "section": response[i].section_title,
-            "pageNumber": response[i].page_number,
+        ).then((res)=>{
+          const response = res.data;
+          const frontPagesNames = this.filterFrontPages(response.filter((d) => d.page_number === 1));
+          for (let i = 0; i < response.length; i++) {
+
+            const filePathParts = response[i].filepath.split("/");
+            this.pagesNames[i] = {
+              "name": filePathParts[filePathParts.length - 1],
+              "section": response[i].section_title,
+              "pageNumber": response[i].page_number,
+            }
           }
-        }
-        for (const frontPagesName of frontPagesNames) {
-          frontPagesName.loading = true;
-        }
-        this.frontPagesNames = frontPagesNames;
-        this.currentPagesNames = this.frontPagesNames;
-        this.newspaperPagesStore.newspaperPages = this.currentPagesNames;
+          for (const frontPagesName of frontPagesNames) {
+            frontPagesName.loading = true;
+          }
+          this.frontPagesNames = frontPagesNames;
+          this.currentPagesNames = this.frontPagesNames;
+          this.newspaperPagesStore.newspaperPages = this.currentPagesNames;
+          this.fetchSectionPages();
+        }).catch((err)=>{
+          console.log("failed doing fetch");
+          console.log(err)
+        });
+
       } catch (error) {
         this.errorMessage = "Unable to get a frontpages";
         console.error(this.errorMessage + ": " + error);
@@ -248,22 +259,14 @@ export default defineComponent({
     },
     handleCurrentFilename(filename) {
       if (filename) {
+        console.log("handleCurrentFilename")
+        console.log(filename)
         this.currentFileName = filename;
         this.currentSectionTitle = filename.section
         this.currentPageNumber = filename.pageNumber;
       }
 
     },
-
-    // initCurrentPageNumber() {
-    //   if (this.currentFileName instanceof String) {
-    //     const regex = /page(\d+)/;
-    //     const match = this.currentFileName && this.currentFileName.match(regex);
-    //     if (match) {
-    //       this.currentPageNumber = parseInt(match[1], 10);
-    //     }
-    //   }
-    // },
 
     initCurrentFrontPage() {
       if (this.frontPagesNames.length > 0) {
@@ -286,6 +289,8 @@ export default defineComponent({
     },
 
     switchPage(fileName) {
+      console.log("switchPage")
+      console.log(fileName)
       // this.$refs.carousel.switchPage(fileName);
       fileName.loading = true;
       this.newspaperPagesStore.newspaperPage = [fileName];
@@ -295,7 +300,7 @@ export default defineComponent({
       this.randomPagesView = false;
       this.oneRandomPageView = true;
       this.itemToShow = 1;
-      this.currentSectionTitle = fileName.section_title;
+      this.currentSectionTitle = fileName.section;
       this.isRandomPageButtonClicked = false;
     },
 
@@ -384,11 +389,13 @@ export default defineComponent({
         const randomPageNumber = this.generateRandomPageNumber(pageCount);
         return this.findFileName(sectionNumber, randomPageNumber);
       });
-
+      console.log("random")
+      console.log(randomPagesNames);
       this.randomPagesView = false;
       this.oneRandomPageView = true;
       this.newspaperPagesStore.randomNewspaperPages = randomPagesNames;
       this.currentPagesNames = randomPagesNames;
+      this.currentFileName = randomPagesNames[0];
     },
 
     changeToRandomSectionPageView() {
@@ -401,6 +408,7 @@ export default defineComponent({
         this.isRandomPageButtonClicked = true;
         this.newspaperPagesStore.randomNewspaperPages = [randomPageName];
         this.currentPagesNames = [randomPageName];
+        this.currentFileName = randomPageName;
       }
     },
 
@@ -429,6 +437,8 @@ export default defineComponent({
     },
 
     async fetchSectionPages() {
+      console.log("fetchSectionPages")
+      console.log(this.pagesNames)
       for (let i = 0; i < this.pagesNames.length; i++) {
         // let pageName = this.pagesNames[i].name;
         //Extract the section number using a regular expression
@@ -438,6 +448,7 @@ export default defineComponent({
         // Check if the section number already exists in the sectionPages array
         let sectionIndex = this.sectionPages.findIndex((section) => section.sectionNumber === sectionNumber);
 
+        console.log(sectionIndex)
         if (sectionIndex !== -1) {
           // If the section number exists, increment the page count for that section
           this.sectionPages[sectionIndex].pageCount++;
@@ -479,14 +490,23 @@ export default defineComponent({
       });
       const nextDay = this.getNextDay();
       this.getOtherBatch(nextDay).then(async (newData) => {
-        if (newData) {
-          await apiClient.get(
-              `/batches/${newData.batchData.id}/newspapers/${newData.newspaperData.id}/newspaper-pages`
-          ).then((response) => {
-            const filtered = this.filterFrontPages(response.data.filter((d) => d.page_number === 1));
-            this.nextDayFrontPagesNames = filtered;
-          })
+        if(newData){
+          if (newData.batchData && newData.newspaperData) {
+            await apiClient.get(
+                `/batches/${newData.batchData.id}/newspapers/${newData.newspaperData.id}/newspaper-pages`
+            ).then((response) => {
+              const filtered = this.filterFrontPages(response.data.filter((d) => d.page_number === 1));
+              this.nextDayFrontPagesNames = filtered;
+            }).catch((error)=>{
+              console.log("nextDayFrontPagesNames failed");
+              console.log(error)
+            })
+          }
         }
+
+      }).catch((error)=>{
+        console.log("failed getOtherBatch");
+        console.log(error)
       })
 
 

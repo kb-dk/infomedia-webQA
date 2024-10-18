@@ -14,11 +14,14 @@ export const newspaperPagesStore =  defineStore('newspaperPages',()=>{
   const nextDayNewspaperPages = ref([]);
   const useCached = ref(false);
   const allLoaded = ref(false);
+  const pdfRequests = ref();
   function setUseCached(toCache){
     useCached.value = toCache;
+
     if(useCached.value){
       cachedNewspaperPages.value = nextDayNewspaperPages.value;
-      cachedNewspaperPagesBlob.value = nextDayNewspaperPagesBlob.value;
+      cachedNewspaperPagesBlob.value = new Map(nextDayNewspaperPagesBlob.value);
+
     }
   }
   async function addNextDayBlob(key,blob) {
@@ -51,6 +54,13 @@ export const newspaperPagesStore =  defineStore('newspaperPages',()=>{
     useCached.value = false;
     allLoaded.value = false;
   }
+  function cancelRequests(){
+    if(pdfRequests.value){
+      console.log(pdfRequests.value)
+      pdfRequests.value.cancel();
+    }
+
+  }
   return {newspaperPages,
     newspaperPage,
     newspaperFrontPages,
@@ -60,12 +70,14 @@ export const newspaperPagesStore =  defineStore('newspaperPages',()=>{
     nextDayNewspaperPages,
     nextDayNewspaperPagesBlob,
     useCached,
+    pdfRequests,
     setUseCached,
     getFrontPages,
     getRandomPages,
     getPage,
     addNextDayBlob,
     allLoaded,
-    clearAll
+    clearAll,
+    cancelRequests
   }
 });

@@ -76,7 +76,11 @@ export default defineComponent({
     currentPage: {
       // deep: true,
       handler(newPage) {
+        console.log("page Table currentpage newPage")
+        console.log(newPage)
+
         if (newPage) {
+
           for (let i = 0; i < this.pages.length;i++){
             if(this.pages[i].src === newPage.name){
               this.focusedPage = i;
@@ -98,7 +102,10 @@ export default defineComponent({
       // console.log(focusedRow)
       setTimeout(()=>{
         const focusedRow = document.querySelector('.focusedPageRow');
-        focusedRow.scrollIntoView({behavior:'smooth'})
+        if(focusedRow){
+          focusedRow.scrollIntoView({behavior:'smooth'})
+        }
+
       },50)
       // focusedRow.scrollIntoView();
     },
