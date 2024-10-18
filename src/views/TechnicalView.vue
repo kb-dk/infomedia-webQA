@@ -100,11 +100,11 @@ export default defineComponent({
         const { calendarRef } = this.$refs;
         const currentDate = (calendarRef as typeof Calendar).date;
 
-        const { data } = await axios.get(`/kuana-ndb-api/batches?month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}&state=BatchInspected`);
+        const { data } = await axios.get(`/kuana-ndb-api/v1/batches?month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}&state=BatchInspected`);
 
         for (const batch of data) {
           batch.state = stateParam;
-          await axios.put(`/kuana-ndb-api/batches/`, batch, { headers: { 'Content-Type': 'application/json' } });
+          await axios.put(`/kuana-ndb-api/v1/batches/`, batch, { headers: { 'Content-Type': 'application/json' } });
         }
 
         this.reloadCalendar();
@@ -132,7 +132,7 @@ export default defineComponent({
     },
     async fetchBatch(currentDate: Date) {
       try {
-        const response = await axios.get(`/kuana-ndb-api/batches?month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}&batch_type=dagsaviser&get_latest=false`);
+        const response = await axios.get(`/kuana-ndb-api/v1/batches?month=${currentDate.getMonth() + 1}&year=${currentDate.getFullYear()}&batch_type=dagsaviser&get_latest=false`);
         return response.data;
       } catch (error) {
         console.error(error);
@@ -145,7 +145,7 @@ export default defineComponent({
       const notes : any = [];
 
       for (const batchInfo of batchInfos) {
-        const response = await axios.get(`/kuana-ndb-api/batches/${batchInfo.id}/all-notes-to-batch`);
+        const response = await axios.get(`/kuana-ndb-api/v1/batches/${batchInfo.id}/all-notes-to-batch`);
         const noteArray = response.data;
 
         if (noteArray.length != 0) {
@@ -153,7 +153,7 @@ export default defineComponent({
             note.batchName = batchInfo.batch_name;
 
             if (note.newspaper_id) {
-              const newspaperResponse = await axios.get(`/kuana-ndb-api/batches/${batchInfo.id}/newspapers/${note.newspaper_id}`);
+              const newspaperResponse = await axios.get(`/kuana-ndb-api/v1/batches/${batchInfo.id}/newspapers/${note.newspaper_id}`);
               note.newspaperName = newspaperResponse.data.newspaper_name;
             }else {
               note.newspaperName = null;

@@ -35,8 +35,6 @@
         </template>
       </div>
     </Slide>
-<!--    <Navigation></Navigation>-->
-<!--    <Pagination />-->
     <template #addons>
       <Navigation v-if="frontPageView"/>
       <Pagination v-if="frontPageView"/>
@@ -175,7 +173,7 @@ export default defineComponent({
             const encoded_item = encodeURIComponent(item.name);
             try {
               const apiClient = axios.create({
-                baseURL: '/kuana-ndb-api',
+                baseURL: '/kuana-ndb-api/v1',
               })
               await apiClient.get(`/file/${encoded_item}`, {
                 responseType: 'blob'}
